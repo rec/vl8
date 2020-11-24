@@ -3,9 +3,9 @@
 ------------------------------------------------------------------
 """
 
+
+# import stroll
 from dataclasses import dataclass
-import aubio
-import stroll
 import numpy as np
 import util
 
@@ -34,12 +34,12 @@ class Granulator:
     def run(self, function, outfile):
         results = self.for_each_granule(function)
         results.sort(1)
-        util.write(out, self.combine(results))
+        util.write(outfile, self.combine(results))
 
     def for_each_granule(self, function):
         half = self.grain_size / 2
         granules = self.duration / half
-        results = empty(granules).transpose()
+        results = util.empty(granules).transpose()
         for i in range(granules):
             begin = half * i
             end = begin + self.grain_size
@@ -59,13 +59,13 @@ class Granulator:
         for out_index, (in_index, value) in enumerate(results):
             i = in_index * half
             o = out_index * half
-            out[:, o:o + half] += buf[:, i:i + half] * fade_in
+            out[:, o : o + half] += buf[:, i : i + half] * fade_in
 
             i += half
             o += half
-            out[:, o:o + half] += buf[:, i: i + half] * fade_in
+            out[:, o : o + half] += buf[:, i : i + half] * fade_out
 
-         return out
+        return out
 
 
 if __name__ == '__main__':
