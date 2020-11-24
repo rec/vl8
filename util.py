@@ -30,7 +30,7 @@ def read(filename, grain_size=0):
     return buffer
 
 
-def write(buffer, filename):
+def write(filename, buffer):
     channels, nsamples = buffer.shape
     sink = aubio.sink(filename, channels=channels)
 

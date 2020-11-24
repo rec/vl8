@@ -11,7 +11,7 @@ import util
 
 __all__ = 'sorta'
 __version__ = '0.1.0'
-OUTFILE = '/data/sorta/full.wav'
+INFILE = '/data/sorta/full.wav'
 MAX_FRAME = 4096
 SAMPLERATE = 44100
 GRAIN_SIZE = SAMPLERATE // 10
@@ -23,7 +23,7 @@ def mean_square(granule):
 
 @dataclass
 class Granulator:
-    filename: str
+    filename: str = INFILE
     grain_size: int = GRAIN_SIZE
     sort: bool = True
 
@@ -31,34 +31,30 @@ class Granulator:
         assert not (self.grain_size % 2)
         self.buffer = util.read(self.filename, self.grain_size)
 
-        begin = 0
-        for c in src:
-            end = min(duration, begin + chunk.shape[1])
-            self.buffer[:, begin : end] = chunk[:, : end - begin]
-            begin = enda
-
-    def run(self, function, sort=True):
+    def run(self, function, outfile):
         results = self.for_each_granule(function)
-        if sort:
-            results.sort(axis=1)
-        return self.combine(results)
+        results.sort(1)
+        util.write(out, self.combine(results))
 
     def for_each_granule(self, function):
         half = self.grain_size / 2
-        results = empty(self.duration / half).transpose()
-        for i, r in enumerate(results):
+        granules = self.duration / half
+        results = empty(granules).transpose()
+        for i in range(granules):
             begin = half * i
             end = begin + self.grain_size
-            r[:] = float(i), function(self.buffer[:, begin:end])
+            value = function(self.buffer[:, begin:end])
+            results[i] = float(i), value
 
         return results
 
     def combine(self, results):
         half = self.grain_size / 2
+        buf = self.buffer
+        out = util.zeros(buf.shape[1] + half)
+
         fade_in = np.linspace(0, 1, half, dtype=util.FLOAT)
         fade_out = np.flip(fade_in)
-        buf = self.buffer
-        out = zeros(buf.shape[1] + half)
 
         for out_index, (in_index, value) in enumerate(results):
             i = in_index * half
@@ -73,4 +69,4 @@ class Granulator:
 
 
 if __name__ == '__main__':
-    print(read_file().shape)
+    Granulator().run(mean_square, '/data/sorta/mean_square.wav')
