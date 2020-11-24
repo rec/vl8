@@ -23,7 +23,7 @@ def mean_square(granule):
 
 @dataclass
 class Granulator:
-    filename: str = INFILE
+    filename: str
     grain_size: int = GRAIN_SIZE
     sort: bool = True
 
@@ -31,14 +31,21 @@ class Granulator:
         assert not (self.grain_size % 2)
         self.buffer = util.read(self.filename, self.grain_size)
 
+    @property
+    def duration(self):
+        return self.buffer.shape[0]
+
     def run(self, function, outfile):
         results = self.for_each_granule(function)
         results.sort(1)
+        print('writing', outfile)
         util.write(outfile, self.combine(results))
 
     def for_each_granule(self, function):
-        half = self.grain_size / 2
-        granules = self.duration / half
+        half = self.grain_size // 2
+        granules = self.duration // half
+        granules = round(granules)
+
         results = util.empty(granules).transpose()
         for i in range(granules):
             begin = half * i
@@ -49,7 +56,7 @@ class Granulator:
         return results
 
     def combine(self, results):
-        half = self.grain_size / 2
+        half = self.grain_size // 2
         buf = self.buffer
         out = util.zeros(buf.shape[1] + half)
 
@@ -69,4 +76,8 @@ class Granulator:
 
 
 if __name__ == '__main__':
-    Granulator().run(mean_square, '/data/sorta/mean_square.wav')
+    print('Reading', INFILE)
+    generator = Granulator(INFILE)
+
+    print('Running mean_square')
+    generator.run(mean_square, '/data/sorta/mean_square.wav')
