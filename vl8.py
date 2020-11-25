@@ -10,7 +10,7 @@ import numpy as np
 import util
 
 __all__ = 'vl8'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 INFILE = '/data/vl8/full.wav'
 MAX_FRAME = 4096
 SAMPLERATE = 44100
