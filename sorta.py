@@ -26,14 +26,12 @@ class Granulator:
     filename: str
     grain_size: int = GRAIN_SIZE
     sort: bool = True
+    duration: int = 0
 
     def __post_init__(self):
         assert not (self.grain_size % 2)
-        self.buffer = util.read(self.filename, self.grain_size)
-
-    @property
-    def duration(self):
-        return self.buffer.shape[0]
+        self.buffer = util.read(self.filename, self.grain_size, self.duration)
+        self.duration = self.buffer.shape[1]
 
     def run(self, function, outfile):
         results = self.for_each_granule(function)
@@ -64,7 +62,7 @@ class Granulator:
         fade_out = np.flip(fade_in)
 
         for out_index, (in_index, value) in enumerate(results):
-            i = in_index * half
+            i = round(in_index) * half
             o = out_index * half
             out[:, o : o + half] += buf[:, i : i + half] * fade_in
 

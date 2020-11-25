@@ -13,19 +13,26 @@ def zeros(length, channels=2):
     return np.zeros(shape=(channels, length), dtype=FLOAT)
 
 
-def read(filename, grain_size=0):
+def read(filename, grain_size=0, duration=0):
     src = aubio.source(filename)
 
-    duration = src.duration
+    duration = duration or src.duration
     if grain_size:
         duration += -duration % grain_size
+
     buffer = empty(duration)
 
     begin = 0
     for chunk in src:
+        if begin >= duration:
+            break
+
         end = min(duration, begin + chunk.shape[1])
         buffer[:, begin:end] = chunk[:, : end - begin]
         begin = end
+    else:
+        if begin < duration:
+            buffer[:, begin:].fill(0)
 
     return buffer
 
