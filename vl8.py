@@ -9,9 +9,9 @@ from dataclasses import dataclass
 import numpy as np
 import util
 
-__all__ = 'sorta'
+__all__ = 'vl8'
 __version__ = '0.1.0'
-INFILE = '/data/sorta/full.wav'
+INFILE = '/data/vl8/full.wav'
 MAX_FRAME = 4096
 SAMPLERATE = 44100
 GRAIN_SIZE = SAMPLERATE // 10
@@ -78,4 +78,4 @@ if __name__ == '__main__':
     generator = Granulator(INFILE)
 
     print('Running mean_square')
-    generator.run(mean_square, '/data/sorta/mean_square.wav')
+    generator.run(mean_square, '/data/vl8/mean_square.wav')

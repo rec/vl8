@@ -15,7 +15,7 @@ _classifiers = [
 
 
 def _version():
-    with open('sorta.py') as fp:
+    with open('vl8.py') as fp:
         line = next(i for i in fp if i.startswith('__version__'))
         return line.strip().split()[-1].strip("'")
 
@@ -25,13 +25,13 @@ REQUIREMENTS = Path('requirements.txt').read_text().splitlines()
 
 if __name__ == '__main__':
     setup(
-        name='sorta',
+        name='vl8',
         version=_version(),
         author='Tom Ritchford',
         author_email='tom@swirly.com',
-        url='https://github.com/rec/sorta',
-        py_modules=['sorta'],
-        description='🔉 sorta: Sort audio granularly 🔉',
+        url='https://github.com/rec/vl8',
+        py_modules=['vl8'],
+        description='🔉 vl8: Sort audio granularly 🔉',
         long_description=open('README.rst').read(),
         license='MIT',
         classifiers=_classifiers,

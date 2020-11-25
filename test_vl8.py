@@ -1,7 +1,7 @@
-# import sorta
+# import vl8
 import unittest
 
 
-class TestSorta(unittest.TestCase):
+class TestVl8(unittest.TestCase):
     def test_existing(self):
         assert True

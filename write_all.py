@@ -7,9 +7,9 @@ import aubio
 import numpy as np
 import stroll
 
-__all__ = 'sorta'
+__all__ = 'vl8'
 __version__ = '0.1.0'
-OUTFILE = '/data/sorta/full.wav'
+OUTFILE = '/data/vl8/full.wav'
 MAX_FRAME = 4096
 
 
@@ -18,7 +18,7 @@ def granules(source, length=0):
 
 
 def read_all():
-    files = [str(i) for i in stroll('/data/sorta', suffix='.wav')]
+    files = [str(i) for i in stroll('/data/vl8', suffix='.wav')]
 
     duration = sum(aubio.source(f).duration for f in files)
     buffer = np.empty(shape=(2, duration), dtype=np.float32)
