@@ -1,13 +1,13 @@
 """
-🏃 Run one or more commands 🏃
-------------------------------------------------------------------
+🔉 vl8: Create derivative works that might not be copyright violations 🔉
+----------------------------------------------------------------------------
+
+This is a tool to create derivative works of pieces of music.
 """
 
-
-# import stroll
+from . import util
 from dataclasses import dataclass
 import numpy as np
-import util
 
 __all__ = 'vl8'
 __version__ = '0.2.0'

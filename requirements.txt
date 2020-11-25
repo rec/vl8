@@ -1,5 +1,5 @@
-aubio
 numpy
+aubio
 pydub
 runs
 stroll
