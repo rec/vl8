@@ -1,13 +1,14 @@
 from vl8 import config
+from vl8.config.config import merge
 import unittest
 
 
 class TestConfig(unittest.TestCase):
     def test_to_section(self):
-        assert config.to_section('s') == 'source'
-        assert config.to_section('jo') == 'job'
+        assert config.to_section('s') == 'sources'
+        assert config.to_section('ta') == 'tasks'
 
-        for bad in '', 'x', 'sa', 'jobo':
+        for bad in '', 'x', 'sa', 'taskso':
             with self.assertRaises(ValueError) as m:
                 config.to_section(bad)
             assert (
@@ -15,34 +16,34 @@ class TestConfig(unittest.TestCase):
             )
 
     def test_merge(self):
-        assert config.merge([]) == {}
+        assert merge([]) == {}
 
         c1 = {'so': {'foo': ['a', 'b']}, 'fu': {'bar': {'bing': 'bong'}}}
 
-        assert config.merge([]) == {}
+        assert merge([]) == {}
         expected = {
-            'source': {'foo': ['a', 'b']},
-            'function': {'bar': {'bing': 'bong'}},
+            'sources': {'foo': ['a', 'b']},
+            'functions': {'bar': {'bing': 'bong'}},
         }
-        assert config.merge([c1]) == expected
+        assert merge([c1]) == expected
 
         c2 = {
-            'source': {'foo': ['c', 'd']},
-            'function': {'bar': {'bop': 'bop'}},
-            'job': {},
+            'sources': {'foo': ['c', 'd']},
+            'functions': {'bar': {'bop': 'bop'}},
+            'tasks': {},
         }
-        assert config.merge([c2]) == c2
+        assert merge([c2]) == c2
 
         expected = {
-            'function': {'bar': {'bop': 'bop'}},
-            'job': {},
-            'source': {'foo': ['c', 'd']},
+            'functions': {'bar': {'bop': 'bop'}},
+            'tasks': {},
+            'sources': {'foo': ['c', 'd']},
         }
-        assert config.merge([c1, c2]) == expected
+        assert merge([c1, c2]) == expected
 
         expected = {
-            'function': {'bar': {'bing': 'bong', 'bop': 'bop'}},
-            'job': {},
-            'source': {'foo': ['a', 'b', 'c', 'd']},
+            'functions': {'bar': {'bing': 'bong', 'bop': 'bop'}},
+            'tasks': {},
+            'sources': {'foo': ['a', 'b', 'c', 'd']},
         }
-        assert config.merge([c1, c2], overwrite=False) == expected
+        assert merge([c1, c2], overwrite=False) == expected
