@@ -4,7 +4,7 @@
 
    * source
    * function
-   * job
+   * task
 
 2. Write a program to run one or more jobs from one or more config files
 
@@ -13,3 +13,13 @@
 4. Write a lot more functions.
 
 5. GUI?
+
+
+APPENDIX: functions
+
+* parallel
+* precis
+* envelope
+* split
+* reverse
+* sort

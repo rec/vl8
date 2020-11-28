@@ -4,7 +4,7 @@ import importlib
 
 
 def parse(functions):
-    for k, v in list(functions.items()):
+    for k, v in functions.items():
         if isinstance(v, str):
             v = {NAME: v}
         elif isinstance(v, list):

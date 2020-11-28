@@ -1,8 +1,8 @@
-from . import SOURCES, FUNCTIONS, TASKS
 from . import sources, functions, tasks
 
 
 def parse(config):
-    yield from sources.parse(config.setdefault(SOURCES, {}))
-    yield from functions.parse(config.setdefault(FUNCTIONS, {}))
-    yield from tasks.parse(config.setdefault(TASKS, {}))
+    for section in sources, functions, tasks:
+        cfg = config.setdefault(section.__name__, {})
+        for k, v in cfg.items():
+            yield from section.parse(k, v)
