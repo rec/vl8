@@ -23,3 +23,14 @@ APPENDIX: functions
 * split
 * reverse
 * sort
+* random walk
+* concatenate
+* noise
+* synthesis
+  * waveforms
+  * AM
+  * FM
+* DSP
+  * limiter
+  * big can of worms!
+  * stateless is easy - pure functions!

@@ -2,8 +2,9 @@
 SOURCES = 'sources'
 FUNCTIONS = 'functions'
 TASKS = 'tasks'
+OPTIONS = 'options'
 
-SECTIONS = SOURCES, FUNCTIONS, TASKS
+SECTIONS = SOURCES, FUNCTIONS, TASKS, OPTIONS
 
 # These are special fields for functions and tasks that allow you
 # to load and call Python functions
