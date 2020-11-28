@@ -1,3 +1,4 @@
+from pathlib import Path
 import aubio
 import numpy as np
 import sys
@@ -5,6 +6,10 @@ import sys
 MAX_FRAME = 4096
 FLOAT = np.float32
 VERBOSE = True
+
+
+def source(f):
+    return aubio.source(str(f))
 
 
 def empty(length, channels=2):
@@ -15,27 +20,34 @@ def zeros(length, channels=2):
     return np.zeros(shape=(channels, length), dtype=FLOAT)
 
 
-def read(filename, grain_size=0, duration=0):
-    log('reading', filename)
-    src = aubio.source(str(filename))
+def read(filenames, grain_size=0, duration=0, gap=0):
+    if isinstance(filenames, (str, Path)):
+        filenames = [filenames]
+    if not duration:
+        duration = sum(source(f).duration for f in filenames)
+        duration += gap * len(filenames) - 1
 
-    duration = duration or src.duration
     if grain_size:
         duration += -duration % grain_size
 
     buffer = empty(duration)
 
     begin = 0
-    for chunk in src:
-        if begin >= duration:
-            break
+    for filename in filenames:
+        log('reading', filename)
+        src = aubio.source(filename)
 
-        end = min(duration, begin + chunk.shape[1])
-        buffer[:, begin:end] = chunk[:, : end - begin]
-        begin = end
-    else:
-        if begin < duration:
-            buffer[:, begin:].fill(0)
+        for chunk in src:
+            if begin >= duration:
+                break
+
+            end = min(duration, begin + chunk.shape[1])
+            buffer[:, begin:end] = chunk[:, : end - begin]
+            begin = end
+        else:
+            if begin < duration:
+                buffer[:, begin:].fill(0)
+        begin += gap
 
     return buffer
 
