@@ -11,9 +11,9 @@ def parse(functions):
             v = {NAME: v[0], ARGS: v[1:]}
 
         if not isinstance(v, dict):
-            yield 'function %s was not a string or dict' % k
+            yield f'function {k} was not a string or dict' % k
         elif NAME not in v:
-            yield 'function had no _name' % k
+            yield f'function {k} had no {NAME}'
         else:
             name = v.pop(NAME)
             args = v.pop(ARGS, [])

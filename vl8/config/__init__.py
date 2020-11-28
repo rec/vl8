@@ -23,4 +23,4 @@ def _find_unique(x, items, name):
             if s.startswith(x):
                 return s
 
-    raise ValueError('Do not understand %s "%s"' % (name, x))
+    raise ValueError(f'Do not understand {name} "{x}"')

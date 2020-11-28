@@ -12,7 +12,7 @@ def load(filename):
     try:
         reader = READERS[p.suffix]
     except KeyError:
-        raise ValueError('Cannot understand suffixs', p.suffix)
+        raise ValueError(f'Cannot understand suffix {p.suffix}')
     with p.open() as fp:
         return reader.load(fp)
 

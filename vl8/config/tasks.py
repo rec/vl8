@@ -23,7 +23,7 @@ def parse(tasks):
             task.update(functions=functions, sources=list(rest))
 
         if not isinstance(task, dict):
-            yield 'Task %s is not a dict, string, or list' % name
+            yield f'Task {name} is not a dict, string, or list'
             continue
 
         tasks[name] = {}
@@ -35,6 +35,6 @@ def parse(tasks):
                 yield e.args[0]
             else:
                 if field in tasks[name]:
-                    yield 'Task field %s appears twice' % field
+                    yield f'Task field {field} appears twice'
                 else:
                     tasks[name][field] = v
