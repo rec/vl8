@@ -28,13 +28,13 @@ def read(filenames, grain_size=0, duration=0, gap=0):
         duration += gap * len(filenames) - 1
 
     if grain_size:
-        duration += -duration % grain_size
-
-    buffer = empty(duration)
+        buffer = empty(duration + (-duration % grain_size))
+    else:
+        buffer = empty(duration)
 
     begin = 0
     for filename in filenames:
-        log('reading', filename)
+        log('Reading', filename)
         src = aubio.source(filename)
 
         for chunk in src:
@@ -48,6 +48,9 @@ def read(filenames, grain_size=0, duration=0, gap=0):
             if begin < duration:
                 buffer[:, begin:].fill(0)
         begin += gap
+
+    if begin != duration + gap:
+        error(f'Wrong duration: {begin} != {duration} + {gap}')
 
     return buffer
 
@@ -67,6 +70,10 @@ def write(filename, buffer):
         sink.do_multi(buffer[:, o : o + length], length)
 
 
+def error(*args, **kwds):
+    print(*args, **kwds, file=sys.stderr)
+
+
 def log(*args, **kwds):
     if VERBOSE:
-        print(*args, **kwds, file=sys.stderr)
+        error(*args, **kwds)

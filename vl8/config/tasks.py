@@ -3,7 +3,7 @@ from . import _find_unique
 FIELDS = 'functions', 'sources', 'out'
 
 
-def parse(tasks):
+def validate(tasks):
     for name, task in tasks.items():
         """A task is
            * an output file (which might shard to many files)

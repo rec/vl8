@@ -2,7 +2,7 @@ from . import DEFAULT
 from pathlib import Path
 
 
-def parse(sources):
+def validate(sources):
     if isinstance(sources, list):
         sources = {DEFAULT: sources}
 

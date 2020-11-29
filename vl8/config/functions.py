@@ -3,7 +3,7 @@ import functools
 import importlib
 
 
-def parse(functions):
+def validate(functions):
     for k, v in functions.items():
         if isinstance(v, str):
             v = {NAME: v}
