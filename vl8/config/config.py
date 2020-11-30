@@ -1,9 +1,10 @@
-from . import to_section
+# from . import expand
 from pathlib import Path
 import json
 import toml
 import yaml
 
+# The sections in a config file dictionary.
 READERS = {'.json': json, '.toml': toml, '.yaml': yaml}
 
 
@@ -21,7 +22,7 @@ def merge(configs, overwrite=True):
     result = {}
     for cfg in configs:
         for name, section in cfg.items():
-            rsection = result.setdefault(to_section(name), {})
+            rsection = result.setdefault(name, {})
 
             for k, v in section.items():
                 if overwrite or k not in rsection:

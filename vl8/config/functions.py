@@ -1,6 +1,8 @@
-from . import ARGS, NAME
 import functools
 import importlib
+
+NAME = '_name'
+ARGS = '_args'
 
 
 def validate(functions):
@@ -17,6 +19,7 @@ def validate(functions):
         else:
             name = v.pop(NAME)
             args = v.pop(ARGS, [])
+            # TODO: this should happen later
             function = _import(name)
             functions[k] = functools.partial(function, *args, **v)
 

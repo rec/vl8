@@ -1,6 +1,7 @@
-from . import _find_unique
+from .expand import Expander
 
-FIELDS = 'functions', 'sources', 'out'
+DEFAULT = {'functions': dict, 'sources': dict, 'out': dict}
+expand = Expander('tasks', DEFAULT)
 
 
 def validate(tasks):
@@ -22,19 +23,8 @@ def validate(tasks):
 
             task.update(functions=functions, sources=list(rest))
 
-        if not isinstance(task, dict):
+        if isinstance(task, dict):
+            yield from expand(task)
+            tasks[name] = task
+        else:
             yield f'Task {name} is not a dict, string, or list'
-            continue
-
-        tasks[name] = {}
-
-        for k, v in task.items():
-            try:
-                field = _find_unique(k, FIELDS, 'field')
-            except ValueError as e:
-                yield e.args[0]
-            else:
-                if field in tasks[name]:
-                    yield f'Task field {field} appears twice'
-                else:
-                    tasks[name][field] = v

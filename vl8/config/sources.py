@@ -1,5 +1,6 @@
-from . import DEFAULT
 from pathlib import Path
+
+DEFAULT = '_'
 
 
 def validate(sources):
