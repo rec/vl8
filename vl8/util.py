@@ -1,23 +1,14 @@
+from . import npf
 from pathlib import Path
 import aubio
-import numpy as np
 import sys
 
 MAX_FRAME = 4096
-FLOAT = np.float32
 VERBOSE = True
 
 
 def source(f):
     return aubio.source(str(f))
-
-
-def empty(length, channels=2):
-    return np.empty(shape=(channels, length), dtype=FLOAT)
-
-
-def zeros(length, channels=2):
-    return np.zeros(shape=(channels, length), dtype=FLOAT)
 
 
 def read(filenames, grain_size=0, duration=0, gap=0):
@@ -28,9 +19,9 @@ def read(filenames, grain_size=0, duration=0, gap=0):
         duration += gap * len(filenames) - 1
 
     if grain_size:
-        buffer = empty(duration + (-duration % grain_size))
+        buffer = npf.empty(duration + (-duration % grain_size))
     else:
-        buffer = empty(duration)
+        buffer = npf.empty(duration)
 
     begin = 0
     for filename in filenames:
@@ -56,7 +47,7 @@ def read(filenames, grain_size=0, duration=0, gap=0):
 
 
 def normalize(buffer):
-    buffer /= max(abs(p) for p in (np.amax(buffer), np.amin(buffer)))
+    buffer /= max(abs(p) for p in (npf.amax(buffer), npf.amin(buffer)))
 
 
 def write(filename, buffer):

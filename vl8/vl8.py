@@ -58,7 +58,7 @@ class Granulator:
         buf = self.buffer
         out = util.zeros(buf.shape[1] + half)
 
-        fade_in = np.linspace(0, 1, half, dtype=util.FLOAT)
+        fade_in = util.linspace(0, 1, half)
         fade_out = np.flip(fade_in)
 
         for out_index, (in_index, value) in enumerate(results):
