@@ -1,4 +1,5 @@
 # from numpy.testing import assert_array_equal
+from pathlib import Path
 from vl8 import npf
 from vl8 import util
 import aubio
@@ -7,25 +8,37 @@ import tdir
 import unittest
 
 DURATION = 2 + 2 * util.MAX_FRAME
-assert tdir
 
 
-@tdir(use_dir='.')
+def killer(length):
+    # ramp = npf.linspace(0, 1, 2 * length).reshape(2, length)
+    ramp = npf.zeros(length)
+    assert ramp.shape == (2, length)
+
+    fname = f'b-{length}.wav'
+    util.write(fname, ramp)
+    c1 = util.read(fname)
+
+    new_channel, new_length = c1.shape
+    return length - new_length
+
+
+@tdir
 class TestIO(unittest.TestCase):
-    def test_crash(self):
-        length = 1 + util.MAX_FRAME
-        b1 = npf.linspace(0, length - 1, length)
-        b1 = b1.reshape(1, length)
-        b1 = npf.r_[b1, b1]
-        assert b1.shape == (2, length)
+    def test_length(self):
+        p = Path(__file__).parent / 'b-4098.wav'
+        assert p.exists()
+        src = aubio.source(str(p))
+        assert src.duration in (4097, 4098)
+        durations = [s.shape[1] for s in src]
+        assert sum(durations) in (4097, 4098)
 
-        util.write('b1.wav', b1)
-        c1 = util.read('b1.wav')
-        if True:
-            return
-        c1.duration
-        if False:
-            assert c1.shape == (2, length)
+    def test_crash(self):
+        assert not killer(util.MAX_FRAME)
+        assert not killer(util.MAX_FRAME + 4)
+        assert not killer(util.MAX_FRAME + 3)
+        assert killer(util.MAX_FRAME + 1) in (0, 1)
+        # for length in range(util.MAX_FRAME, util.MAX_FRAME + 3):
 
     def test_round_trip_1(self):
         half = DURATION // 2
