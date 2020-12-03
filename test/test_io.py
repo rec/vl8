@@ -7,11 +7,27 @@ import tdir
 import unittest
 
 DURATION = 2 + 2 * util.MAX_FRAME
+assert tdir
 
 
-@tdir
+@tdir(use_dir='.')
 class TestIO(unittest.TestCase):
-    def test_round_trip(self):
+    def test_crash(self):
+        length = 1 + util.MAX_FRAME
+        b1 = npf.linspace(0, length - 1, length)
+        b1 = b1.reshape(1, length)
+        b1 = npf.r_[b1, b1]
+        assert b1.shape == (2, length)
+
+        util.write('b1.wav', b1)
+        c1 = util.read('b1.wav')
+        if True:
+            return
+        c1.duration
+        if False:
+            assert c1.shape == (2, length)
+
+    def test_round_trip_1(self):
         half = DURATION // 2
 
         b1 = npf.linspace(0, half - 1, half)
@@ -21,6 +37,8 @@ class TestIO(unittest.TestCase):
         b2 = b2.reshape(1, half)
         b1 = npf.r_[b1, b1]
         b2 = npf.r_[b2, b2]
+        assert b1.shape == (2, half)
+
         util.write('b1.wav', b1)
         util.write('b2.wav', b2)
 
