@@ -5,6 +5,8 @@ import sys
 
 MAX_FRAME = 4096
 VERBOSE = True
+CAUSE_CRASH = False
+# Track down a crash in aubio
 
 
 def source(f):
@@ -14,12 +16,21 @@ def source(f):
 def read(filenames, grain_size=0, duration=0, gap=0):
     if isinstance(filenames, (str, Path)):
         filenames = [filenames]
+
+    assert filenames, 'No filenames'
+
     if not duration:
         duration = sum(source(f).duration for f in filenames)
-        duration += gap * len(filenames) - 1
+        if not CAUSE_CRASH:
+            duration += gap * (len(filenames) - 1)
+        else:
+            # Bug that triggered a crash
+            duration += gap * len(filenames) - 1
 
-    if grain_size:
-        buffer = npf.empty(duration + (-duration % grain_size))
+    fill = grain_size and -duration % grain_size
+    if fill:
+        buffer = npf.empty(duration + fill)
+        buffer[:, -fill:].fill(0)
     else:
         buffer = npf.empty(duration)
 
@@ -35,9 +46,7 @@ def read(filenames, grain_size=0, duration=0, gap=0):
             end = min(duration, begin + chunk.shape[1])
             buffer[:, begin:end] = chunk[:, : end - begin]
             begin = end
-        else:
-            if begin < duration:
-                buffer[:, begin:].fill(0)
+
         begin += gap
 
     if begin != duration + gap:
@@ -58,7 +67,8 @@ def write(filename, buffer):
 
     for o in range(0, nsamples, MAX_FRAME):
         length = min(MAX_FRAME, nsamples - o)
-        sink.do_multi(buffer[:, o : o + length], length)
+        buf = buffer[:, o : o + length]
+        sink.do_multi(buf, length)
 
 
 def error(*args, **kwds):
