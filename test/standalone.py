@@ -3,11 +3,15 @@ import numpy as np
 import os
 
 FRAME = 4096
-REMOVE = True
+REMOVE = not True
 
 
 def write_empty(duration):
-    buffer = np.zeros((2, duration), dtype=np.float32)
+    if False:
+        buffer = np.zeros((2, duration), dtype=np.float32)
+    else:
+        buffer = np.linspace(0, 1, 2 * duration, dtype=np.float32)
+        buffer = buffer.reshape(2, duration)
 
     filename = f'b-{duration}.wav'
     with aubio.sink(filename, channels=2) as sink:
@@ -36,5 +40,5 @@ def test_crash(start, count):
 
 
 if __name__ == '__main__':
-    test_crash(0, 129)
-    test_crash(FRAME, 128)
+    # test_crash(0, 129)
+    test_crash(FRAME, 3)
