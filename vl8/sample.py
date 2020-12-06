@@ -13,7 +13,14 @@ class Sample:
     @classmethod
     def read(cls, filename):
         s = AudioSegment.from_file(filename)
-        return cls(_to_matrix(s), s.frame_rate)
+        array = np.frombuffer(s._data, dtype=s.array_type)
+        nsamples = len(array) // s.channels
+
+        assert not len(array) % s.channels
+        assert nsamples == int(s.frame_count())
+
+        matrix = array.reshape((s.channels, nsamples), order='F')
+        return cls(matrix, s.frame_rate)
 
     @functools.wraps(AudioSegment.export)
     def write(self, out_f, format=None, *args, **kwargs):
@@ -27,13 +34,3 @@ class Sample:
             frame_rate=self.frame_rate,
             channels=self.data.shape[0],
         )
-
-
-def _to_matrix(s):
-    array = np.frombuffer(s._data, dtype=s.array_type)
-    nsamples = len(array) // s.channels
-
-    assert not len(array) % s.channels
-    assert nsamples == int(s.frame_count())
-
-    return array.reshape((s.channels, nsamples), order='F')
