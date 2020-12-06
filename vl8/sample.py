@@ -10,6 +10,11 @@ class Sample:
     data: np.ndarray
     frame_rate: int
 
+    def __post_init__(self):
+        length, *rest = self.data.shape
+        if not rest:
+            self.data = self.data.reshape((1, length))
+
     @classmethod
     def read(cls, filename):
         s = AudioSegment.from_file(filename)
