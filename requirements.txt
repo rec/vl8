@@ -1,7 +1,5 @@
 # numpy must be first
 numpy
-
-aubio
 pydub
 pyyaml
 runs

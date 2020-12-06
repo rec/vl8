@@ -23,7 +23,7 @@ class TestValidate(unittest.TestCase):
         # TODO: restore this
         # self.validate(sources='foo.wav', functions={'foo': 'vl8.foo'})
         self.validate(
-            sources={'_': ['foo.wav']}, functions={'foo': 'vl8.util.read'}
+            sources={'_': ['foo.wav']}, functions={'foo': 'vl8.util.error'}
         )
 
         assert self.errors == []
