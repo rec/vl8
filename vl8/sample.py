@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 from pydub import AudioSegment
 import functools
 import numpy as np
@@ -6,27 +7,33 @@ import numpy as np
 
 @dataclass
 class Sample:
-    sample: np.ndarray
+    data: np.ndarray
     frame_rate: int
 
     @classmethod
     def read(cls, filename):
         s = AudioSegment.from_file(filename)
-        array = np.frombuffer(s._data, dtype=s.array_type)
-
-        assert len(array) == int(s.frame_count())
-        assert not len(array) % s.channels
-
-        nsamples = len(array) // s.channels
-        matrix = array.reshape(s.channels, nsamples, 'F')
-
-        return cls(matrix, s.frame_rate)
+        return cls(_to_matrix(s), s.frame_rate)
 
     @functools.wraps(AudioSegment.export)
-    def write(self, *args, **kwargs):
-        AudioSegment(
-            data=self.sample.tobytes('F'),
-            sample_width=self.sample.dtype.itemsize,
+    def write(self, out_f, format=None, *args, **kwargs):
+        format = format or Path(out_f).suffix[1:]
+        return self.segment().export(out_f, format, *args, **kwargs)
+
+    def segment(self):
+        return AudioSegment(
+            data=self.data.tobytes('F'),
+            sample_width=self.data.dtype.itemsize,
             frame_rate=self.frame_rate,
-            channels=self.sample.shape[1],
-        ).export(*args, **kwargs)
+            channels=self.data.shape[0],
+        )
+
+
+def _to_matrix(s):
+    array = np.frombuffer(s._data, dtype=s.array_type)
+    nsamples = len(array) // s.channels
+
+    assert not len(array) % s.channels
+    assert nsamples == int(s.frame_count())
+
+    return array.reshape((s.channels, nsamples), order='F')
