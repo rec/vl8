@@ -10,12 +10,25 @@ DEFAULT_SAMPLE_RATE = 44100
 @dataclass
 class Sample:
     data: np.ndarray
-    frame_rate: int = DEFAULT_SAMPLE_RATE
+    sample_rate: int = DEFAULT_SAMPLE_RATE
 
     def __post_init__(self):
         length, *rest = self.data.shape
         if not rest:
             self.data = self.data.reshape((1, length))
+
+    def to_time(self, samples):
+        return samples / self.sample_rate
+
+    def to_samples(self, time):
+        return round(time * self.sample_rate)
+
+    @property
+    def channels(self):
+        return self.data.shape[0]
+
+    def __len__(self):
+        return self.data.shape[1]
 
     @classmethod
     def read(cls, filename):
@@ -38,6 +51,6 @@ class Sample:
         return AudioSegment(
             data=self.data.tobytes('F'),
             sample_width=self.data.dtype.itemsize,
-            frame_rate=self.frame_rate,
-            channels=self.data.shape[0],
+            frame_rate=self.sample_rate,
+            channels=self.channels,
         )

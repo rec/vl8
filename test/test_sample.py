@@ -17,7 +17,7 @@ class TestSample(unittest.TestCase):
         segment = AudioSegment.from_file(TEST_FILE)
         sample = Sample.read(TEST_FILE)
 
-        assert sample.frame_rate == 44100
+        assert sample.sample_rate == 44100
         assert sample.data.shape == (2, length)
         assert segment._data == sample.data.tobytes('F')
         assert vars(segment) == vars(sample.segment())
