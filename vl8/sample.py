@@ -4,11 +4,13 @@ from pydub import AudioSegment
 import functools
 import numpy as np
 
+DEFAULT_SAMPLE_RATE = 44100
+
 
 @dataclass
 class Sample:
     data: np.ndarray
-    frame_rate: int
+    frame_rate: int = DEFAULT_SAMPLE_RATE
 
     def __post_init__(self):
         length, *rest = self.data.shape
