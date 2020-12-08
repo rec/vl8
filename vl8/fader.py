@@ -13,13 +13,12 @@ class Fader:
     space: object = np.linspace
 
     def __post_init__(self):
-        lin = functools.partial(self.space, endpoint=True, dtype=self.dtype)
-
         if self.n_out <= 0:
             self.n_out = self.n_in
 
         b = self.begin
         e = self.end
+        lin = functools.partial(self.space, endpoint=True, dtype=self.dtype)
 
         self._fade_in = lin(b, e, self.n_in)
         if self.n_out == self.n_in:
