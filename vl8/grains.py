@@ -13,9 +13,11 @@ class Grains:
     size: int = GRAIN_SIZE
     overlap: float = OVERLAP
     fader: object = None
-    dtype: np.dtype = np.float32
+    dtype: np.dtype = None
 
     def __post_init__(self):
+        if self.dtype is None:
+            self.dtype = self.data.dtype
         o = OVERLAP if self.overlap is None else self.overlap
         fade = round(o * self.size / 2)
         self.stride = self.size - fade
