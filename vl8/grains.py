@@ -1,34 +1,34 @@
+from . import fader
 from dataclasses import dataclass
+import math
 import numpy as np
 
 GRAIN_SIZE = 1024
+OVERLAP = 0.5
 
 
 @dataclass
 class Grains:
     data: np.ndarray
     size: int = GRAIN_SIZE
-    overlap: float = 1.0
+    overlap: float = OVERLAP
+    fader: object = None
     dtype: np.dtype = np.float32
 
     def __post_init__(self):
-        assert 0 <= self.overlap <= 1
-        f = round(self.overlap * self.size / 2)
-        self.fade_in = np.linspace(0, 1, f, endpoint=True, dtype=self.dtype)
-        self.fade_out = np.flip(self.fade_in)
+        o = OVERLAP if self.overlap is None else self.overlap
+        fade = round(o * self.size / 2)
+        self.stride = self.size - fade
+        if self.fader is None:
+            self.fader = fader.Fader(fade, dtype=self.dtype)
 
-    def chunk(self, i):
-        begin = i * (self.size - self.fade)
-        c = self.data[:, begin : begin + self.size]
-        missing = self.size - c.shape[1]
-        if missing < 0:
-            return c
-        return np.c_[c, np.zeros((2, missing), dtype=self.dtype)]
+    def __len__(self):
+        return math.ceil(self.data.shape[-1] / self.stride)
 
-    def add_to(self, i, target):
-        c = self.chunk(i)
-        f = len(self.fade_in)
-
-        target[:, :f] += c[:, :f] * self.fade_in
-        target[:, f : self.size - f] += c[:, f:-f]
-        target[:, self.size - f : self.size] += c[:, -f:] * self.fade_out
+    def __getitem__(self, i):
+        begin = i * self.stride
+        g = self.data[:, begin : begin + self.size]
+        missing = self.size - g.shape[-1]
+        if missing >= 0:
+            g = np.c_[g, np.zeros((2, missing), dtype=self.dtype)]
+        return g
