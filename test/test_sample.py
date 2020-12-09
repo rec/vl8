@@ -1,7 +1,7 @@
 from numpy.testing import assert_array_equal
 from pathlib import Path
 from pydub import AudioSegment
-from vl8.sample import Sample
+from vl8.dsp.sample import Sample
 import numpy as np
 import tdir
 import unittest

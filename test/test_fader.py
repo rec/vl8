@@ -1,4 +1,4 @@
-from vl8 import fader
+from vl8.dsp import fader
 import unittest
 
 
