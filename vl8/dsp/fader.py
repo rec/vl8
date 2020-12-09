@@ -6,7 +6,7 @@ import numpy as np
 @dataclass
 class Fader:
     n_in: int
-    n_out: int = 0
+    n_out: int = -1
     begin: float = 0.0
     end: float = 1.0
     curve: object = np.linspace

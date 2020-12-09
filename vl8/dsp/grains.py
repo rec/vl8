@@ -1,34 +1,48 @@
 from .fader import Fader
 from dataclasses import dataclass
-import math
-import numpy as np
+import random
 
-GRAIN_SIZE = 1024
+SIZE = 1024
 OVERLAP = 0.5
 
 
-class Grain:
-    def __init__(self, size=GRAIN_SIZE, overlap=OVERLAP):
-        self.size = size
-        self.overlap = overlap
-        self.fade = round(self.overlap * self.size / 2)
-        self.stride = self.size - self.fade
-        self.fader = Fader(self.fade)
-
-
 @dataclass
-class Grains:
-    data: np.ndarray
-    grain: Grain
+class Grain:
+    size: int = SIZE
+    overlap: float = OVERLAP
+    variation: float = 0.0
+    seed: int = None
+    distribution: object = random.uniform
 
-    def __len__(self):
-        return math.ceil(self.data.shape[-1] / self.grain.stride)
+    @property
+    def fade(self):
+        return round(self.overlap * self.size / 2)
 
-    def __getitem__(self, i):
-        begin = i * self.grain.stride
-        g = self.data[:, begin : begin + self.grain.size]
-        missing = self.grain.size - g.shape[-1]
-        if missing >= 0:
-            zeros = np.zeros((2, missing), dtype=self.data.dtype)
-            g = np.c_[g, zeros]
-        return g
+    @property
+    def fader(self):
+        return Fader(self.fade)
+
+    @property
+    def stride(self):
+        return self.size - self.fade
+
+    def sizes(self):
+        v = 0
+        if self.variation:
+            assert 0 < self.variation < 1
+            random.seed(self.seed)
+            v = round(self.variation * self.size)
+
+        i = 0
+        while True:
+            delta = v and self.distribution(-v, v)
+            yield i, i + delta + self.size
+            i += delta + self.stride
+
+    def grains(self, data):
+        length = data.shape[-1]
+        for begin, end in self.sizes():
+            if begin < length:
+                yield self.data[:, begin:end]
+            else:
+                break
