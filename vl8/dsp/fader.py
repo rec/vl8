@@ -9,7 +9,6 @@ class Fader:
     n_out: int = 0
     begin: float = 0.0
     end: float = 1.0
-    dtype: np.dtype = np.float32
     curve: object = np.linspace
 
     def __call__(self, source, target=None):
