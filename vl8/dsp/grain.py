@@ -1,4 +1,3 @@
-from .fader import Fader
 from dataclasses import dataclass
 import random
 
@@ -32,10 +31,6 @@ class Grain:
         return round(self.overlap * self.size / 2)
 
     @property
-    def fader(self):
-        return Fader(self.fade)
-
-    @property
     def stride(self):
         return self.size - self.fade
 
@@ -55,9 +50,6 @@ class Grain:
     def grains(self, data):
         length = data.shape[-1]
         for begin, end in self.sizes():
-            print('ONE', begin, end, length)
-            if begin < length:
-                print('TWO')
-                yield data[:, begin:end]
-            else:
+            if begin >= length:
                 break
+            yield data[:, begin:end]
