@@ -35,7 +35,8 @@ class Envelope:
         segments = _segments(levels, times, self.loop_count)
 
         for t, seg in _curves(segments, length, self.curve, source.dtype):
-            target[:, t : t + len(seg)] += self.scale(seg)
+            src = source[:, t : t + len(seg)] * self.scale(seg)
+            target[:, t : t + len(seg)] += src
 
         return target
 
@@ -94,7 +95,7 @@ def _segments(levels, times, loop_count):
 def _curves(segments, length, curve, dtype):
     t = 0
     for l0, l1, dt in segments:
-        seg = curve(l0, l1, dt, dtype=dtype)
+        seg = curve(l0, l1, dt, dtype=dtype, endpoint=True)
         to_chop = t + dt - length
         if to_chop > 0:
             yield t, seg[:-to_chop]

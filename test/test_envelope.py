@@ -30,6 +30,6 @@ class TestEnvelope(unittest.TestCase):
         assert a.shape == actual.shape
 
         # TODO: actually validate that this is the right answer
-        channel = [12, 18, 24, 31, 37, 44, 50, 57]
+        channel = [120, 180, 240, 310, 370, 440, 500, 570]
         expected = np.array([channel, channel], dtype=np.int32)
         assert_array_equal(expected, actual)
