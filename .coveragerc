@@ -7,7 +7,7 @@ source = vl8
 
 [report]
 
-fail_under = 55
+fail_under = 60
 skip_covered = True
 
 exclude_lines =
