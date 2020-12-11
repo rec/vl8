@@ -39,11 +39,11 @@ class Grain:
         if self.variation:
             assert 0 < self.variation < 1
             random.seed(self.seed)
-            v = round(self.variation * self.size)
+            v = self.variation * self.size
 
         i = 0
         while True:
-            delta = v and self.distribution(-v, v)
+            delta = v and round(self.distribution(-v, v))
             yield i, i + delta + self.size
             i += delta + self.stride
 
