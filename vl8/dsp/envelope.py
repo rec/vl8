@@ -1,62 +1,93 @@
 from dataclasses import dataclass
+from numbers import Number
 import numpy as np
-
-
-def min_length(*items):
-    return min(i.shape[-1] for i in items if i is not None)
 
 
 @dataclass
 class Envelope:
     levels: object
-    times: object
-    length: int = -1
-    loop_count: int = -1
-    mult: float = 1
-    offset: float = 0
+    times: object = None
+    length: int = None
+    loop_count: int = None
+    mult: float = None
+    offset: float = None
     curve: object = np.linspace
 
     # reverse: bool = False
     # switch: bool = False
 
     def __call__(self, source, target=None):
-        length = min_length(source, target)
-        if self.length >= 0:
-            length = min(self.length, length)
-        results = []
-
-        segments = _segments(self.times, self.levels, self.loop_count)
-        for t, seg in _curves(segments, length, self.curve, source.dtype):
-            if self.mult != 1:
-                seg = seg * self.mult
-            if self.offset != 0:
-                seg = seg + self.offset
-
+        levels, times = _check(self.levels, self.times)
+        if len(levels) == 1:
+            # A constant value
             if target is None:
-                results.append(seg)
-            else:
-                target[:, t : t + len(seg)] += seg
+                return self.scale(source)
+            target += self.scale(source)
+            return target
 
-        return np.c_[results] if target is None else target
+        if target is None:
+            target = np.zeros_like(source)
+
+        length = min(i.shape[-1] for i in (source, target))
+        if self.length is not None:
+            length = min(self.length, length)
+
+        segments = _segments(levels, times, self.loop_count)
+
+        for t, seg in _curves(segments, length, self.curve, source.dtype):
+            target[:, t : t + len(seg)] += self.scale(seg)
+
+        return target
+
+    def scale(self, a):
+        if self.mult is not None:
+            a = a * self.mult
+        if self.offset is not None:
+            a = a + self.offset
+        return a
 
 
-def _segments(times, levels, loop_count):
-    def to_list(x):
-        try:
-            return list(x)
-        except TypeError:
-            return [x]
+def _check(levels, times):
+    try:
+        level_time_pairs = all(len(i) == 2 for i in levels)
+    except Exception:
+        level_time_pairs = False
 
-    times = to_list(times)
-    levels = to_list(levels)
+    if times is None:
+        if not level_time_pairs:
+            raise ValueError(
+                'levels must be a list of time, level pairs if times is None'
+            )
+        times, levels = zip(*levels)
+    elif level_time_pairs:
+        raise ValueError(
+            'times must be None if levels us be a list of time, level pairs'
+        )
 
+    if isinstance(levels, Number):
+        levels = [levels]
+    elif len(levels) < 1:
+        raise ValueError('There must be at least one level')
+
+    if isinstance(times, Number):
+        times = [times]
+    elif not times and len(levels) != 1:
+        raise ValueError('A constant envelope can only have one level')
+
+    if any(t < 0 for t in times):
+        raise ValueError('Times cannot be negative')
+
+    return levels, times
+
+
+def _segments(levels, times, loop_count):
     i = 0
-    while not (i / len(times) >= loop_count >= 0):
-        dt = times[i % len(times)]
-        l0 = levels[i % len(levels)]
-        l1 = levels[(i + 1) % len(levels)]
-
-        yield l0, l1, dt
+    while loop_count is None or i / len(levels) < loop_count:
+        yield (
+            levels[i % len(levels)],
+            levels[(i + 1) % len(levels)],
+            times[i % len(times)],
+        )
         i += 1
 
 
@@ -67,6 +98,6 @@ def _curves(segments, length, curve, dtype):
         to_chop = t + dt - length
         if to_chop > 0:
             yield t, seg[:-to_chop]
-            return
+            break
         yield t, seg
         t += dt

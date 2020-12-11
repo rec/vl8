@@ -11,7 +11,7 @@ class TestGrain(unittest.TestCase):
         assert g.stride == 3 * 256
         assert g.fade == 256
 
-        sizes = list(itertools.islice(g.sizes(), 0, 4))
+        sizes = list(itertools.islice(g.sizes(), 4))
         assert sizes == [(0, 1024), (768, 1792), (1536, 2560), (2304, 3328)]
 
     def test_grains(self):
