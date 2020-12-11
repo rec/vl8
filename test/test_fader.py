@@ -8,7 +8,8 @@ class TestFader(unittest.TestCase):
     def test_simple(self):
         fader = Fader(4)
         a = np.ones((2, 16), dtype=np.float32) * 100
-        actual = fader(a)
+        actual = np.zeros_like(a)
+        fader(a, actual)
         assert a.shape == actual.shape
 
         ramp = [0, 100 / 3, 200 / 3]

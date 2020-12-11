@@ -11,10 +11,7 @@ class Fader:
     end: float = 1.0
     curve: object = np.linspace
 
-    def __call__(self, source, target=None):
-        if target is None:
-            target = np.zeros_like(source)
-
+    def __call__(self, source, target):
         length = min(i.shape[-1] for i in (source, target))
 
         ni, no = self.n_in, self.n_out
@@ -23,4 +20,4 @@ class Fader:
         times = [ni, length - ni - no, no]
         levels = [self.begin, self.end, self.end, self.begin]
         env = envelope.Envelope(levels, times, curve=self.curve)
-        return env(source, target)
+        env(source, target)

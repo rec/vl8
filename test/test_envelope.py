@@ -26,7 +26,8 @@ class TestEnvelope(unittest.TestCase):
     def test_simple(self):
         env = envelope.Envelope([12, 70, 211], [10, 2])
         a = np.ones((2, 8), dtype=np.int32) * 10
-        actual = env(a)
+        actual = np.zeros_like(a)
+        env(a, actual)
         assert a.shape == actual.shape
 
         # TODO: actually validate that this is the right answer

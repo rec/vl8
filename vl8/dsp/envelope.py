@@ -16,17 +16,12 @@ class Envelope:
     # reverse: bool = False
     # switch: bool = False
 
-    def __call__(self, source, target=None):
+    def __call__(self, source, target):
         levels, times = _check(self.levels, self.times)
         if len(levels) == 1:
             # A constant value
-            if target is None:
-                return self.scale(source)
             target += self.scale(source)
             return target
-
-        if target is None:
-            target = np.zeros_like(source)
 
         length = min(i.shape[-1] for i in (source, target))
         if self.length is not None:
@@ -37,8 +32,6 @@ class Envelope:
         for t, seg in _curves(segments, length, self.curve, source.dtype):
             src = source[:, t : t + len(seg)] * self.scale(seg)
             target[:, t : t + len(seg)] += src
-
-        return target
 
     def scale(self, a):
         if self.mult is not None:
