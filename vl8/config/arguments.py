@@ -1,8 +1,8 @@
-from . import args
+from . import parse_args
 
 
 def validate(options):
-    defaults = vars(args.PARSER.parse([]))
+    defaults = vars(parse_args.PARSER.parse([]))
     results = {}
 
     for k, v in defaults.items():

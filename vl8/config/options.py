@@ -1,6 +1,6 @@
-from . import args
+from . import parse_args
 from .expand import Expander
 
-DEFAULTS = vars(args.PARSER.parse([]))
+DEFAULTS = vars(parse_args.PARSER.parse([]))
 DEFAULTS.pop('arguments')
 validate = Expander('options', DEFAULTS)
