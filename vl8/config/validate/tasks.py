@@ -1,4 +1,4 @@
-from .expand import Expander
+from ..expand import Expander
 
 DEFAULT = {'functions': dict, 'sources': dict, 'out': dict}
 expand = Expander('tasks', DEFAULT)
