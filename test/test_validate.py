@@ -13,11 +13,7 @@ class TestValidate(unittest.TestCase):
         self.validate()
         assert self.errors == []
         assert self.config == {
-            'arguments': {
-                'arguments': None,
-                'continue': False,
-                'dry_run': False,
-                'verbose': False},
+            'arguments': {},
             'functions': {},
             'options': {'continue': False, 'dry_run': False, 'verbose': False},
             'sources': {},
@@ -38,11 +34,7 @@ class TestValidate(unittest.TestCase):
         assert not functions
 
         assert self.config == {
-            'arguments': {
-                'arguments': None,
-                'continue': False,
-                'dry_run': False,
-                'verbose': False},
+            'arguments': {},
             'options': {'continue': False, 'dry_run': False, 'verbose': False},
             'sources': {'_': [Path('foo.wav')]},
             'tasks': {},

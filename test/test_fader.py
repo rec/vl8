@@ -41,7 +41,8 @@ class TestFader(unittest.TestCase):
                 81.935486,
                 65.161285,
                 48.387096,
-            ], [
+            ],
+            [
                 51.612904,
                 88.17204,
                 124.731186,
@@ -58,7 +59,7 @@ class TestFader(unittest.TestCase):
                 133.54839,
                 116.77419,
                 100.0,
-            ]
+            ],
         ]
         expected = np.array(expected, dtype=np.float32)
         print(target)
