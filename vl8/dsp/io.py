@@ -1,8 +1,8 @@
+
+from . import DEFAULT_SAMPLE_RATE
 from pathlib import Path
 from pydub import AudioSegment
 import numpy as np
-
-DEFAULT_SAMPLE_RATE = 44100
 
 
 def read(filename):
