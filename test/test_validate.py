@@ -1,5 +1,5 @@
 from pathlib import Path
-from vl8.config import validate
+from vl8.config.validate import validate
 import functools
 import unittest
 
