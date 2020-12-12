@@ -1,35 +1,35 @@
-1. Create a config file format
+We have a config file format
 
-   Three parts:
+arguments - command line arguments
+functions - function definitions
+options - command line options or flags
+sources - collections of source files
+tasks - actual tasks to be executed
 
-   * source
-   * function
-   * task
 
-2. Write a program to run one or more jobs from one or more config files
+1. Set up just a simple concatenate document
 
-3. Set up command line flags that allow a config to be prepared
-
-4. Write a lot more functions.
-
-5. GUI?
 
 
 APPENDIX: functions
 
-* parallel
-* precis
-* envelope
-* split
-* reverse
-* sort
-* random walk
-* concatenate
+* parallel - DONE
+* precis - DONE
+* envelope - DONE
+* concatenate - DONE
+* gray code - DONE
+* reverse - DONE
+* stripe - DONE
+
+* split - no
+* sort - in progress
+* random walk - no
 * noise
 * synthesis
   * waveforms
   * AM
   * FM
+
 * DSP
   * limiter
   * big can of worms!
