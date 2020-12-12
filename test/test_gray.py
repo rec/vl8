@@ -1,4 +1,4 @@
-from vl8 import gray
+from vl8.util import gray
 import itertools
 import unittest
 
