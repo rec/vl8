@@ -1,6 +1,7 @@
 graycode
 numpy
 pydub
+pyrubberband
 pyyaml
 runs
 stroll
