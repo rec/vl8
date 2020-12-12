@@ -1,4 +1,4 @@
-# numpy must be first
+graycode
 numpy
 pydub
 pyyaml
