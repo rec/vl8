@@ -56,7 +56,7 @@ def combine(samples, dtype, gap=0, pre=0, post=0):
 
         fade_end = begin - gap
         fade_in = np.linspace(0, 1, -gap, endpoint=True, dtype=dtype)
-        fade_out = np.flip(fade_in)
+        fade_out = fade_in[::-1]
 
         result[:, begin:fade_end] *= fade_out
         result[:, begin:fade_end] += fade_in * intro
