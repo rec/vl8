@@ -16,8 +16,20 @@ def read(filename):
     return matrix, s.frame_rate
 
 
-def write(data, filename, sample_rate=DEFAULT_SAMPLE_RATE, *args, **kwargs):
+def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, *args, **kwargs):
     first, *rest = data.shape
+
+    if not np.issubdtype(data.dtype, np.integer):
+        m1, m2 = np.amax(data), -np.amin(data)
+        m = max(m1, m2)
+        if m > 1:
+            data = data / m
+
+        data = 0xFFFF * (1 + data) / 2 - 0x8000
+        assert np.amax(data) <= 0x7FFF
+        assert np.amin(data) >= -0x8000
+        data = data.astype(np.int16)
+
     segment = AudioSegment(
         data=data.tobytes('F'),
         sample_width=data.dtype.itemsize,
