@@ -21,13 +21,12 @@ LOOP_GAPS = True
 
 def combine(samples, dtype, gap=0, pre=0, post=0):
     gaps = list(gap) if isinstance(gap, (list, tuple)) else [gap or 0]
-    gaps = [samples.to_samples(g) for g in gaps]
 
     if LOOP_GAPS:
         # Make copies of the gaps until there are enough of them.
-        copies = math.ceil((len(samples) - 1) / len(gaps))
+        copies = math.ceil((len(samples)) / len(gaps))
         gaps = copies * gaps
-        assert len(gaps) >= len(samples)
+        assert len(gaps) >= len(samples), f'{len(gaps)} >= {len(samples)}'
     else:
         # Repeat the last item
         gaps += [gaps[-1]] * (len(samples) - 1 - len(gaps))
@@ -37,22 +36,24 @@ def combine(samples, dtype, gap=0, pre=0, post=0):
         gaps[i] = max(gaps[i], -sample.shape[1])
         if i:
             gaps[i] = max(gaps[i], -samples[i - 1].shape[1])
+    print('XXX', gaps)
 
     duration = pre + sum(len(s) for s in samples) + sum(gaps) + post
-    shape = (max(s.channels for s in samples), duration)
+    shape = (max(s.shape[0] for s in samples), duration)
     result = np.zeros(shape, dtype=dtype)
 
     end = pre
     for sample, gap in zip(samples, [0] + gaps):
         begin = end + gap
-        end = begin + len(sample)
+        end = begin + sample.shape[-1]
 
         if gap >= 0:
-            result[:, begin:end] = sample.data
+            print(f'{begin}, {end}, {result.shape}, {sample.shape}')
+            result[:, begin:end] = sample
             continue
 
-        intro = sample.data[:, :-gap]
-        remains = sample.data[:, -gap:]
+        intro = sample[:, :-gap]
+        remains = sample[:, -gap:]
 
         fade_end = begin - gap
         fade_in = np.linspace(0, 1, -gap, endpoint=True, dtype=dtype)

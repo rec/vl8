@@ -10,7 +10,7 @@ TEST_FILE = Path(__file__).parent / 'b-4098.wav'
 
 
 @tdir
-class TestSample(unittest.TestCase):
+class TestIO(unittest.TestCase):
     def test_file(self):
         length = 4098
 
