@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import sys
 
 """
 
@@ -16,31 +17,26 @@ Negative numbers and numbers bigger than one are possible!
 
 """
 
-LOOP_GAPS = True
-
 
 def combine(samples, dtype, gap=0, pre=0, post=0):
-    gaps = list(gap) if isinstance(gap, (list, tuple)) else [gap or 0]
-
-    if LOOP_GAPS:
-        # Make copies of the gaps until there are enough of them.
-        copies = math.ceil((len(samples)) / len(gaps))
-        gaps = copies * gaps
-        assert len(gaps) >= len(samples), f'{len(gaps)} >= {len(samples)}'
+    if isinstance(gap, (list, tuple)):
+        gaps = list(gap)
     else:
-        # Repeat the last item
-        gaps += [gaps[-1]] * (len(samples) - 1 - len(gaps))
+        gaps = [gap or 0]
+    gaps *= math.ceil((len(samples)) / len(gaps))
 
     # Fix any fade gaps that are too long.
     for i, sample in enumerate(samples):
+        gi = gaps[i]
         gaps[i] = max(gaps[i], -sample.shape[1])
         if i:
             gaps[i] = max(gaps[i], -samples[i - 1].shape[1])
-    print('XXX', gaps)
+        if gi != gaps[i]:
+            print('sample was too short for gap', file=sys.stderr)
 
-    duration = pre + sum(len(s) for s in samples) + sum(gaps) + post
-    shape = (max(s.shape[0] for s in samples), duration)
-    result = np.zeros(shape, dtype=dtype)
+    duration = pre + sum(s.shape[-1] for s in samples) + sum(gaps) + post
+    channels = max(s.shape[0] for s in samples)
+    result = np.zeros((channels, duration), dtype=dtype)
 
     end = pre
     for sample, gap in zip(samples, [0] + gaps):
@@ -48,7 +44,6 @@ def combine(samples, dtype, gap=0, pre=0, post=0):
         end = begin + sample.shape[-1]
 
         if gap >= 0:
-            print(f'{begin}, {end}, {result.shape}, {sample.shape}')
             result[:, begin:end] = sample
             continue
 
