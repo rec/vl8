@@ -5,7 +5,7 @@ import numpy as np
 import tdir
 import unittest
 
-DIR = Path(__file__).parents[1] / 'sounds'
+DIR = Path(__file__).parent / 'sources'
 FILES = tuple(DIR / f'{i}.wav' for i in range(1, 4))
 
 

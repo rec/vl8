@@ -7,7 +7,7 @@ import tdir
 import unittest
 
 TEST_FILE = Path(__file__).parent / 'b-4098.wav'
-DIR = Path(__file__).parents[1] / 'sounds'
+DIR = Path(__file__).parent / 'sources'
 
 
 @tdir
