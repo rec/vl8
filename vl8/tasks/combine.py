@@ -7,15 +7,6 @@ import sys
 
 gap: None, a number of seconds or a list of seconds
 if a gap is negative, it's a fade
-
-overlap: None or any floating point numbers, referenced to the longest item.
-
-0 means: all start together
-0.5 means: middles of all songs are at same time
-1 means: all end together
-
-Negative numbers and numbers bigger than one are possible!
-
 """
 
 
@@ -39,7 +30,7 @@ def combine(sources, dtype, curve=np.linspace, gap=0, pre=0, post=0):
         if gi != gaps[i]:
             print(f'fade {gi} was longer than the sample!', file=sys.stderr)
 
-    gaps = [0] + gaps[: len(sources) - 2] + [0, 0]
+    gaps = [0] + gaps[: len(sources) - 1] + [0]
     duration = pre + sum(s.shape[-1] for s in sources) + sum(gaps) + post
     channels = max(s.shape[0] for s in sources)
     result = np.zeros((channels, duration), dtype=dtype)
@@ -64,3 +55,18 @@ def combine(sources, dtype, curve=np.linspace, gap=0, pre=0, post=0):
         result[:, b:e] += src[:, b - begin : e - end or None]
 
     return result
+
+
+"""
+# Should be elsewhere in a task
+
+overlap: None or any floating point numbers, referenced to the longest item.
+
+These next comments shoul
+
+0 means: all start together
+0.5 means: middles of all songs are at same time
+1 means: all end together
+
+Negative numbers and numbers bigger than one are possible!
+"""
