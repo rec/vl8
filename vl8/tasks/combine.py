@@ -1,3 +1,4 @@
+import functools
 import math
 import numpy as np
 import sys
@@ -18,45 +19,48 @@ Negative numbers and numbers bigger than one are possible!
 """
 
 
-def combine(samples, dtype, gap=0, pre=0, post=0):
+def combine(sources, dtype, curve=np.linspace, gap=0, pre=0, post=0):
+    @functools.lru_cache()
+    def fader(a, b, gap):
+        return curve(a, b, gap, endpoint=True, dtype=dtype)
+
     if isinstance(gap, (list, tuple)):
         gaps = list(gap)
     else:
         gaps = [gap or 0]
-    gaps *= math.ceil((len(samples)) / len(gaps))
+    gaps *= math.ceil((len(sources)) / len(gaps))
 
     # Fix any fade gaps that are too long.
-    for i, sample in enumerate(samples):
+    for i, src in enumerate(sources):
         gi = gaps[i]
-        gaps[i] = max(gaps[i], -sample.shape[1])
+        gaps[i] = max(gaps[i], -src.shape[1])
         if i:
-            gaps[i] = max(gaps[i], -samples[i - 1].shape[1])
+            gaps[i] = max(gaps[i], -sources[i - 1].shape[1])
         if gi != gaps[i]:
-            print('sample was too short for gap', file=sys.stderr)
+            print(f'fade {gi} was longer than the sample!', file=sys.stderr)
 
-    duration = pre + sum(s.shape[-1] for s in samples) + sum(gaps) + post
-    channels = max(s.shape[0] for s in samples)
+    gaps = [0] + gaps[: len(sources) - 2] + [0, 0]
+    duration = pre + sum(s.shape[-1] for s in sources) + sum(gaps) + post
+    channels = max(s.shape[0] for s in sources)
     result = np.zeros((channels, duration), dtype=dtype)
 
     end = pre
-    for sample, gap in zip(samples, [0] + gaps):
-        begin = end + gap
-        end = begin + sample.shape[-1]
+    for i, src in enumerate(sources):
+        g0, g1 = gaps[i : i + 2]
+        begin = end + g0
+        end = begin + src.shape[-1]
 
-        if gap >= 0:
-            result[:, begin:end] = sample
-            continue
+        b, e = begin, end
+        if g0 < 0:  # Fade in
+            fade = -g0
+            result[:, b : b + fade] += fader(0, 1, fade) * src[:, :fade]
+            b += fade
 
-        intro = sample[:, :-gap]
-        remains = sample[:, -gap:]
+        if g1 < 0:  # Fade out
+            fade = -g1
+            result[:, e - fade : e] += fader(1, 0, fade) * src[:, -fade:]
+            e -= fade
 
-        fade_end = begin - gap
-        fade_in = np.linspace(0, 1, -gap, endpoint=True, dtype=dtype)
-        fade_out = fade_in[::-1]
-
-        result[:, begin:fade_end] *= fade_out
-        result[:, begin:fade_end] += fade_in * intro
-
-        result[:, fade_end : fade_end + remains.shape[1]] = remains
+        result[:, b:e] += src[:, b - begin : e - end or None]
 
     return result

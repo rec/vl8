@@ -8,7 +8,7 @@ import unittest
 DIR = Path(__file__).parents[1] / 'sounds'
 
 
-@tdir
+@tdir(use_dir=None)
 class TestCombine(unittest.TestCase):
     def test_123(self):
         sample_rate = 44100 // 4
