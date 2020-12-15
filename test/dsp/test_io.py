@@ -68,6 +68,7 @@ class TestIO(unittest.TestCase):
         infile = DIR / '1.wav'
         outfile = Path('1.wav')
         data, sample_rate = io.read(infile)
+        assert data.dtype == np.int8
         io.write(outfile, data, sample_rate)
 
         d1 = infile.read_bytes()

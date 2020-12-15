@@ -5,6 +5,7 @@ pydub
 pyrubberband
 pyyaml
 runs
+soundfile
 stroll
 toml
 xmod

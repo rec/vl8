@@ -20,7 +20,7 @@ class TestCombine(unittest.TestCase):
         result = combine.combine(segs, segs[0].dtype, gap=2 * sample_rate)
         assert_files_equal('123.wav', result, sample_rate)
 
-    def test_123_float_XXX(self):
+    def test_123_float(self):
         sample_rate = 44100 // 4
         segs, rates = zip(*(io.read(f) for f in FILES))
         assert list(rates) == [sample_rate] * 3
