@@ -24,9 +24,9 @@ def combine(sources, dtype, curve=np.linspace, gap=0, pre=0, post=0):
     # Fix any fade gaps that are too long.
     for i, src in enumerate(sources):
         gi = gaps[i]
-        gaps[i] = max(gaps[i], -src.shape[1])
+        gaps[i] = max(gaps[i], -src.shape[-1])
         if i:
-            gaps[i] = max(gaps[i], -sources[i - 1].shape[1])
+            gaps[i] = max(gaps[i], -sources[i - 1].shape[-1])
         if gi != gaps[i]:
             print(f'fade {gi} was longer than the sample!', file=sys.stderr)
 
