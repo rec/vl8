@@ -2,10 +2,10 @@ dataclasses
 graycode
 numpy
 pydub
-pyrubberband
 pyyaml
 runs
 soundfile
 stroll
+tdir
 toml
 xmod

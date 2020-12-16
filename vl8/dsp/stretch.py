@@ -1,7 +1,6 @@
 from . import DEFAULT_SAMPLE_RATE
 import functools
 import numpy as np
-import pyrubberband as rb
 
 
 def _rubber(f):
@@ -17,5 +16,5 @@ def _rubber(f):
     return wrapped
 
 
-time_stretch = _rubber(rb.time_stretch)
-pitch_shift = _rubber(rb.pitch_shift)
+# time_stretch = _rubber(rb.time_stretch)
+# pitch_shift = _rubber(rb.pitch_shift)
