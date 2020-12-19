@@ -1,82 +1,167 @@
 from .. import util
+from struct import unpack_from, calcsize
 import numpy as np
-import struct
 
-ERROR = 'Not in .WAV format'
+# See http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
 
-INTRO = '<4sI'
-RIFF = '<4sI4s'
-FMT = '<4sHHIIHHHHI16s'
-INTRO_SIZE = struct.calcsize(INTRO)
-assert INTRO_SIZE == 8
-assert struct.calcsize(RIFF) == 12
+WAVE_FORMAT_PCM = 0x0001
+WAVE_FORMAT_IEEE_FLOAT = 0x0003
+WAVE_FORMATS = {WAVE_FORMAT_PCM, WAVE_FORMAT_IEEE_FLOAT}
 
+HEADER_LENGTH = 8
+FMT_FORMAT = '<HHIIHH'
+FMT_LENGTH = calcsize(FMT_FORMAT)
+assert FMT_LENGTH == 16
 
-def _chunks(mm):
-    begin = 0
-    while begin < len(mm):
-        intro = begin + INTRO_SIZE
-        tag, chunk_size = struct.unpack_from(INTRO, mm[begin:intro])
-        end = intro + chunk_size
-        if end > len(mm):
-            util.error(f'Chunk overrun in {tag}: {end} > {len(mm)}')
+FMT_BLOCK_LENGTHS = {16, 18, 40}
 
-        yield tag, mm[intro:end]
-        begin = end if begin else 12
+PCM_BITS_PER_SAMPLE = {8, 16, 32, 64}
+FLOAT_BITS_PER_SAMPLE = {32, 64}
+
+BITS_PER_SAMPLE = PCM_BITS_PER_SAMPLE, FLOAT_BITS_PER_SAMPLE
+
+# Making 24 bits work transparently is probably impossible:
+# https://stackoverflow.com/a/34128171/43839
 
 
-def wave(filename, mode='r'):
-    mm = np.memmap(filename, mode=mode)
-    # wave_size = None
-
-    chunks = (f'{t}: {len(c)}' for t, c in _chunks(mm))
-    print(*chunks, sep='\n')
-
-
-if __name__ == '__main__':
-    import sys
-
-    for i in sys.argv[1:]:
-        wave(i)
-
-    print('done')
-
-
-"""
-    for tag, begin, end in chunks(mm):
-        if wave_size is None:
-            assert tag == 'RIFF'
-            wave_size = len(segment)
-
-            assert
-
-    with open(filename, 'rb') as fp:
-        with mmap.mmap(fp.fileno(), 0) as mm:
-
-            size = struct.calcsize(format)
-            data = fp.read(size)
-            return struct.unpack_from(format, data)
-
-        ckID, cksize1, WAVEID = _read(RIFF)
-
-        if not (ckID == 'RIFF' and WAVEID == 'WAVE'):
-            raise ValueError(ERROR)
+class MemWave(np.memmap):
+    def __new__(cls, filename, mode='r', order='C', always_2d=False):
+        begin, end, fmt = _metadata(filename)
 
         (
-            ckID,
-            cksize2,
             wFormatTag,
             nChannels,
             nSamplesPerSec,
             nAvgBytesPerSec,
             nBlockAlign,
             wBitsPerSample,
-            cbSize,
-            wValidBitsPerSample,
-            dwChannelMask,
-            SubFormat,
-        ) = _read(FMT)
+        ) = unpack_from(FMT_FORMAT, fmt[:FMT_LENGTH])
 
-        if ckID != 'fmt ':
-            raise ValueError(ERROR)
-"""
+        if wFormatTag not in WAVE_FORMATS:
+            raise ValueError(f'Do not understand wFormatTag={wFormatTag}')
+
+        is_float = wFormatTag == WAVE_FORMAT_IEEE_FLOAT
+        if wBitsPerSample not in BITS_PER_SAMPLE[is_float]:
+            raise ValueError(f'Cannot mmap wBitsPerSample={wBitsPerSample}')
+
+        type_name = ('int', 'float')[is_float]
+        dtype = f'{type_name}{wBitsPerSample}'
+
+        bytes_per_frame = wBitsPerSample // 8 * nChannels
+
+        extra = (end - begin) % bytes_per_frame
+        if extra:
+            util.error(f'Extra bytes {extra}')
+
+        frame_length = (end - begin) // bytes_per_frame
+
+        if nChannels == 1 and not always_2d:
+            shape = (frame_length,)
+        elif order == 'C':
+            shape = frame_length, nChannels
+        elif order == 'F':
+            shape = nChannels, frame_length
+        else:
+            raise ValueError(f'Bad order "{order}"')
+
+        self = np.memmap.__new__(
+            cls, filename, dtype, mode, begin, shape, order
+        )
+
+        self.sample_rate = nSamplesPerSec
+        self.order = order
+        self.channnels = nChannels
+
+        return self
+
+    @property
+    def length(self):
+        return self.shape[self.ndim > 1 and self.order != 'C']
+
+    @property
+    def duration(self):
+        return self.length / self.sample_rate
+
+
+def _metadata(filename):
+    begin = end = fmt = None
+
+    with open(filename, 'rb') as fp:
+        (tag, _, _), *chunks = _chunks(fp)
+        if tag != b'WAVE':
+            raise ValueError(f'Not a WAVE file: {tag}')
+
+        for tag, b, e in chunks:
+            if tag == b'fmt ':
+                if not fmt:
+                    b += HEADER_LENGTH
+                    fp.seek(b)
+                    fmt = fp.read(e - b)
+                else:
+                    util.error('fmt chunk after first ignored')
+            elif tag == b'data':
+                if not (begin or end):
+                    begin, end = b, e
+                else:
+                    util.error('data chunk after first ignored')
+
+    if begin is None:
+        raise ValueError('No data chunk found')
+
+    if fmt is None:
+        raise ValueError('No fmt chunk found')
+
+    if len(fmt) not in FMT_BLOCK_LENGTHS:
+        raise ValueError('Weird fmt block')
+
+    if len(fmt) == 40:
+        raise ValueError('Cannot read extensible format WAV files')
+
+    return begin, end, fmt
+
+
+def _chunks(fp):
+    file_size = fp.seek(-1, 2)
+    fp.seek(0)
+
+    def read_one(format):
+        return unpack_from('<' + format, fp.read(calcsize(format)))[0]
+
+    def read_tag():
+        tag = read_one('4s')
+        if tag and not tag.rstrip().isalnum():
+            util.error(f'Dubious tag {tag}')
+        return tag
+
+    def read_int():
+        return read_one('I')
+
+    tag = read_tag()
+    if tag != b'RIFF':
+        raise ValueError(f'Not a RIFF file: {tag}')
+
+    size = read_int()
+    yield read_tag(), 0, size
+
+    while fp.tell() < file_size:
+        begin = fp.tell()
+        tag, chunk_size = read_tag(), read_int()
+        fp.seek(chunk_size, 1)
+        end = fp.tell()
+        if end > file_size:
+            util.error(f'Incomplete chunk: {end} > {file_size}')
+            end = file_size
+        yield tag, begin, end
+
+
+if __name__ == '__main__':
+    import sys
+
+    for i in sys.argv[1:]:
+        mw = MemWave(i)
+        print(mw.shape)
+        print(mw.length)
+        print(mw.duration)
+        print(mw)
+
+    print('done')
