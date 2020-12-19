@@ -24,7 +24,7 @@ BITS_PER_SAMPLE = PCM_BITS_PER_SAMPLE, FLOAT_BITS_PER_SAMPLE
 # https://stackoverflow.com/a/34128171/43839
 
 
-class MemWave(np.memmap):
+class MmapWave(np.memmap):
     def __new__(cls, filename, mode='r', order='C', always_2d=False):
         begin, end, fmt = _metadata(filename)
 
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     import sys
 
     for i in sys.argv[1:]:
-        mw = MemWave(i)
+        mw = MmapWave(i)
         print(mw.shape)
         print(mw.length)
         print(mw.duration)
