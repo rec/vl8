@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-import random
+from random import Random, _inst
 
 SIZE = 1024
 OVERLAP = 0.5
@@ -8,48 +8,46 @@ OVERLAP = 0.5
 @dataclass
 class Grain:
     """Grains from within a larger sample, with optional overlaps and
-    optional variation"""
+       optional variation"""
 
     size: int = SIZE
-    """Size of each grain, in samples"""
+    """Size of each grain, in samples.  Must be non-negative"""
 
-    overlap: float = OVERLAP
-    """Overlap between grains, as a ratio to `size`"""
+    overlap: int = SIZE // 2
+    """Overlap between grains, in samples.  Must be non-negative."""
+
+    distribution: object = Random.uniform
+    """A distribution function that takes a `random.Random`, and two values and
+       returns a random floating point number in that range."""
 
     variation: float = 0.0
-    """Variation between grains, as a ratio to `size`"""
-
-    seed: int = None
-    """Seed for random.seed"""
-
-    distribution: object = random.uniform
-    """A distribution function that takes two values and returns a random
-    number in that range."""
+    """Variation between grains, as a ratio to `size`.
+       Must be between 0 and 1."""
 
     @property
     def fade(self):
-        return round(self.overlap * self.size / 2)
+        return self.overlap // 2
 
     @property
     def stride(self):
         return self.size - self.fade
 
-    def sizes(self):
+    def sizes(self, rand=_inst):
         v = 0
         if self.variation:
             assert 0 < self.variation < 1
-            random.seed(self.seed)
             v = self.variation * self.size
 
         i = 0
         while True:
-            delta = v and round(self.distribution(-v, v))
+            delta = v and round(self.distribution(rand, -v, v))
             yield i, i + delta + self.size
             i += delta + self.stride
 
-    def grains(self, data):
+    def grains(self, data, rand=_inst):
+        # Dodgy
         length = data.shape[-1]
-        for begin, end in self.sizes():
+        for begin, end in self.sizes(rand):
             if begin >= length:
                 break
             yield data[:, begin:end]
