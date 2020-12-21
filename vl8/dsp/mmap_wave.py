@@ -1,8 +1,15 @@
+from . import DEFAULT_SAMPLE_RATE
 from .. import util
 from struct import unpack_from, calcsize
+import number
 import numpy as np
 
+__all__ = 'RawMap', 'WaveMap'
+
 # See http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+#
+# Making 24 bits work transparently is probably impossible:
+# https://stackoverflow.com/a/34128171/43839
 
 WAVE_FORMAT_PCM = 0x0001
 WAVE_FORMAT_IEEE_FLOAT = 0x0003
@@ -20,11 +27,60 @@ FLOAT_BITS_PER_SAMPLE = {32, 64}
 
 BITS_PER_SAMPLE = PCM_BITS_PER_SAMPLE, FLOAT_BITS_PER_SAMPLE
 
-# Making 24 bits work transparently is probably impossible:
-# https://stackoverflow.com/a/34128171/43839
+
+class RawMap(np.memmap):
+    def __new__(
+        cls,
+        filename,
+        dtype,
+        channels,
+        sample_rate=DEFAULT_SAMPLE_RATE,
+        begin=0,
+        end=None,
+        mode='r',
+        order='C',
+        always_2d=False,
+    ):
+        if end is None:
+            with open(filename, 'rb') as fp:
+                fp.seek(-1, 2)
+                end = fp.tell()
+
+        dt = np.dtype(dtype)
+        bytes_per_frame = dt.itemsize * channels
+
+        frames = (end - begin) // bytes_per_frame
+        extra = (end - begin) % bytes_per_frame
+        if extra:
+            util.error(f'Extra bytes {extra}')
+
+        if channels == 1 and not always_2d:
+            shape = (frames,)
+        elif order == 'C':
+            shape = frames, channels
+        elif order == 'F':
+            shape = channels, frames
+        else:
+            raise ValueError(f'Bad order "{order}"')
+
+        self = np.memmap.__new__(cls, filename, dt, mode, begin, shape, order)
+
+        self.sample_rate = sample_rate
+        self.order = order
+        self.channnels = channels
+
+        return self
+
+    @property
+    def length(self):
+        return self.shape[self.ndim > 1 and self.order != 'C']
+
+    @property
+    def duration(self):
+        return self.length / self.sample_rate
 
 
-class MmapWave(np.memmap):
+class WaveMap(RawMap):
     def __new__(cls, filename, mode='r', order='C', always_2d=False):
         begin, end, fmt = _metadata(filename)
 
@@ -47,40 +103,31 @@ class MmapWave(np.memmap):
         type_name = ('int', 'float')[is_float]
         dtype = f'{type_name}{wBitsPerSample}'
 
-        bytes_per_frame = wBitsPerSample // 8 * nChannels
+        assert np.dtype(dtype).itemsize == wBitsPerSample // 8
 
-        extra = (end - begin) % bytes_per_frame
-        if extra:
-            util.error(f'Extra bytes {extra}')
-
-        frame_length = (end - begin) // bytes_per_frame
-
-        if nChannels == 1 and not always_2d:
-            shape = (frame_length,)
-        elif order == 'C':
-            shape = frame_length, nChannels
-        elif order == 'F':
-            shape = nChannels, frame_length
-        else:
-            raise ValueError(f'Bad order "{order}"')
-
-        self = np.memmap.__new__(
-            cls, filename, dtype, mode, begin, shape, order
+        self = RawMap.__new__(
+            cls,
+            filename,
+            dtype,
+            nChannels,
+            nSamplesPerSec,
+            begin,
+            end,
+            mode,
+            order,
+            always_2d,
         )
-
-        self.sample_rate = nSamplesPerSec
-        self.order = order
-        self.channnels = nChannels
+        self.begin = begin
+        self.end = end
 
         return self
 
-    @property
-    def length(self):
-        return self.shape[self.ndim > 1 and self.order != 'C']
 
-    @property
-    def duration(self):
-        return self.length / self.sample_rate
+def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, block_align=None):
+    is_int = isinstance(data.dtype, number.Integral)
+    chunk_size = 16 if is_int else 18
+    with open(filename, 'wb') as fp:
+        return chunk_size, fp
 
 
 def _metadata(filename):
@@ -158,7 +205,7 @@ if __name__ == '__main__':
     import sys
 
     for i in sys.argv[1:]:
-        mw = MmapWave(i)
+        mw = WaveMap(i)
         print(mw.shape)
         print(mw.length)
         print(mw.duration)
