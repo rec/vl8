@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from fractions import Fraction
 from random import Random, _inst
-import itertools
 
 SIZE = Fraction(1024)
 
@@ -36,11 +35,7 @@ class Grain:
             return self.distribution(rand, -self.variation, self.variation)
 
         begin = 0
-
-        for i in itertools.count():
-            if begin >= size:
-                break
-
+        while begin < size:
             end = begin + self.size
             if self.variation:
                 end += self.distribution(rand, -self.variation, self.variation)
