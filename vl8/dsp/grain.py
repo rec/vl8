@@ -29,7 +29,7 @@ class Grain:
     def stride(self):
         return self.size - self.overlap
 
-    def sizes(self, rand=_inst):
+    def sizes(self, size, rand=_inst):
         def delta():
             if not self.variation:
                 return 0
@@ -38,16 +38,16 @@ class Grain:
         begin = 0
 
         for i in itertools.count():
+            if begin >= size:
+                break
+
             end = begin + self.size
             if self.variation:
                 end += self.distribution(rand, -self.variation, self.variation)
 
-            yield round(begin), round(end)
+            yield round(begin), round(min(size, end))
             begin = end - self.overlap
 
     def grains(self, data, rand=_inst):
-        length = data.shape[-1]
-        for begin, end in self.sizes(rand):
-            if begin >= length:
-                break
+        for begin, end in self.sizes(max(data.shape), rand):
             yield data[:, begin:end]

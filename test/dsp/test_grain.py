@@ -1,7 +1,6 @@
 from numpy.testing import assert_array_equal
 from random import Random
 from vl8.dsp.grain import Grain
-import itertools
 import numpy as np
 import unittest
 
@@ -11,7 +10,7 @@ class TestGrain(unittest.TestCase):
         g = Grain()
         assert g.stride == 512
 
-        actual = list(itertools.islice(g.sizes(), 7))
+        actual = list(g.sizes(4096))
         expected = [
             (0, 1024),
             (512, 1536),
@@ -20,6 +19,7 @@ class TestGrain(unittest.TestCase):
             (2048, 3072),
             (2560, 3584),
             (3072, 4096),
+            (3584, 4096),
         ]
         assert actual == expected
 

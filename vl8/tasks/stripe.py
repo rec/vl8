@@ -1,27 +1,23 @@
-# from fractions import Fraction
-from ..grain import Grain
+# from ..grain import Grain
+from fractions import Fraction
+import copy
 import itertools
 import numpy as np
 
+MIN_STRIPE_SIZE = 10
 
-def stripe(samples, dtype, grain):
-    lengths = [max(s.shape) for s in samples]
 
-    ml = max(lengths)
-    # grain_count = overlap = variation = seed = size = 0
+def stripe(samples, dtype, grain, rand):
+    ms = Fraction(max(MIN_STRIPE_SIZE, *(max(s.shape) for s in samples)))
 
-    def new_grain(sample):
-        size = sample.size * ml / max(sample.shape)
-        gr = dict(Grain(**vars(grain)))
-        # TODO: overlap needs to be an absolute number
-        # because here we have different-sized grains!
-        # size = math.ceil( / grain_count)
-        # Grains(size, overlap, variation, seed)
-
-        return size, gr
-
-    grains = [new_grain(s) for s in samples]
-    size = stride = 0
+    grains = []
+    for sample in samples:
+        size = max(sample.shape)
+        ratio = ms / size
+        assert ratio >= 1, f'{ratio} < 1'
+        gr = copy.copy(grain)
+        gr.size *= ratio
+        grains.append(list(gr.sizes(size, rand)))
 
     length = sum(s.shape[-1] for s in samples) + size
     buffer = np.zeros((2, length), dtype=dtype)
@@ -32,6 +28,6 @@ def stripe(samples, dtype, grain):
         for g in grain:
             if g is not None:
                 buffer[:, time : time + size] += g
-                time += stride
+                # time += stride
 
     return buffer
