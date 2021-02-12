@@ -1,4 +1,5 @@
 from vl8.config.config import merge
+from vl8.config.parse_args import separate_arguments
 import unittest
 
 
@@ -38,3 +39,8 @@ class TestConfig(unittest.TestCase):
             'sources': {'foo': ['a', 'b', 'c', 'd']},
         }
         assert merge([c1, c2], overwrite=False) == expected
+
+    def test_separate_arguments(self):
+        actual = separate_arguments('aBcDEFg', str.isupper)
+        expected = [('B', ['a', 'c']), ('D', []), ('E', []), ('F', ['g'])]
+        assert actual == expected

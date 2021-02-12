@@ -1,6 +1,6 @@
 from numpy.testing import assert_array_equal
-from random import Random
 from vl8.dsp.grain import Grain
+from vl8.dsp.rand import Rand
 import numpy as np
 import unittest
 
@@ -47,10 +47,8 @@ class TestGrain(unittest.TestCase):
         size = 20
         data = np.linspace(0, size, size, dtype=np.int32).reshape(2, size // 2)
 
-        rand = Random(0)
-
-        grain = Grain(7, 4, variation=2)
-        actual = list(grain.grains(data, rand))
+        grain = Grain(7, 4, rand=Rand(args=(-2, 2), seed=0))
+        actual = list(grain.grains(data))
         assert len(actual) == 3
 
         expected = [

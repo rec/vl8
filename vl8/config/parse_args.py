@@ -20,3 +20,27 @@ _VERBOSE_H = """Print more stuff"""
 
 PARSER = parser()
 parse = PARSER.parse_args
+
+
+def is_function(argument):
+    if '.' not in argument or '(' in argument:
+        return True
+    return not argument.endswith('.wav')  # TODO
+
+
+def separate_arguments(arguments, is_function=is_function):
+    results = []
+
+    function, args = None, []
+    for a in arguments:
+        if is_function(a):
+            if function:
+                results.append((function, args))
+                function, args = None, []
+            function = a
+        else:
+            args.append(a)
+    if function or args:
+        results.append((function, args))
+
+    return results

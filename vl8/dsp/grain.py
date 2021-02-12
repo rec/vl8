@@ -1,6 +1,7 @@
+from .rand import Rand
 from dataclasses import dataclass
 from fractions import Fraction
-from random import Random, _inst
+from typing import Optional
 
 SIZE = Fraction(1024)
 
@@ -16,33 +17,19 @@ class Grain:
     overlap: Fraction = SIZE / 2
     """Overlap between grains, in fractional samples.  Must be non-negative."""
 
-    distribution: object = Random.uniform
-    """A distribution function that takes a `random.Random`, and two values and
-       returns a random floating point number in that range."""
-
-    variation: Fraction = 0
-    """Variation between grains, in fractional samples.
-       Must be less than size."""
+    rand: Optional[Rand] = None
 
     @property
     def stride(self):
         return self.size - self.overlap
 
-    def sizes(self, size, rand=_inst):
-        def delta():
-            if not self.variation:
-                return 0
-            return self.distribution(rand, -self.variation, self.variation)
-
+    def sizes(self, size):
         begin = 0
         while begin < size:
-            end = begin + self.size
-            if self.variation:
-                end += self.distribution(rand, -self.variation, self.variation)
-
+            end = begin + self.size + (self.rand() if self.rand else 0)
             yield round(begin), round(min(size, end))
             begin = end - self.overlap
 
-    def grains(self, data, rand=_inst):
-        for begin, end in self.sizes(max(data.shape), rand):
+    def grains(self, data):
+        for begin, end in self.sizes(max(data.shape)):
             yield data[:, begin:end]

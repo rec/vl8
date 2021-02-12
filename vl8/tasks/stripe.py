@@ -1,4 +1,5 @@
-# from ..grain import Grain
+from ..grain import Grain
+from dataclasses import dataclass
 from fractions import Fraction
 import copy
 import itertools
@@ -31,3 +32,8 @@ def stripe(samples, dtype, grain, rand):
                 # time += stride
 
     return buffer
+
+
+@dataclass
+class Stripe:
+    grains: Grain

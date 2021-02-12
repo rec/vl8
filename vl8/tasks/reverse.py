@@ -1,2 +1,2 @@
 def reverse(data):
-    return data[:, ::-1]
+    return data[..., -1]
