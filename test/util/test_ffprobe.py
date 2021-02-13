@@ -1,4 +1,5 @@
 from .. import skip
+from fractions import Fraction
 from vl8.util import ffprobe
 import unittest
 
@@ -13,13 +14,16 @@ class TestFfprobe(unittest.TestCase):
 
         pprint(actual)
         expected = {
-            'bitrate': '256 kb/s',
-            'channels': '2 channels',
-            'duration': '00:00:02.94',
-            'encoding': 'pcm_s16le',
-            'encoding_data': '([1][0][0][0] / 0x0001)',
+            'audio': 'pcm_s16le',
+            'bitrate': 256000,
+            'channels': 2,
+            'duration': Fraction(147, 50),
             'numbers': 's16',
             'sample_rate': 8000,
         }
 
         assert actual == expected
+
+    def test_missing(self):
+        with self.assertRaises(FileNotFoundError):
+            ffprobe('NO-SUCH-FILE.wav')
