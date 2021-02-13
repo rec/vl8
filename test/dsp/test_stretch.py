@@ -1,20 +1,18 @@
 # from .assert_files_equal import assert_files_equal
 
 # from vl8.dsp import stretch
+from .. import skip
 from pathlib import Path
 from vl8.dsp import io
-import os
 import tdir
 import unittest
 
 DIR = Path(__file__).parent / 'sources'
-IS_TRAVIS = os.getenv('TRAVIS', '').lower().startswith('t')
-skip_if_travis = unittest.skipIf(IS_TRAVIS, 'Test does not work in travis')
 
 
 @tdir(use_dir='.')
 class TestStretch(unittest.TestCase):
-    @skip_if_travis
+    @skip.if_travis
     def test_pitch_up(self):
         sample_rate = 44100 // 4
         data, rate = io.read(DIR / '2.wav')
