@@ -18,11 +18,11 @@ SPECIAL_DTYPE = {
 }
 
 
-def read(file, *args, original_type=True, **kwargs):
+def read(file, original_type=True, **kwargs):
     f = _file(file)
     sf = soundfile.SoundFile(f)
     dtype = DTYPE.get(sf.subtype, SPECIAL_DTYPE.get(sf.subtype, DEFAULT_TYPE))
-    data, sr = soundfile.read(f, always_2d=True, dtype=dtype, *args, **kwargs)
+    data, sr = soundfile.read(f, always_2d=True, dtype=dtype, **kwargs)
     data = np.transpose(data)
 
     if original_type:
@@ -38,7 +38,7 @@ def read(file, *args, original_type=True, **kwargs):
     return data, sr
 
 
-def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, *args, **kwargs):
+def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, **kwargs):
     d = np.transpose(data)
 
     f = _file(filename)
@@ -61,7 +61,7 @@ def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, *args, **kwargs):
     else:
         raise ValueError(f'Unknown type {d.dtype}')
 
-    return soundfile.write(f, d, sample_rate, subtype, *args, **kwargs)
+    return soundfile.write(f, d, sample_rate, subtype, **kwargs)
 
 
 def _file(f):
