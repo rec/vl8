@@ -1,3 +1,4 @@
+from .scale import Scale
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 import random
@@ -9,14 +10,11 @@ class Rand:
     args: list = field(default_factory=list)
     kwargs: dict = field(default_factory=dict)
     seed: Optional[int] = None
-    scale: float = 1
-    offset: float = 0
+    scale: Scale = field(default_factory=Scale)
 
     def __post_init__(self):
-        if self.seed is None:
-            self._inst = random._inst
-        else:
-            self._inst = random.Random()
+        self._inst = random.Random()
+        if self.seed is not None:
             self._inst.seed(self.seed)
 
     def __call__(self, *args, **kwargs):
@@ -29,5 +27,4 @@ class Rand:
         elif self.kwargs:
             kwargs = dict(self.kwargs, **kwargs)
 
-        d = self.distribution(self._inst, *args, **kwargs)
-        return self.scale * d + self.offset
+        return self.scale(self.distribution(self._inst, *args, **kwargs))

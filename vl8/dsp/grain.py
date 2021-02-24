@@ -20,10 +20,10 @@ class Grain:
     rand: Optional[Rand] = None
 
     @property
-    def stride(self):
+    def stride(self) -> int:
         return self.size - self.overlap
 
-    def sizes(self, size):
+    def sizes(self, size: int):
         begin = 0
         while begin < size:
             end = begin + self.size + (self.rand() if self.rand else 0)

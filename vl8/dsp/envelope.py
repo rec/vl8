@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from .scale import Scale
+from dataclasses import dataclass, field
 from numbers import Number
 import numpy as np
 
@@ -9,8 +10,7 @@ class Envelope:
     times: object = None
     length: int = None
     loop_count: int = None
-    mult: float = None
-    offset: float = None
+    scale: Scale = field(default_factory=Scale)
     curve: object = np.linspace
 
     # reverse: bool = False
@@ -33,12 +33,28 @@ class Envelope:
             src = source[:, t : t + len(seg)] * self.scale(seg)
             target[:, t : t + len(seg)] += src
 
-    def scale(self, a):
-        if self.mult is not None:
-            a = a * self.mult
-        if self.offset is not None:
-            a = a + self.offset
-        return a
+
+def _segments(levels, times, loop_count):
+    i = 0
+    while loop_count is None or i / len(levels) < loop_count:
+        yield (
+            levels[i % len(levels)],
+            levels[(i + 1) % len(levels)],
+            times[i % len(times)],
+        )
+        i += 1
+
+
+def _curves(segments, length, curve, dtype):
+    t = 0
+    for l0, l1, dt in segments:
+        seg = curve(l0, l1, dt, dtype=dtype, endpoint=True)
+        to_chop = t + dt - length
+        if to_chop > 0:
+            yield t, seg[:-to_chop]
+            break
+        yield t, seg
+        t += dt
 
 
 def _check(levels, times):
@@ -72,26 +88,3 @@ def _check(levels, times):
         raise ValueError('Times cannot be negative')
 
     return levels, times
-
-
-def _segments(levels, times, loop_count):
-    i = 0
-    while loop_count is None or i / len(levels) < loop_count:
-        yield (
-            levels[i % len(levels)],
-            levels[(i + 1) % len(levels)],
-            times[i % len(times)],
-        )
-        i += 1
-
-
-def _curves(segments, length, curve, dtype):
-    t = 0
-    for l0, l1, dt in segments:
-        seg = curve(l0, l1, dt, dtype=dtype, endpoint=True)
-        to_chop = t + dt - length
-        if to_chop > 0:
-            yield t, seg[:-to_chop]
-            break
-        yield t, seg
-        t += dt
