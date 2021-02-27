@@ -26,19 +26,21 @@ Knife for audio.
 
      vl8 one.wav  # Info on the file.
      vl8 cat one.wav two.wav three.wav  # concatenates them
-     vl8 'cat(gap=2)' one.wav two.wav   # concatenate them with no gap
+     vl8 'cat(gap=2)' one.wav two.wav   # concatenate them with 2 second gap
      vl8 'cat(gap=2)' one.wav two.wav --out=three.wav
      vl8 'cat(gap=2)' one.wav two.wav 'rubberband(pitch=-50)'
      ###  vl8 mix reverse one.wav NO.
      vl8 'reverse(balance=0.5)' one.wav  # balance!
-     vl7 'slice(length=[2, 3], duration=12, maxslice=4)' one.wav two.wav
-     vl7 'sample(jump=4, length=1, count=20)' one.wav two.wav
+     vl8 'slice(length=[2, 3], duration=12, maxslice=4)' one.wav two.wav
+     vl8 'sample(jump=4, length=1, count=20)' one.wav two.wav
+     vl8 'my_command(one=20)' one.wav two.wav
+     vl8 'path.to.command(one=20)' one.wav two.wav
 
-"Balance" is a special case where we mix the input with the output.  We want to
-do that a lot of the time.
+"Balance" is a "universal property" where we mix the input with the output.  We
+want to do that a lot of the time, so if a function doesn't have a balance
+command, we put it in for them automatically, but you can override it yourself.
 
-If a function doesn't have a balance command, we put it in for them
-automatically.
+There might be other "universal" properties we can add.
 
 Problem: automatically creating the output name
 Answer: a timestamp with add the base names of all the effects appended

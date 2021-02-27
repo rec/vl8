@@ -1,3 +1,4 @@
+from ..util.audio_formats import AUDIO_FORMATS
 import argparse
 
 
@@ -12,20 +13,8 @@ def parser():
     return p
 
 
-_DESCRIPTION = """slice, dice, mix-and-match"""
-_ARGUMENTS_H = 'Files or JSON or Yaml'
-_CONTINUE_H = 'Try to continue to processing after an error has occurred'
-_DRY_RUN_H = 'Check that files and functions exist but do not run'
-_VERBOSE_H = """Print more stuff"""
-
-PARSER = parser()
-parse = PARSER.parse_args
-
-
-def is_function(argument):
-    if '.' not in argument or '(' in argument:
-        return True
-    return not argument.endswith('.wav')  # TODO
+def is_function(x):
+    return not ('.' in x and x.split('.')[-1] in AUDIO_FORMATS)
 
 
 def separate_arguments(arguments, is_function=is_function):
@@ -44,3 +33,13 @@ def separate_arguments(arguments, is_function=is_function):
         results.append((function, args))
 
     return results
+
+
+_DESCRIPTION = """slice, dice, mix-and-match"""
+_ARGUMENTS_H = 'Files or JSON or Yaml'
+_CONTINUE_H = 'Try to continue to processing after an error has occurred'
+_DRY_RUN_H = 'Check that files and functions exist but do not run'
+_VERBOSE_H = """Print more stuff"""
+
+PARSER = parser()
+parse = PARSER.parse_args

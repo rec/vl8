@@ -1,5 +1,5 @@
 from vl8.config.config import merge
-from vl8.config.parse_args import separate_arguments
+from vl8.config.parse_args import is_function, separate_arguments
 import unittest
 
 
@@ -40,7 +40,19 @@ class TestConfig(unittest.TestCase):
         }
         assert merge([c1, c2], overwrite=False) == expected
 
+    def test_is_function(self):
+        for i in 'cut', 'tricky.wav()', 'first.second':
+            assert is_function(i)
+
+        for i in 'cut.wav', 'tricky.wav()', 'first.second':
+            assert is_function(i)
+
     def test_separate_arguments(self):
         actual = separate_arguments('aBcDEFg', str.isupper)
         expected = [('B', ['a', 'c']), ('D', []), ('E', []), ('F', ['g'])]
+        assert actual == expected
+
+    def test_separate_arguments2(self):
+        actual = separate_arguments('AbCdefG', str.isupper)
+        expected = [('A', ['b']), ('C', ['d', 'e', 'f']), ('G', [])]
         assert actual == expected
