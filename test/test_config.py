@@ -56,3 +56,21 @@ class TestConfig(unittest.TestCase):
         actual = separate_arguments('AbCdefG', str.isupper)
         expected = [('A', ['b']), ('C', ['d', 'e', 'f']), ('G', [])]
         assert actual == expected
+
+    def test_separate_arguments3(self):
+        actual = separate_arguments('abcdefg', str.isupper)
+        expected = [(None, ['a', 'b', 'c', 'd', 'e', 'f', 'g'])]
+        assert actual == expected
+
+    def test_separate_arguments4(self):
+        actual = separate_arguments('ABCDEFG', str.isupper)
+        expected = [
+            ('A', []),
+            ('B', []),
+            ('C', []),
+            ('D', []),
+            ('E', []),
+            ('F', []),
+            ('G', []),
+        ]
+        assert actual == expected

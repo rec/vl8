@@ -21,7 +21,7 @@ def separate_arguments(arguments, is_function=is_function):
     results = []
 
     function, args = None, []
-    for a in arguments:
+    for a in arguments or ():
         if is_function(a):
             if function:
                 results.append((function, args))
@@ -35,6 +35,13 @@ def separate_arguments(arguments, is_function=is_function):
     return results
 
 
+def parse(args=None):
+    r = PARSER.parse_args(args)
+    r.arguments = separate_arguments(r.arguments)
+
+    return r
+
+
 _DESCRIPTION = """slice, dice, mix-and-match"""
 _ARGUMENTS_H = 'Files or JSON or Yaml'
 _CONTINUE_H = 'Try to continue to processing after an error has occurred'
@@ -42,4 +49,3 @@ _DRY_RUN_H = 'Check that files and functions exist but do not run'
 _VERBOSE_H = """Print more stuff"""
 
 PARSER = parser()
-parse = PARSER.parse_args
