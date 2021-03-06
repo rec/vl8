@@ -2,6 +2,41 @@ from typing import Class
 import dataclasses
 
 """
+New story!
+
+A *Function*, not a task, is either a function or a dataclass with a __call__
+method.
+
+Functions can be single-valued - they take one source and return zero or more
+outputs or multi-valued - they take zero or sources and return zero or more
+outputs.
+
+    def task1(source, *, a: int = 1, b: str):
+        pass
+
+    def task2(*sources, *, a=1, b: str):
+        pass
+
+    @dataclass
+    class Task1:
+      a: int = 1
+      b: str
+
+      def __call__(self, source):
+          pass
+
+    @dataclass
+    class Task2:
+      a: int = 1
+      b: str
+
+      def __call__(self, *sources):
+          pass
+
+"""
+
+
+"""
 Each task description is represented by a dataclass.
 Some fields are required, others have default values.
 

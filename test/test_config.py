@@ -1,5 +1,5 @@
 from vl8.config.config import merge
-from vl8.config.parse_args import is_function, separate_arguments
+from vl8.config.parse_args import is_function, separate_commands
 import unittest
 
 
@@ -47,30 +47,30 @@ class TestConfig(unittest.TestCase):
         for i in 'cut.wav', 'tricky.wav()', 'first.second':
             assert is_function(i)
 
-    def test_separate_arguments(self):
-        actual = separate_arguments('aBcDEFg', str.isupper)
-        expected = [('B', ['a', 'c']), ('D', []), ('E', []), ('F', ['g'])]
+    def test_separate_commands(self):
+        actual = separate_commands('aBcDEFg', str.isupper)
+        expected = [['B', ['a', 'c']], ['D', []], ['E', []], ['F', ['g']]]
         assert actual == expected
 
-    def test_separate_arguments2(self):
-        actual = separate_arguments('AbCdefG', str.isupper)
-        expected = [('A', ['b']), ('C', ['d', 'e', 'f']), ('G', [])]
+    def test_separate_commands2(self):
+        actual = separate_commands('AbCdefG', str.isupper)
+        expected = [['A', ['b']], ['C', ['d', 'e', 'f']], ['G', []]]
         assert actual == expected
 
-    def test_separate_arguments3(self):
-        actual = separate_arguments('abcdefg', str.isupper)
-        expected = [(None, ['a', 'b', 'c', 'd', 'e', 'f', 'g'])]
+    def test_separate_commands3(self):
+        actual = separate_commands('abcdefg', str.isupper)
+        expected = [[None, ['a', 'b', 'c', 'd', 'e', 'f', 'g']]]
         assert actual == expected
 
-    def test_separate_arguments4(self):
-        actual = separate_arguments('ABCDEFG', str.isupper)
+    def test_separate_commands4(self):
+        actual = separate_commands('ABCDEFG', str.isupper)
         expected = [
-            ('A', []),
-            ('B', []),
-            ('C', []),
-            ('D', []),
-            ('E', []),
-            ('F', []),
-            ('G', []),
+            ['A', []],
+            ['B', []],
+            ['C', []],
+            ['D', []],
+            ['E', []],
+            ['F', []],
+            ['G', []],
         ]
         assert actual == expected

@@ -15,7 +15,12 @@ class TestValidate(unittest.TestCase):
         assert self.config == {
             'arguments': {},
             'functions': {},
-            'options': {'continue': False, 'dry_run': False, 'verbose': False},
+            'options': {
+                'continue': False,
+                'dry_run': False,
+                'output': False,
+                'verbose': False,
+            },
             'sources': {},
             'tasks': {},
         }
@@ -35,7 +40,12 @@ class TestValidate(unittest.TestCase):
 
         assert self.config == {
             'arguments': {},
-            'options': {'continue': False, 'dry_run': False, 'verbose': False},
+            'options': {
+                'continue': False,
+                'dry_run': False,
+                'output': False,
+                'verbose': False,
+            },
             'sources': {'_': [Path('foo.wav')]},
             'tasks': {},
         }
