@@ -30,10 +30,9 @@ def _import(name):
     except ImportError:
         pass
 
+    path, name = name.rsplit('.', maxsplit=1)
+    module = importlib.import_module(path)
     try:
-        path, name = name.rsplit('.', maxsplit=1)
-        module = importlib.import_module(path)
         return getattr(module, name)
-    except Exception as e:
-        e.args = e.args + (f'when reading function {name}',)
-        raise
+    except AttributeError:
+        raise ImportError(f'No attribute in {path} named {name}') from None
