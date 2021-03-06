@@ -31,7 +31,7 @@ def _import(name):
         pass
 
     try:
-        path, name = name.rsplit(maxsplit=1)
+        path, name = name.rsplit('.', maxsplit=1)
         module = importlib.import_module(path)
         return getattr(module, name)
     except Exception as e:
