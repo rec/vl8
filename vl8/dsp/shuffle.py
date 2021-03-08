@@ -14,5 +14,5 @@ class Shuffle:
     shuffle: Callable = random.Random.shuffle
     rand: Rand = field(default_factory=Rand)
 
-    def __call__(self, source: np.darray, target: np.darray):
+    def __call__(self, source: np.ndarray, target: np.ndarray):
         self.shuffle(source)  # TODO

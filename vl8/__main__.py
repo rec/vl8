@@ -1,6 +1,6 @@
 from .config import parse_args
+from .function.function_call import FunctionCall
 from .util import error
-from .util.function import Function
 import sys
 
 
@@ -10,7 +10,7 @@ def main(args=None):
     commands = []
 
     for function, sources in args.commands:
-        commands.append(Function(function))
+        commands.append(FunctionCall(function))
 
     errors = []
     if errors:

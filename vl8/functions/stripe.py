@@ -1,4 +1,4 @@
-from ..grain import Grain
+from ..dsp.grain import Grain
 from dataclasses import dataclass
 from fractions import Fraction
 import copy
