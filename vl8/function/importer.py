@@ -24,7 +24,7 @@ def _canon(s):
 
 
 def _import(name):
-    name = name if '.' in name else f'vl8.tasks.{name}'
+    name = name if '.' in name else f'vl8.functions.{name}'
     try:
         return importlib.import_module(name)
     except ImportError:

@@ -1,19 +1,18 @@
-# from ..grain import Grain
-from . import task
 import numpy as np
 
 MIN_STRIPE_SIZE = 10
 
 """"
 reflect is a granular task that mixes a sound with its mirror image
+
 """
 
 
-class Reflect(task.TaskDescription):
+class Reflect:
     def _config(self, config: dict) -> dict:
         return config
 
-    def _run(self, task: task.Task):
+    def _run(self, task: object):
         return task
 
 
