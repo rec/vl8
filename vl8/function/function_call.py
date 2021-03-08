@@ -1,4 +1,5 @@
 from . import abbrev
+from ..util.catcher import Catcher
 from .function import Function
 import typeguard
 import yaml
@@ -49,10 +50,10 @@ def _split_args(name):
 
 def _expand(func, args):
     expanded = {}
-    exceptions = []
 
+    catcher = Catcher()
     for key, value in args.items():
-        try:
+        with catcher:
             param = abbrev(func.params, key)
             if param.name in expanded:
                 raise KeyError(param.name, 'Duplicate key')
@@ -62,12 +63,6 @@ def _expand(func, args):
                 argname = f'{key}/{param.name}'
             typeguard.check_type(argname, value, param)
             expanded[param.name] = value
-        except Exception as e:
-            exceptions.append(e)
 
-    if len(exceptions) == 1:
-        raise exceptions[0]
-    if exceptions:
-        raise ValueError(str(exceptions))
-
+    catcher.raise_if()
     return expanded
