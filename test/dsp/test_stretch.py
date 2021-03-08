@@ -1,6 +1,3 @@
-# from .assert_files_equal import assert_files_equal
-
-# from vl8.dsp import stretch
 from .. import skip
 from pathlib import Path
 from vl8.dsp import io

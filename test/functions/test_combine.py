@@ -1,12 +1,12 @@
-from .assert_files_equal import assert_files_equal
+from ..assert_files_equal import assert_files_equal
 from pathlib import Path
 from vl8.dsp import io
-from vl8.tasks import combine
+from vl8.functions import combine
 import numpy as np
 import tdir
 import unittest
 
-DIR = Path(__file__).parent / 'sources'
+DIR = Path(__file__).parents[1] / 'dsp/sources'
 FILES = tuple(DIR / f'{i}.wav' for i in range(1, 4))
 
 
