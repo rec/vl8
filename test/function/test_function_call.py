@@ -1,4 +1,4 @@
-from vl8.function.function_call import FunctionCall
+from vl8.function import FunctionCall
 import unittest
 
 

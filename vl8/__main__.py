@@ -1,5 +1,5 @@
 from .config import parse_args
-from .function.function_call import FunctionCall
+from .function import FunctionCall
 from .util import error
 import sys
 
