@@ -8,5 +8,6 @@ soundfile
 stroll
 tdir
 toml
+typeguard
 wavemap
 xmod
