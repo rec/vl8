@@ -4,54 +4,52 @@ import inspect
 
 class Function:
     def __init__(self, name):
+        self.name = name
         f = self.function = importer(name)
-        self.sig = _sig(f)
+        self.params = _params(f)
+        self.is_class = isinstance(f, type)
 
-        if isinstance(f, type):
+        if self.is_class:
             f_call = vars(f).get('__call__')
             if not f_call:
                 raise ValueError(f'Class {name} is not callable')
 
-            call = _sig(f_call)
+            params = list(_params(f_call).values())
 
-            if not call or call[0].name != 'self':
+            if not params or params[0].name != 'self':
                 raise ValueError(f'{f}.__call__ must be a member function')
 
-            if len(call) != 2:
+            if len(params) != 2:
                 raise ValueError(f'{f}.__call__() takes one argument')
 
-            call = call[1]
+            param = params[1]
 
-        elif not self.sig:
+        elif not self.params:
             raise ValueError(f'{f}() needs at least one argument')
+
         else:
-            call = self.sig.pop(0)
+            # It's a function
+            param = next(iter(self.params.values()))
+            self.params.pop(param.name)
 
-        if call.kind in (call.POSITIONAL_ONLY, call.POSITIONAL_OR_KEYWORD):
-            self.simple = True
-        elif call.kind is call.VAR_POSITIONAL:
-            self.simple = False
+        if param.kind in (param.POSITIONAL_ONLY, param.POSITIONAL_OR_KEYWORD):
+            self.is_simple = True
+        elif param.kind is param.VAR_POSITIONAL:
+            self.is_simple = False
         else:
-            raise ValueError(f'Bad signature for {f}({self.sig})')
+            raise ValueError(f'Bad signature for {f}({self.params})')
 
-    def __call__(self, *sources):
-        return self.function(*sources)
+    def required(self):
+        return [p.name for p in self.params.values() if p.default is p.empty]
+
+    def __call__(self, *sources, **kwargs):
+        if self.is_simple and len(sources) != 1:
+            raise TypeError(f'{self.name} takes exactly one argument')
+        if self.is_class:
+            return self.function(**kwargs)(*sources)
+        else:
+            return self.function(*sources, **kwargs)
 
 
-def _sig(s):
-    return list(inspect.signature(s).parameter.values())
-
-
-def _split_args(name):
-    # TODO: put this somewhere
-    # import yaml
-    # fname, args = _split_args(name)
-    # self.config = yaml.safe_load(f'{args}')
-
-    for begin, end in '()', '{}':
-        if name.endswith(end):
-            if begin not in name:
-                raise ValueError(f'"{end}" with no "{begin}" in "{name}"')
-            return name[:-1].split(begin, maxsplit=1)
-
-    return name, ''
+def _params(s):
+    return dict(inspect.signature(s).parameters)
