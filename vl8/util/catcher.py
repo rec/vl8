@@ -16,14 +16,6 @@ class Catcher(Exception):
 
         return wrapped
 
-    def map(self, f, *values):
-        results = []
-        for v in values:
-            with self:
-                results.append(f(v))
-        self.raise_if()
-        return results
-
     def __enter__(self):
         pass
 
@@ -44,3 +36,28 @@ class Catcher(Exception):
     def raise_if(self):
         if self:
             raise self
+
+
+def map_dict(f, args):
+    catcher = Catcher()
+    result = {}
+
+    for k, v in args.items():
+        with catcher:
+            k, v = f(k, v)
+            if k in result:
+                raise KeyError(k, 'Duplicate key')
+            result[k] = v
+    catcher.raise_if()
+    return result
+
+
+def map_list(f, *values):
+    catcher = Catcher()
+    result = []
+
+    for v in values:
+        with catcher:
+            result.append(f(v))
+    catcher.raise_if()
+    return result
