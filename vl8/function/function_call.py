@@ -4,7 +4,7 @@ import typeguard
 import yaml
 
 
-class FuncArgs:
+class FunctionCall:
     def __init__(self, func, **kwargs):
         self.func, self.args = _func_args(func)
         if kwargs:
@@ -26,7 +26,7 @@ class FuncArgs:
 def _func_args(func):
     if isinstance(func, Function):
         return func, {}
-    if isinstance(func, FuncArgs):
+    if isinstance(func, FunctionCall):
         return func.func, dict(func.args)
     if not isinstance(func, str):
         raise TypeError(f'Cannot understand func={func}')
