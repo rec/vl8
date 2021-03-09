@@ -1,3 +1,4 @@
+from . import function_names
 import importlib
 import xmod
 
@@ -5,12 +6,12 @@ import xmod
 @xmod
 def importer(name):
     """Import a callable item from a name"""
-    f = _import(name)
+    f, fname = _import(name)
     if callable(f):
         return f
 
     # It's a module or something like it.
-    stem = _canon(name.split('.')[-1])
+    stem = _canon(fname.split('.')[-1])
 
     for k, v in vars(f).items():
         if callable(v) and not k.startswith('_') and _canon(k) == stem:
@@ -24,15 +25,23 @@ def _canon(s):
 
 
 def _import(name):
-    name = name if '.' in name else f'vl8.functions.{name}'
     try:
-        return importlib.import_module(name)
+        return importlib.import_module(name), name
     except ImportError:
         pass
+
+    if '.' not in name:
+        try:
+            fname = function_names.get(name)
+        except KeyError:
+            raise ImportError(
+                f'vl8.functions.{name} cannot be found'
+            ) from None
+        return importlib.import_module(f'vl8.functions.{fname}'), fname
 
     path, name = name.rsplit('.', maxsplit=1)
     module = importlib.import_module(path)
     try:
-        return getattr(module, name)
+        return getattr(module, name), name
     except AttributeError:
         raise ImportError(f'No attribute in {path} named {name}') from None
