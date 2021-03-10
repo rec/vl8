@@ -12,10 +12,10 @@ def separate_commands(commands):
     for a in commands or ():
         if is_function(a):
             if function:
-                yield [function, args]
+                yield function, args
                 function, args = None, []
             function = a
         else:
             args.append(a)
     if function or args:
-        yield [function, args]
+        yield function, args

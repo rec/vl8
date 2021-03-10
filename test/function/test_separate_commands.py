@@ -16,28 +16,37 @@ class TestIsFunction(unittest.TestCase):
 class TestSeparateCommands(unittest.TestCase):
     def test_separate_commands(self):
         actual = list(separate_commands('aBcDEFg'))
-        expected = [['B', ['a', 'c']], ['D', []], ['E', []], ['F', ['g']]]
+        expected = [
+            ('B', ['a', 'c']),
+            ('D', []),
+            ('E', []),
+            ('F', ['g']),
+        ]
         assert actual == expected
 
     def test_separate_commands2(self):
         actual = list(separate_commands('AbCdefG'))
-        expected = [['A', ['b']], ['C', ['d', 'e', 'f']], ['G', []]]
+        expected = [
+            ('A', ['b']),
+            ('C', ['d', 'e', 'f']),
+            ('G', []),
+        ]
         assert actual == expected
 
     def test_separate_commands3(self):
         actual = list(separate_commands('abcdefg'))
-        expected = [[None, ['a', 'b', 'c', 'd', 'e', 'f', 'g']]]
+        expected = [(None, ['a', 'b', 'c', 'd', 'e', 'f', 'g'])]
         assert actual == expected
 
     def test_separate_commands4(self):
         actual = list(separate_commands('ABCDEFG'))
         expected = [
-            ['A', []],
-            ['B', []],
-            ['C', []],
-            ['D', []],
-            ['E', []],
-            ['F', []],
-            ['G', []],
+            ('A', []),
+            ('B', []),
+            ('C', []),
+            ('D', []),
+            ('E', []),
+            ('F', []),
+            ('G', []),
         ]
         assert actual == expected
