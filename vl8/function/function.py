@@ -1,13 +1,15 @@
 from . import importer
 import inspect
 
+DEFAULT = 'cat'
+
 
 class Function:
     def __init__(self, name):
         def params(s):
             return dict(inspect.signature(s).parameters)
 
-        self.name = name
+        self.name = name or DEFAULT
         self.function = importer(name)
         self.params = params(self.function)
         self.is_class = isinstance(self.function, type)

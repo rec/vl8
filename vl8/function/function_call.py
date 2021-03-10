@@ -6,10 +6,10 @@ import yaml
 
 
 class FunctionCall:
-    def __init__(self, func, **kwargs):
+    def __init__(self, func, args=None):
         self.func, self.args = _func_args(func)
-        if kwargs:
-            self.args.update(_expand(self.func, kwargs))
+        if args:
+            self.args.update(_expand(self.func, args))
         params = self.func.params
         required = {p.name for p in params.values() if p.default is p.empty}
         self.missing = required.difference(self.args)
@@ -25,6 +25,9 @@ class FunctionCall:
 
 
 def _func_args(func):
+    if func is None:
+        return Function(None), {}
+
     if isinstance(func, Function):
         return func, {}
     if isinstance(func, FunctionCall):

@@ -55,12 +55,25 @@ def map_dict(f, args):
     return result
 
 
-def map_list(f, *values):
+def _map(f, seq):
     catcher = Catcher()
-    result = []
+    results = []
 
-    for v in values:
+    for v in seq:
         with catcher:
-            result.append(f(v))
+            results.append(f(*v))
+
     catcher.raise_if()
-    return result
+    return results
+
+
+def map_sequence(f, seq):
+    return _map(lambda x: f([x]), seq)
+
+
+def map_star(f, seq):
+    return _map(f, seq)
+
+
+def map_zip(fseq, seq):
+    return _map(lambda f, x: f(x), zip(fseq, seq))
