@@ -1,8 +1,13 @@
-from ..function import separate_commands
 import argparse
+import xmod
 
 
-def parser():
+@xmod
+def parse_args(args=[]):
+    return _parser().parse_args(args)
+
+
+def _parser():
     p = argparse.ArgumentParser(description=_DESCRIPTION)
 
     p.add_argument('commands', nargs='?', help=_COMMANDS_H)
@@ -14,18 +19,9 @@ def parser():
     return p
 
 
-def parse(args=None):
-    r = PARSER.parse_args(args)
-    r.commands = separate_commands(r.commands)
-
-    return r
-
-
 _DESCRIPTION = """slice, dice, mix-and-match"""
 _COMMANDS_H = 'A list of commands to run'
 _CONTINUE_H = 'Try to continue to processing after an error has occurred'
 _DRY_RUN_H = 'Check that files and functions exist but do not run'
 _OUTPUT_H = """File or file pattern to output to"""
 _VERBOSE_H = """Print more stuff"""
-
-PARSER = parser()
