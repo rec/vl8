@@ -3,8 +3,8 @@ import xmod
 
 
 @xmod
-def parse_args(args=[]):
-    return _parser().parse_args(args)
+def parse_args(args=None):
+    return _PARSER.parse_args(args)
 
 
 def _parser():
@@ -25,3 +25,6 @@ _CONTINUE_H = 'Try to continue to processing after an error has occurred'
 _DRY_RUN_H = 'Check that files and functions exist but do not run'
 _OUTPUT_H = """File or file pattern to output to"""
 _VERBOSE_H = """Print more stuff"""
+
+_PARSER = _parser()
+DEFAULTS = vars(parse_args([]))
