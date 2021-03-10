@@ -19,9 +19,12 @@ class Catcher(Exception):
     def __enter__(self):
         pass
 
-    def __exit__(self, *args):
-        if args[0]:
-            self.exceptions.append(args)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_val:
+            if isinstance(exc_val, Catcher):
+                self.exceptions.extend(exc_val.exceptions)
+            else:
+                self.exceptions.append(exc_val)
 
         return True
 
