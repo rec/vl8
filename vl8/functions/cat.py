@@ -10,7 +10,7 @@ if a gap is negative, it's a fade
 """
 
 
-def combine(sources, dtype, curve=np.linspace, gap=0, pre=0, post=0):
+def cat(sources, dtype, curve=np.linspace, gap=0, pre=0, post=0):
     @functools.lru_cache()
     def fader(a, b, gap):
         return curve(a, b, gap, endpoint=True, dtype=dtype)
