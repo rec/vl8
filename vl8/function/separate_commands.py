@@ -6,20 +6,16 @@ def is_function(x):
     return not ('.' in x and x.split('.')[-1] in AUDIO_FORMATS)
 
 
-@xmod
-def separate_commands(commands, is_function=is_function):
-    results = []
-
+@xmod(mutable=True)
+def separate_commands(commands):
     function, args = None, []
     for a in commands or ():
         if is_function(a):
             if function:
-                results.append([function, args])
+                yield [function, args]
                 function, args = None, []
             function = a
         else:
             args.append(a)
     if function or args:
-        results.append([function, args])
-
-    return results
+        yield [function, args]
