@@ -1,3 +1,4 @@
+import contextlib
 import functools
 
 
@@ -39,6 +40,16 @@ class Catcher(Exception):
     def raise_if(self):
         if self:
             raise self
+
+
+@contextlib.contextmanager
+def catcher(catcher=None):
+    catcher = catcher or Catcher()
+
+    with catcher:
+        yield catcher
+
+    catcher.raise_if()
 
 
 def map_dict(f, args):

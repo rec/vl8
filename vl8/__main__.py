@@ -7,12 +7,22 @@ import sys
 
 
 def main(args=None):
-    def fix(*args):
-        return catcher.map_zip((FunctionCall, File), args)
-
     args = parse_args(args)
     commands = separate_commands(args.commands)
-    function_calls = catcher.map_star(fix, commands)
+
+    function_calls = []
+    with catcher() as cat:
+        for function, files in commands:
+            with cat:
+                function = FunctionCall(function)
+
+            new_files = []
+            for file in files:
+                with cat:
+                    new_files.append(File(file))
+
+            function_calls.append((function, new_files))
+
     return function_calls
 
 
