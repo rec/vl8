@@ -14,14 +14,18 @@ class FunctionCall:
         required = {p.name for p in params.values() if p.default is p.empty}
         self.missing = required.difference(self.args)
 
-    @property
-    def is_simple(self):
-        return self.func.is_simple
-
-    def __call__(self, *src):
+    def __call__(self, *files):
         if self.missing:
             raise TypeError(f'Missing required arguments {self.missing}')
-        return self.func(*src, **self.args)
+
+        def call(*s):
+            return self.func(*s, **self.args)
+
+        if self.func.is_simple:
+            for s in files:
+                yield call(s)
+        else:
+            yield call(*files)
 
 
 def _func_args(func):

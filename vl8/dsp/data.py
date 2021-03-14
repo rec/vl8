@@ -1,9 +1,23 @@
 from . import io
+from dataclasses import dataclass
 from pathlib import Path
+import numpy as np
 
 
-class File:
-    def __init__(self, name):
+class HasData:
+    def apply(self, operation):
+        return Data(operation(self), self.sample_rate)
+
+
+@dataclass
+class Data(HasData):
+    def __init__(self, data: np.ndarray, sample_rate: int):
+        self.data = data
+        self.sample_rate = sample_rate
+
+
+class File(HasData):
+    def __init__(self, name: str):
         self.path = Path(name).absolute()
         if not self.path.exists():
             raise FileNotFoundError(f"No such file or directory {name}")
@@ -19,4 +33,4 @@ class File:
     @property
     def sample_rate(self):
         self.data
-        return self.sample_rate
+        return self._sample_rate
