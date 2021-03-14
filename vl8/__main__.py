@@ -1,6 +1,6 @@
 from .config import parse_args
 from .dsp.data import File
-from .function import FunctionCall
+from .function import BoundFunction
 from .function import separate_commands
 from .util import catcher
 import sys
@@ -25,7 +25,7 @@ def _fcalls(commands):
     with catcher() as cat:
         for function, files in commands:
             with cat:
-                function = FunctionCall(function)
+                function = BoundFunction(function)
 
             new_files = []
             for file in files:

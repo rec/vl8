@@ -1,22 +1,22 @@
-from vl8.function import FunctionCall
+from vl8.function import BoundFunction
 import unittest
 
 
-class TestFunctionCall(unittest.TestCase):
+class TestBoundFunction(unittest.TestCase):
     def test_a_simple_function(self):
-        f = FunctionCall('test.function.test_function.simp(required: true)')
+        f = BoundFunction('test.function.test_function.simp(required: true)')
         assert f.func.is_simple
         assert f.missing == set()
         assert tuple(f('one')) == (('one', True, 1),)
 
     def test_simple_function2(self):
-        f = FunctionCall('test.function.test_function.simp(r: true)')
+        f = BoundFunction('test.function.test_function.simp(r: true)')
         assert f.func.is_simple
         assert f.missing == set()
         assert tuple(f('one')) == (('one', True, 1),)
 
     def test_simple_error(self):
-        f = FunctionCall('test.function.test_function.simp')
+        f = BoundFunction('test.function.test_function.simp')
         assert f.func.is_simple
         assert f.missing == {'required'}
         with self.assertRaises(TypeError) as m:

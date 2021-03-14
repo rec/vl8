@@ -5,7 +5,7 @@ import typeguard
 import yaml
 
 
-class FunctionCall:
+class BoundFunction:
     def __init__(self, func, args=None):
         self.func, self.args = _func_args(func)
         if args:
@@ -34,15 +34,17 @@ def _func_args(func):
 
     if isinstance(func, Function):
         return func, {}
-    if isinstance(func, FunctionCall):
-        return func.func, dict(func.args)
-    if not isinstance(func, str):
-        raise TypeError(f'Cannot understand func={func}')
 
-    fname, arg_str = _split_args(func)
-    args = yaml.safe_load('{%s}' % arg_str)
-    f = Function(fname)
-    return f, _expand(f, args)
+    if isinstance(func, BoundFunction):
+        return func.func, dict(func.args)
+
+    if isinstance(func, str):
+        fname, arg_str = _split_args(func)
+        args = yaml.safe_load('{%s}' % arg_str)
+        f = Function(fname)
+        return f, _expand(f, args)
+
+    raise TypeError(f'Cannot understand func={func}')
 
 
 def _split_args(name):
