@@ -5,7 +5,7 @@ import sys
 
 def main(args=None):
     args = parse_args(args)
-    _write_files(run_functions(args))
+    _write_files(run_functions(args), args)
 
 
 def _write_files(files):

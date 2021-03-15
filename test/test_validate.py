@@ -36,7 +36,9 @@ _CONFIG = {
     'options': {
         'continue': False,
         'dry_run': False,
-        'output': False,
+        'force': False,
+        'output': '',
+        'samplebits': 16,
         'verbose': False,
     },
     'sources': {},
