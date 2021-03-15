@@ -12,18 +12,7 @@ class TestValidate(unittest.TestCase):
     def test_empty(self):
         self.validate()
         assert self.errors == []
-        assert self.config == {
-            'arguments': {},
-            'functions': {},
-            'options': {
-                'continue': False,
-                'dry_run': False,
-                'output': False,
-                'verbose': False,
-            },
-            'sources': {},
-            'tasks': {},
-        }
+        assert self.config == dict(_CONFIG, functions={})
 
     def test_simple(self):
         # TODO: restore this
@@ -38,14 +27,18 @@ class TestValidate(unittest.TestCase):
         assert isinstance(functions.pop('foo'), functools.partial)
         assert not functions
 
-        assert self.config == {
-            'arguments': {},
-            'options': {
-                'continue': False,
-                'dry_run': False,
-                'output': False,
-                'verbose': False,
-            },
-            'sources': {'_': [Path('foo.wav')]},
-            'tasks': {},
-        }
+        sources = {'_': [Path('foo.wav')]}
+        assert self.config == dict(_CONFIG, sources=sources)
+
+
+_CONFIG = {
+    'arguments': {},
+    'options': {
+        'continue': False,
+        'dry_run': False,
+        'output': False,
+        'verbose': False,
+    },
+    'sources': {},
+    'tasks': {},
+}
