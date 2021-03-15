@@ -2,6 +2,7 @@ from . import io
 from dataclasses import dataclass
 from pathlib import Path
 import numpy as np
+import wavemap
 
 
 class HasData:
@@ -17,7 +18,7 @@ class Data(HasData):
 
 
 class File(HasData):
-    def __init__(self, name: str):
+    def __init__(self, name: str, dtype: np.dtype = np.float32):
         self.path = Path(name).absolute()
         if not self.path.exists():
             raise FileNotFoundError(f"No such file or directory {name}")
@@ -28,6 +29,7 @@ class File(HasData):
     def data(self):
         if self._data is None:
             self._data, self._sample_rate = io.read(self.path)
+            self._data = wavemap.convert(self._data, self._dtype)
         return self._data
 
     @property
