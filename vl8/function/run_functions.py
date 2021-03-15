@@ -1,9 +1,8 @@
 from . import function_calls
 from . import separate_commands
-import xmod
 
 
-def _run_calls(function_calls, args):
+def _run_calls(fcalls, args):
     # If a function DOES have files, it acts on those files
     # and then adds them to the pool.
     #
@@ -16,8 +15,7 @@ def _run_calls(function_calls, args):
     #
     pool = []
 
-    while function_calls:
-        function, files = function_calls.pop(0)
+    for function, files in fcalls:
         if files:
             pool.extend(function(*files))
         else:
@@ -26,8 +24,7 @@ def _run_calls(function_calls, args):
     return pool
 
 
-@xmod
-def run_functions(args):
+def run(args):
     commands = separate_commands(args.commands)
     fcalls = function_calls(commands)
     return _run_calls(fcalls, args)

@@ -1,15 +1,14 @@
+from . import function
 from .config import parse_args
-from .function import run_functions
+from .dsp import io
 import sys
 
 
 def main(args=None):
-    args = parse_args(args)
-    _write_files(run_functions(args), args)
-
-
-def _write_files(files):
-    pass
+    pa = parse_args(args)
+    data = function.run(pa)
+    for f in io.write_data(data, pa.out_file, pa.out_format, pa.dtype):
+        print('Written', f)
 
 
 if __name__ == '__main__':

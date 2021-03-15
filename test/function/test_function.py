@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from vl8.function import Function
+from vl8.function.function import Function
 import unittest
 
 

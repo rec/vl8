@@ -1,6 +1,6 @@
-from . import BoundFunction
 from ..dsp.data import File
 from ..util import catcher
+from .bound_function import BoundFunction
 import xmod
 
 

@@ -1,30 +1,26 @@
-from . import DEFAULT_SAMPLE_RATE
 from . import pydub_io
-from . import soundfile_io
-from . import wavemap_io
+import datetime
+import wavemap
 
 read = pydub_io.read
 write = pydub_io.write
 
 
-def choose_read(filename):
-    exceptions = []
+def write_data(data_list, output_file=None, output_format='.wav', dtype=None):
+    out = output_file or _timestamp()
+    if '.' not in out:
+        dot = '' if output_format.startswith('.') else '.'
+        out = f'{out}{dot}{output_format}'
 
-    for module in wavemap_io, pydub_io, soundfile_io:
-        try:
-            return module.read(filename)
-        except Exception as e:
-            exceptions.append(str(e))
+    if '{' not in out:
+        out = '{}.'.join(out.rsplit('.', maxsplit=1))
 
-    raise ValueError(f'Cannot read file {filename}: {exceptions}')
+    for i, data in enumerate(data_list):
+        filename = out.format('' if len(data_list) == 1 else f'+{i}')
+        d = wavemap.convert(data.data, dtype)
+        write(filename, d, data.sample_rate)
+        yield filename
 
 
-def choose_write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE):
-    exceptions = []
-    for module in pydub_io, wavemap_io, soundfile_io:
-        try:
-            return module.write(filename, sample_rate)
-        except Exception as e:
-            exceptions.append(e)
-
-    raise ValueError(f'Cannot write file {filename}: {exceptions}')
+def _timestamp():
+    return datetime.datetime.now().strftime('VL8/%Y-%m-%d-%H-%M-%S')
