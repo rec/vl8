@@ -34,11 +34,12 @@ class TestValidate(unittest.TestCase):
 _CONFIG = {
     'arguments': {},
     'options': {
+        'calc_type': 'float32',
         'continue': False,
         'dry_run': False,
         'force': False,
         'output': '',
-        'samplebits': 16,
+        'output_type': 'int16',
         'verbose': False,
     },
     'sources': {},
