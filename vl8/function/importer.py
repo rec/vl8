@@ -4,9 +4,9 @@ import xmod
 
 
 @xmod
-def importer(name):
+def importer(name, default_module=None):
     """Import a callable item from a name"""
-    f, fname = _import(name)
+    f, fname = _import(name, default_module)
     if callable(f):
         return f
 
@@ -24,11 +24,18 @@ def _canon(s):
     return s.lower().replace('_', '')
 
 
-def _import(name):
+def _import(name, default_module):
     try:
         return importlib.import_module(name), name
     except ImportError:
         pass
+
+    if default_module:
+        name = f'{default_module}.{name}'
+        try:
+            return importlib.import_module(name), name
+        except ImportError:
+            pass
 
     if '.' not in name:
         try:

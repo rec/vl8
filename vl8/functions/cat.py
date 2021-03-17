@@ -1,60 +1,43 @@
-import functools
-import math
+from ..dsp import curve_cache
+from ..util import fix_gaps
 import numpy as np
-import sys
-
-"""
-
-gap: None, a number of seconds or a list of seconds
-if a gap is negative, it's a fade
-"""
 
 
-def cat(sources, dtype, curve=np.linspace, gap=0, pre=0, post=0):
-    @functools.lru_cache()
-    def fader(a, b, gap):
-        return curve(a, b, gap, endpoint=True, dtype=dtype)
+def cat(*src, dtype=None, curve=np.linspace, gap=0, pre=0, post=0):
+    """
+    gap: None, a number of seconds or a list of seconds
+    if a gap is negative, it's a fade
+    """
+    dtype = dtype or src[0].dtype
+    channels, durations = zip(*(s.shape for s in src))
+    channels = max(channels)
+    gaps = fix_gaps(durations, gap, pre, post, src[0].sample_rate)
+    duration = sum(durations) + sum(gaps)
+    print(channels, duration, durations, gaps)
+    arr = np.zeros((channels, duration), dtype=dtype)
 
-    if isinstance(gap, (list, tuple)):
-        gaps = list(gap)
-    else:
-        gaps = [gap or 0]
-    gaps *= math.ceil((len(sources)) / len(gaps))
+    fader = curve_cache(curve, dtype)
 
-    # Fix any fade gaps that are too long.
-    for i, src in enumerate(sources):
-        gi = gaps[i]
-        gaps[i] = max(gaps[i], -src.shape[-1])
-        if i:
-            gaps[i] = max(gaps[i], -sources[i - 1].shape[-1])
-        if gi != gaps[i]:
-            print(f'fade {gi} was longer than the sample!', file=sys.stderr)
-
-    gaps = [0] + gaps[: len(sources) - 1] + [0]
-    duration = pre + sum(s.shape[-1] for s in sources) + sum(gaps) + post
-    channels = max(s.shape[0] for s in sources)
-    result = np.zeros((channels, duration), dtype=dtype)
-
-    end = pre
-    for i, src in enumerate(sources):
-        g0, g1 = gaps[i : i + 2]
-        begin = end + g0
-        end = begin + src.shape[-1]
+    begin = end = 0
+    for i, s in enumerate(src):
+        begin = end + gaps[i]
+        end = begin + s.shape[-1]
+        fade_in, fade_out = -gaps[i], -gaps[i + 1]
 
         b, e = begin, end
-        if g0 < 0:  # Fade in
-            fade = -g0
-            result[:, b : b + fade] += fader(0, 1, fade) * src[:, :fade]
-            b += fade
+        if fade_in > 0:
+            delta = fader(0, 1, fade_in) * s[:, :fade_in]
+            arr[:, b : b + fade_in] += delta
+            b += fade_in
 
-        if g1 < 0:  # Fade out
-            fade = -g1
-            result[:, e - fade : e] += fader(1, 0, fade) * src[:, -fade:]
-            e -= fade
+        if fade_out > 0:
+            delta = fader(1, 0, fade_out) * s[:, -fade_out:]
+            arr[:, e - fade_out : e] += delta
+            e -= fade_out
 
-        result[:, b:e] += src[:, b - begin : e - end or None]
+        arr[:, b:e] += s[:, b - begin : e - end or None]
 
-    return result
+    return arr
 
 
 """
