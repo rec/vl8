@@ -5,9 +5,9 @@ import sys
 
 
 def main(args=None):
-    pa = parse_args(args)
-    data = function.run(pa)
-    for f in io.write_data(data, pa.out_file, pa.out_format, pa.dtype):
+    a = parse_args(args)
+    data = function.run(a)
+    for f in io.write_data(data, a.out_file, a.out_format, a.out_type):
         print('Written', f)
 
 

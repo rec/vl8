@@ -8,8 +8,8 @@ class TestIsFunction(unittest.TestCase):
         for i in 'cut', 'tricky.wav()', 'first.second':
             assert separate_commands.is_function(i)
 
-        for i in 'cut.wav', 'tricky.wav()', 'first.second':
-            assert separate_commands.is_function(i)
+        for i in 'cut.wav', 'tricky.mp3':
+            assert not separate_commands.is_function(i)
 
 
 @mock.patch('vl8.function.separate_commands.is_function', str.isupper)

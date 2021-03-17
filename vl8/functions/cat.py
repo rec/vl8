@@ -1,4 +1,5 @@
 from ..dsp import curve_cache
+from ..dsp.data import Data
 from ..util import fix_gaps
 import numpy as np
 
@@ -37,7 +38,7 @@ def cat(*src, dtype=None, curve=np.linspace, gap=0, pre=0, post=0):
 
         arr[:, b:e] += s[:, b - begin : e - end or None]
 
-    return arr
+    return Data(arr, src[0].sample_rate)
 
 
 """

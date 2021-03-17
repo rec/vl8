@@ -1,4 +1,5 @@
 from . import pydub_io
+from pathlib import Path
 import datetime
 import wavemap
 
@@ -18,6 +19,7 @@ def write_data(data_list, output_file=None, output_format='.wav', dtype=None):
     for i, data in enumerate(data_list):
         filename = out.format('' if len(data_list) == 1 else f'+{i}')
         d = wavemap.convert(data.data, dtype)
+        Path(filename).parent.mkdir(parents=True, exist_ok=True)
         write(filename, d, data.sample_rate)
         yield filename
 

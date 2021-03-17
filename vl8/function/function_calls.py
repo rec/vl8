@@ -9,6 +9,7 @@ def function_calls(commands):
     fcalls = []
     with catcher() as cat:
         for function, files in commands:
+            bound = None
             with cat:
                 bound = BoundFunction(function)
 

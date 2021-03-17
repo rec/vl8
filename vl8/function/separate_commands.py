@@ -3,7 +3,10 @@ import xmod
 
 
 def is_function(x):
-    return not ('.' in x and x.split('.')[-1] in AUDIO_FORMATS)
+    if '.' in x:
+        suffix = x.rsplit('.', maxsplit=1)[-1]
+        return suffix.upper() not in AUDIO_FORMATS
+    return True
 
 
 @xmod(mutable=True)

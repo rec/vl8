@@ -1,8 +1,11 @@
 import contextlib
 import functools
+import xmod
 
 
 class Catcher(Exception):
+    consume_exception = False
+
     def __init__(self):
         self.exceptions = []
 
@@ -27,7 +30,7 @@ class Catcher(Exception):
             else:
                 self.exceptions.append(exc_val)
 
-        return True
+        return self.consume_exception
 
     def __str__(self):
         if not self.exceptions:
@@ -40,16 +43,6 @@ class Catcher(Exception):
     def raise_if(self):
         if self:
             raise self
-
-
-@contextlib.contextmanager
-def catcher(catcher=None):
-    catcher = catcher or Catcher()
-
-    with catcher:
-        yield catcher
-
-    catcher.raise_if()
 
 
 def map_dict(f, args):
@@ -88,3 +81,14 @@ def map_star(f, seq):
 
 def map_zip(fseq, seq):
     return _map(lambda f, x: f(x), zip(fseq, seq))
+
+
+@xmod
+@contextlib.contextmanager
+def catcher(catcher=None):
+    catcher = catcher or Catcher()
+
+    with catcher:
+        yield catcher
+
+    catcher.raise_if()

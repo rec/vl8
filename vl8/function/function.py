@@ -10,7 +10,7 @@ class Function:
             return dict(inspect.signature(s).parameters)
 
         self.name = name or DEFAULT
-        self.function = importer(name)
+        self.function = importer(self.name)
         self.params = params(self.function)
         self.is_class = isinstance(self.function, type)
 
