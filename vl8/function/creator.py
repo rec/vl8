@@ -1,3 +1,4 @@
+from ..dsp.data import Data
 from dataclasses import dataclass
 from typing import Optional
 import numpy as np
@@ -22,4 +23,5 @@ class Creator:
         shape = self._channels(src), self._duration(src)
         dtype = self.dtype or src[0].dtype
         arr = self._make(shape=shape, dtype=dtype)
-        return self._call(arr, *src)
+        self._call(arr, *src)
+        return Data(arr, src[0].sample_rate)

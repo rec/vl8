@@ -24,9 +24,9 @@ class Function:
             param = self.params.pop(pname)
 
         else:
-            f_call = vars(self.function).get('__call__')
+            f_call = _get_call(self.function)
             if not f_call:
-                raise ValueError(f'Class {name} is not callable')
+                raise ValueError(f'Class {self.name} is not callable')
 
             call_params = list(params(f_call).values())
 
@@ -59,3 +59,13 @@ class Function:
             return self.function(**kwargs)(*sources)
         else:
             return self.function(*sources, **kwargs)
+
+
+def _get_call(cls):
+    x = vars(cls).get('__call__')
+    if x:
+        return x
+    for base in cls.__bases__:
+        x = _get_call(base)
+        if x:
+            return x

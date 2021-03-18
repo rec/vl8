@@ -1,5 +1,4 @@
 from ..dsp import curve_cache
-from ..dsp.data import Data
 from ..function.creator import Creator
 from ..util import fix_gaps
 from dataclasses import dataclass
@@ -12,7 +11,6 @@ class Cat(Creator):
     gap: fix_gaps.Gaps = 0
     pre: int = 0
     post: int = 0
-    __call__ = Creator.__call__
 
     def _duration(self, src):
         durations = [s.shape[1] for s in src]
@@ -47,8 +45,6 @@ class Cat(Creator):
                 e -= fade_out
 
             arr[:, b:e] += s[:, b - begin : e - end or None]
-
-        return Data(arr, src[0].sample_rate)
 
 
 """
