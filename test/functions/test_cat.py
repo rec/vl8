@@ -1,7 +1,7 @@
 from ..assert_files_equal import assert_files_equal
 from pathlib import Path
 from vl8.dsp.data import File
-from vl8.functions import cat
+from vl8.functions.cat import Cat
 import tdir
 import unittest
 
@@ -10,6 +10,10 @@ FILES = tuple(DIR / f'{i}.wav' for i in range(1, 4))
 assert len(FILES) == 3
 
 SAMPLE_RATE = 11025
+
+
+def cat(*src, **kwargs):
+    return Cat(**kwargs)(*src)
 
 
 @tdir
@@ -24,22 +28,22 @@ class TestCat(unittest.TestCase):
         assert sample_counts == [10849, 12172, 11643]
         assert channels == [1, 1, 1]
 
-        result = cat.cat(*sources, gap=2)
+        result = Cat(gap=2)(*sources)
         assert_files_equal('123.wav', result, SAMPLE_RATE)
 
     def test_123_float(self):
         sources = [File(f) for f in FILES]
-        result = cat.cat(*sources, dtype='float32', gap=1)
+        result = Cat(dtype='float32', gap=1)(*sources)
         assert_files_equal('123-float.wav', result, SAMPLE_RATE)
 
     def test_123_float_fade(self):
         sources = [File(f) for f in FILES]
-        result = cat.cat(*sources, dtype='float32', gap=-1 / 2)
+        result = Cat(dtype='float32', gap=-1 / 2)(*sources)
         assert_files_equal('123-float-fade.wav', result, SAMPLE_RATE)
 
     def test_2(self):
         f = File(DIR / '2.wav')
         assert f.sample_count == 12172
         assert f.sample_rate == 11025
-        result = cat.cat(f, gap=2)
+        result = Cat(gap=2)(f)
         assert_files_equal('2.wav', result, SAMPLE_RATE)

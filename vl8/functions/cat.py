@@ -1,50 +1,54 @@
 from ..dsp import curve_cache
 from ..dsp.data import Data
+from ..function.creator import Creator
 from ..util import fix_gaps
-import numpy as np
+from dataclasses import dataclass
+from typing import Callable, Union
 
 
-def target(src, f_channel=max, f_duration=max, dtype=None, f_make=np.zeros):
-    channels, durations = zip(*(s.shape for s in src))
-    shape = f_channel(channels), f_duration(durations)
-    return f_make(shape, dtype or src[0].dtype)
+@dataclass
+class Cat(Creator):
+    curve: Union[str, Callable] = 'linspace'
+    gap: fix_gaps.Gaps = 0
+    pre: int = 0
+    post: int = 0
+    __call__ = Creator.__call__
 
+    def _duration(self, src):
+        durations = [s.shape[1] for s in src]
+        self.gaps = fix_gaps(
+            durations, self.gap, self.pre, self.post, src[0].sample_rate
+        )
+        return sum(durations) + sum(self.gaps)
 
-def cat(*src, dtype=None, curve=np.linspace, gap=0, pre=0, post=0):
-    """
-    gap: None, a number of seconds or a list of seconds
-    if a gap is negative, it's a fade
-    """
+    def _call(self, arr, *src):
+        """
+        gap: None, a number of seconds or a list of seconds
+        if a gap is negative, it's a fade
+        """
 
-    gaps = []
+        fader = curve_cache(self.curve, arr.dtype)
 
-    def duration(durations):
-        gaps[:] = fix_gaps(durations, gap, pre, post, src[0].sample_rate)
-        return sum(durations) + sum(gaps)
+        begin = end = 0
+        for i, s in enumerate(src):
+            begin = end + self.gaps[i]
+            end = begin + s.shape[-1]
+            fade_in, fade_out = -self.gaps[i], -self.gaps[i + 1]
 
-    arr = target(src, f_duration=duration, dtype=dtype)
-    fader = curve_cache(curve, arr.dtype)
+            b, e = begin, end
+            if fade_in > 0:
+                delta = fader(0, 1, fade_in) * s[:, :fade_in]
+                arr[:, b : b + fade_in] += delta
+                b += fade_in
 
-    begin = end = 0
-    for i, s in enumerate(src):
-        begin = end + gaps[i]
-        end = begin + s.shape[-1]
-        fade_in, fade_out = -gaps[i], -gaps[i + 1]
+            if fade_out > 0:
+                delta = fader(1, 0, fade_out) * s[:, -fade_out:]
+                arr[:, e - fade_out : e] += delta
+                e -= fade_out
 
-        b, e = begin, end
-        if fade_in > 0:
-            delta = fader(0, 1, fade_in) * s[:, :fade_in]
-            arr[:, b : b + fade_in] += delta
-            b += fade_in
+            arr[:, b:e] += s[:, b - begin : e - end or None]
 
-        if fade_out > 0:
-            delta = fader(1, 0, fade_out) * s[:, -fade_out:]
-            arr[:, e - fade_out : e] += delta
-            e -= fade_out
-
-        arr[:, b:e] += s[:, b - begin : e - end or None]
-
-    return Data(arr, src[0].sample_rate)
+        return Data(arr, src[0].sample_rate)
 
 
 """

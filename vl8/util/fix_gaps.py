@@ -4,12 +4,13 @@ import math
 import xmod
 
 Number = Union[int, float]
+Gaps = Union[Number, List[Number]]
 
 
 @xmod
 def fix_gaps(
     durations: List[int],
-    gaps: Union[Number, List[Number]],
+    gaps: Gaps,
     pre: float = 0,
     post: float = 0,
     sample_rate: Optional[int] = None,
