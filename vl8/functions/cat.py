@@ -4,19 +4,26 @@ from ..util import fix_gaps
 import numpy as np
 
 
+def target(src, f_channel=max, f_duration=max, dtype=None, f_make=np.zeros):
+    channels, durations = zip(*(s.shape for s in src))
+    shape = f_channel(channels), f_duration(durations)
+    return f_make(shape, dtype or src[0].dtype)
+
+
 def cat(*src, dtype=None, curve=np.linspace, gap=0, pre=0, post=0):
     """
     gap: None, a number of seconds or a list of seconds
     if a gap is negative, it's a fade
     """
-    dtype = dtype or src[0].dtype
-    channels, durations = zip(*(s.shape for s in src))
-    channels = max(channels)
-    gaps = fix_gaps(durations, gap, pre, post, src[0].sample_rate)
-    duration = sum(durations) + sum(gaps)
-    arr = np.zeros((channels, duration), dtype=dtype)
 
-    fader = curve_cache(curve, dtype)
+    gaps = []
+
+    def duration(durations):
+        gaps[:] = fix_gaps(durations, gap, pre, post, src[0].sample_rate)
+        return sum(durations) + sum(gaps)
+
+    arr = target(src, f_duration=duration, dtype=dtype)
+    fader = curve_cache(curve, arr.dtype)
 
     begin = end = 0
     for i, s in enumerate(src):
