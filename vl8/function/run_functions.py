@@ -1,5 +1,7 @@
 from . import function_calls
 from . import separate_commands
+from ..dsp import data
+import numpy as np
 
 
 def run(args):
@@ -17,9 +19,20 @@ def run(args):
     commands = separate_commands(args.commands)
 
     for function, files in function_calls(commands):
+        items = files or pool
+
+        def convert(x):
+            if isinstance(x, data.HasData):
+                return x
+            if isinstance(x, np.ndarray):
+                return data.Data(x, items[0].sample_rate)
+            raise ValueError(f'Cannot understand {x}')
+
+        result = (convert(x) for x in function(*items))
+
         if files:
-            pool.extend(function(*files))
+            pool.extend(result)
         else:
-            pool[:] = function(*pool)
+            pool[:] = result
 
     return pool
