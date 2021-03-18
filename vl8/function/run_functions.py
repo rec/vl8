@@ -2,7 +2,7 @@ from . import function_calls
 from . import separate_commands
 
 
-def _run_calls(fcalls, args):
+def run(args):
     # If a function DOES have files, it acts on those files
     # and then adds them to the pool.
     #
@@ -12,19 +12,14 @@ def _run_calls(fcalls, args):
     # TODO: new "parentheses" functions `pa` and `ren` create subpools
     # TODO: use `args`
     # TODO: a way to explicitly name results in the pool
-    #
-    pool = []
 
-    for function, files in fcalls:
+    pool = []
+    commands = separate_commands(args.commands)
+
+    for function, files in function_calls(commands):
         if files:
             pool.extend(function(*files))
         else:
             pool[:] = function(*pool)
 
     return pool
-
-
-def run(args):
-    commands = separate_commands(args.commands)
-    fcalls = function_calls(commands)
-    return _run_calls(fcalls, args)

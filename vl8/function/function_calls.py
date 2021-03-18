@@ -6,6 +6,8 @@ import xmod
 
 @xmod
 def function_calls(commands):
+    # Nearly all the complexity is because we want to catch all the
+    # errors and report them and not just fail on the first error.
     fcalls = []
     with catcher() as cat:
         for function, files in commands:
@@ -19,16 +21,15 @@ def function_calls(commands):
                     new_files.append(File(file))
 
             fcalls.append([bound, new_files])
+        try:
+            i = next(i for i, f in enumerate(fcalls) if f[1])
+        except StopIteration:
+            raise ValueError('No files were specified') from None
 
-    try:
-        i = next(i for i, f in enumerate(fcalls) if f[1])
-    except StopIteration:
-        raise ValueError('No files were specified') from None
+        # For convenience, if f, g, h are functions,
+        # f g h file1 file2 file3 becomes f file1 file2 file3 g h
+        if i:
+            f0, fi = fcalls[0], fcalls[i]
+            fi[1], f0[1] = f0[1], fi[1]
 
-    # For convenience, if f, g, h are functions,
-    # f g h file1 file2 file3 becomes f file1 file2 file3 g h
-    if i:
-        f0, fi = fcalls[0], fcalls[i]
-        fi[1], f0[1] = f0[1], fi[1]
-
-    return fcalls
+        return fcalls

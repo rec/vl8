@@ -14,7 +14,6 @@ def cat(*src, dtype=None, curve=np.linspace, gap=0, pre=0, post=0):
     channels = max(channels)
     gaps = fix_gaps(durations, gap, pre, post, src[0].sample_rate)
     duration = sum(durations) + sum(gaps)
-    print(channels, duration, durations, gaps)
     arr = np.zeros((channels, duration), dtype=dtype)
 
     fader = curve_cache(curve, dtype)
