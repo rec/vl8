@@ -6,7 +6,7 @@ from typing import Callable, Union
 
 
 @dataclass
-class Cat(Creator):
+class Catenate(Creator):
     curve: Union[str, Callable] = 'linspace'
     gap: fix_gaps.Gaps = 0
     pre: int = 0

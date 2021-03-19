@@ -1,5 +1,5 @@
 from vl8.function import importer
-from vl8.functions import cat
+from vl8.functions.catenate import Catenate
 import unittest
 
 
@@ -9,8 +9,8 @@ class TestImporter(unittest.TestCase):
         assert imp is TestImporter
 
     def test_importer_function(self):
-        assert importer('cat') is cat.Cat
-        assert importer('c') is cat.Cat
+        assert importer('cat') is Catenate
+        assert importer('c') is Catenate
 
     def test_importer_guess(self):
         imp = importer('test.function.test_importer')
