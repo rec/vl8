@@ -15,16 +15,15 @@ class Grain:
     size: Fraction = SIZE
     """Size of each grain, in fractional samples.  Must be non-negative"""
 
-    # TODO: this should be as a fraction _of `size`_!!!!
-    overlap: Fraction = SIZE / 2
-    """Overlap between grains, in fractional samples.  Must be non-negative and
-       strictly less than `size`"""
+    overlap: Fraction = Fraction(1, 2)
+    """Overlap ratio between grains, between 0 and 1 inclusive"""
 
     rand: Optional[Rand] = None
 
     @property
     def stride(self) -> Fraction:
-        return self.size - self.overlap
+        assert 0 <= self.overlap <= 1
+        return self.size * (1 - self.overlap)
 
     def sizes(self, size: int) -> Iterator[Tuple[int]]:
         begin = 0
@@ -33,7 +32,7 @@ class Grain:
             if self.rand:
                 end += self.rand()
             yield round(begin), round(min(size, end))
-            begin = end - self.overlap
+            begin = end - self.overlap * self.size
 
     def chunks(self, data: np.ndarray) -> Iterator[np.ndarray]:
         for begin, end in self.sizes(max(data.shape)):

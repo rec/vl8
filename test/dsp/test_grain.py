@@ -1,3 +1,4 @@
+from fractions import Fraction
 from numpy.testing import assert_array_equal
 from vl8.dsp.grain import Grain
 from vl8.dsp.rand import Rand
@@ -27,7 +28,7 @@ class TestGrain(unittest.TestCase):
         size = 20
         data = np.linspace(0, size, size, dtype=np.int32).reshape(2, size // 2)
 
-        grain = Grain(7, 4)
+        grain = Grain(7, Fraction(4, 7))
         actual = list(grain.chunks(data))
         print(actual)
         assert len(actual) == 4
@@ -47,7 +48,7 @@ class TestGrain(unittest.TestCase):
         size = 20
         data = np.linspace(0, size, size, dtype=np.int32).reshape(2, size // 2)
 
-        grain = Grain(7, 4, rand=Rand(args=(-2, 2), seed=0))
+        grain = Grain(7, Fraction(4, 7), rand=Rand(args=(-2, 2), seed=0))
         actual = list(grain.chunks(data))
         assert len(actual) == 3
 
