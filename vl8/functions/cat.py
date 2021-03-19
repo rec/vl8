@@ -12,7 +12,7 @@ class Cat(Creator):
     pre: int = 0
     post: int = 0
 
-    def _duration(self, src):
+    def _prepare(self, src):
         durations = [s.shape[1] for s in src]
         self.gaps = fix_gaps(
             durations, self.gap, self.pre, self.post, src[0].sample_rate

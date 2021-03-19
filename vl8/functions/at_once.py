@@ -1,23 +1,25 @@
-import numpy as np
+from ..function.creator import Creator
+from dataclasses import dataclass
 
 
-def at_once(samples, dtype, overlap=0.5):
-    max_length = max(len(s) for s in samples)
-    min_length = min(len(s) for s in samples)
+@dataclass
+class AtOnce(Creator):
+    overlap: float = 0.5
 
-    begin = round(overlap * (max_length - min_length) / 2)
-    if begin < 0:
-        offset = -begin
-        length = max_length + offset
-    else:
-        offset = 0
-        length = max(max_length, begin + min_length)
+    def _prepare(self, src):
+        self.max_length = max(len(s) for s in src)
+        min_length = min(len(s) for s in src)
 
-    channels = max(s.channels for s in samples)
-    result = np.zeros((channels, length), dtype)
+        begin = round(self.overlap * (self.max_length - min_length) / 2)
+        if begin < 0:
+            self.offset = -begin
+            return self.max_length + self.offset
+        else:
+            self.offset = 0
+            return max(self.max_length, begin + min_length)
 
-    for s in samples:
-        begin = offset + round(overlap * (max_length - len(s)) / 2)
-        result[:, begin : begin + len(s)] += s
-
-    return result
+    def _call(self, arr, *src):
+        for s in src:
+            begin = self.offset
+            begin += round(self.overlap * (self.max_length - len(s)) / 2)
+            arr[:, begin : begin + len(s)] += s

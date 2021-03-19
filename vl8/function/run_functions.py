@@ -20,19 +20,23 @@ def run(args):
 
     for function, files in function_calls(commands):
         items = files or pool
-
-        def convert(x):
-            if isinstance(x, data.HasData):
-                return x
-            if isinstance(x, np.ndarray):
-                return data.Data(x, items[0].sample_rate)
-            raise ValueError(f'Cannot understand {x}')
-
-        result = (convert(x) for x in function(*items))
-
+        results = _apply(function(*items), items[0].sample_rate)
         if files:
-            pool.extend(result)
+            pool.extend(results)
         else:
-            pool[:] = result
+            pool[:] = results
 
     return pool
+
+
+def _apply(results, sample_rate):
+    if isinstance(results, (data.HasData, np.ndarray)):
+        results = [results]
+
+    for x in results:
+        if isinstance(x, data.HasData):
+            yield x
+        elif isinstance(x, np.ndarray):
+            yield data.Data(x, sample_rate)
+        else:
+            raise ValueError(f'Cannot understand {x}')

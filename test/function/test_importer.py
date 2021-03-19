@@ -1,5 +1,5 @@
 from vl8.function import importer
-from vl8.functions import reverse
+from vl8.functions import cat
 import unittest
 
 
@@ -9,9 +9,8 @@ class TestImporter(unittest.TestCase):
         assert imp is TestImporter
 
     def test_importer_function(self):
-        imp = importer('reverse')
-        assert imp is reverse.reverse
-        assert importer('rev') is reverse.reverse
+        assert importer('cat') is cat.Cat
+        assert importer('c') is cat.Cat
 
     def test_importer_guess(self):
         imp = importer('test.function.test_importer')

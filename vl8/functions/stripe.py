@@ -1,39 +1,64 @@
 from ..dsp.grain import Grain
-from dataclasses import dataclass
+from ..dsp.rand import Rand
+from ..function.creator import Creator
+from dataclasses import dataclass, field
 from fractions import Fraction
 import copy
 import itertools
-import numpy as np
 
-MIN_STRIPE_SIZE = 10
-
-
-def stripe(samples, dtype, grain, rand):
-    ms = Fraction(max(MIN_STRIPE_SIZE, *(max(s.shape) for s in samples)))
-
-    grains = []
-    for sample in samples:
-        size = max(sample.shape)
-        ratio = ms / size
-        assert ratio >= 1, f'{ratio} < 1'
-        gr = copy.copy(grain)
-        gr.size *= ratio
-        grains.append(list(gr.sizes(size, rand)))
-
-    length = sum(s.shape[-1] for s in samples) + size
-    buffer = np.zeros((2, length), dtype=dtype)
-
-    time = 0
-    # There is no iter(g)!
-    for grain in itertools.izip_longest(*(iter(g) for g in grains)):
-        for g in grain:
-            if g is not None:
-                buffer[:, time : time + size] += g
-                # time += stride
-
-    return buffer
+MIN_GRAIN_SIZE = Fraction(100)
+MIN_DURATION = Fraction(1000)
 
 
 @dataclass
-class Stripe:
-    grains: Grain
+class Stripe(Creator):
+    grain: Grain = field(default_factory=Grain)
+    rand: Rand = field(default_factory=Rand)
+
+    def _prepare(self, *src):
+        # Add a full extra largest size grain, just in case. :-)
+        return super()._prepare(*src) + self.grain.size
+
+    def _call(self, arr, *src):
+        if self.grain.size < MIN_GRAIN_SIZE:
+            msg = f'Grain too short: {self.grain.size} < {MIN_GRAIN_SIZE}'
+            raise ValueError(msg)
+
+        max_duration = max(s.shape[1] for s in src)
+        if max_duration < MIN_DURATION:
+            msg = f'Sources too short: {max_duration} < {MIN_DURATION}'
+            raise ValueError(msg)
+
+        grain_count = max_duration / self.grain.stride
+
+        # What if some duration is "pretty short"?
+        #
+        # If one source is 60 minutes = 3600s and another is 1s, with
+        # a grain of 50ms, 2200 samples then if I scale that size down to the
+        # 1s source then it will be less than one sample long.
+        #
+        # A hard-limit on stripe size fixes this, but means we must expect to
+        # run out of some (short) sources before the end.
+
+        grain_chunks = []
+        for s in src:
+            duration = max(s.shape)
+            grain_size = max(MIN_GRAIN_SIZE, duration / grain_count)
+            ratio = grain_size / self.grain.size
+            assert ratio <= 1, f'{ratio} > 1'
+
+            grain = copy.copy(self.grain)
+            grain.size *= ratio
+            grain.overlap *= ratio
+            assert (
+                MIN_GRAIN_SIZE <= grain.stride <= self.grain.stride
+            ), '{MIN_GRAIN_SIZE} > {grain.stride} > {self.grain.stride}'
+
+            grain_chunks.append(((grain, chunk) for chunk in grain.chunks(s)))
+
+        striped_chunks = (i for i in itertools.zip_longest(*grain_chunks) if i)
+
+        time = 0
+        for grain, chunk in striped_chunks:
+            arr[:, time : time + chunk.shape[1]] += chunk
+            time += grain.stride
