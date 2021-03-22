@@ -4,9 +4,9 @@ from ..function.creator import Creator
 from dataclasses import dataclass, field
 from fractions import Fraction
 import copy
-import itertools
+import more_itertools
 
-MIN_GRAIN_SIZE = Fraction(100)
+MIN_GRAIN_SIZE = Fraction(50)
 MIN_DURATION = Fraction(1000)
 
 
@@ -15,9 +15,14 @@ class Stripe(Creator):
     grain: Grain = field(default_factory=Grain)
     rand: Rand = field(default_factory=Rand)
 
-    def _prepare(self, *src):
+    def __call__(self, *args, **kwargs):
+        print('TWO', args, kwargs)
+        return super().__call__(*args, **kwargs)
+
+    def _prepare(self, src):
+        print('ONE', src)
         # Add a full extra largest size grain, just in case. :-)
-        return super()._prepare(*src) + self.grain.size
+        return sum(s.shape[1] for s in src) + round(self.grain.size)
 
     def _call(self, arr, *src):
         if self.grain.size < MIN_GRAIN_SIZE:
@@ -52,13 +57,19 @@ class Stripe(Creator):
             grain.overlap *= ratio
             assert (
                 MIN_GRAIN_SIZE <= grain.stride <= self.grain.stride
-            ), '{MIN_GRAIN_SIZE} > {grain.stride} > {self.grain.stride}'
+            ), f'{MIN_GRAIN_SIZE} > {grain.stride} > {self.grain.stride}'
 
             grain_chunks.append(((grain, chunk) for chunk in grain.chunks(s)))
 
-        striped_chunks = (i for i in itertools.zip_longest(*grain_chunks) if i)
-
+        striped_chunks = more_itertools.interleave_longest(*grain_chunks)
+        # striped_chunks = [list(i) for i in il]
+        # print(len(striped_chunks))
+        # print(*(len(s) for s in striped_chunks))
+        # print(*(type(s) for s in striped_chunks[0]))
         time = 0
-        for grain, chunk in striped_chunks:
-            arr[:, time : time + chunk.shape[1]] += chunk
+
+        for i, (grain, chunk) in enumerate(striped_chunks):
+            print(round(time), time, i, chunk.shape)
+            rt = round(time)
+            arr[:, rt : rt + chunk.shape[1]] += chunk
             time += grain.stride
