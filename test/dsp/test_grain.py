@@ -32,7 +32,7 @@ class TestGrain(unittest.TestCase):
         assert actual == expected
 
     def test_simple(self):
-        actual = list(Grain(7, 0).chunks(self.data()))
+        actual = list(Grain(size=7, overlap=0).chunks(self.data()))
         expected = [
             [[0, 1, 2, 3, 4, 5, 6], [10, 11, 12, 13, 14, 15, 16]],
             [[7, 8, 9], [17, 18, 19]],
@@ -42,7 +42,7 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_variation(self):
-        grain = Grain(7, 0, rand=Rand(args=(-2, 2), seed=0))
+        grain = Grain(size=7, overlap=0, rand=Rand(args=(-2, 2), seed=0))
         actual = list(grain.chunks(self.data()))
         expected = [
             [[0, 1, 2, 3, 4, 5, 6, 7], [10, 11, 12, 13, 14, 15, 16, 17]],
@@ -54,7 +54,7 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_grain(self):
-        actual = list(Grain(48).chunks(self.data(1024)))
+        actual = list(Grain(size=48).chunks(self.data(1024)))
         expected = json.loads(RESULTS.read_text())
         # RESULTS.write_text(json.dumps(expected, indent=2))
         assert len(actual) == len(expected)

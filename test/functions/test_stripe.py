@@ -17,5 +17,5 @@ SAMPLE_RATE = 11025
 class TestStripe(unittest.TestCase):
     def DONT_test_123_simple(self):
         sources = [File(f) for f in FILES]
-        result = Stripe(grain=Grain(200))(*sources)
+        result = Stripe(grain=Grain(wrong=200))(*sources)
         assert_files_equal('stripe-123.wav', result, SAMPLE_RATE, True)
