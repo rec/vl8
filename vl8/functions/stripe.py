@@ -16,21 +16,21 @@ class Stripe(Creator):
     rand: Rand = field(default_factory=Rand)
 
     def __call__(self, *args, **kwargs):
-        print('TWO', args, kwargs)
         return super().__call__(*args, **kwargs)
 
     def _prepare(self, src):
-        print('ONE', src)
-        # Add a full extra largest size grain, just in case. :-)
-        return sum(s.shape[1] for s in src) + round(self.grain.size)
-
-    def _call(self, arr, *src):
         if self.grain.size < MIN_GRAIN_SIZE:
             msg = f'Grain too short: {self.grain.size} < {MIN_GRAIN_SIZE}'
             raise ValueError(msg)
 
+        # Add a full extra largest size grain, just in case. :-)
+        return sum(s.shape[1] for s in src) + round(self.grain.size)
+
+    def _call(self, arr, *src):
         max_duration = max(s.shape[1] for s in src)
-        if max_duration < MIN_DURATION:
+        min_duration = min(s.shape[1] for s in src)
+
+        if max_duration < MIN_DURATION or min_duration < MIN_DURATION:
             msg = f'Sources too short: {max_duration} < {MIN_DURATION}'
             raise ValueError(msg)
 

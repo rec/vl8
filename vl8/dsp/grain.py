@@ -6,6 +6,7 @@ from typing import Iterator, Optional, Tuple
 import numpy as np
 
 SIZE = Fraction(1024)
+# Overlap = Union[Fraction, Tuple[int], float]
 
 
 @dataclass
@@ -73,3 +74,21 @@ class Grain:
             mul(chunk[:, fs:], self._fade_out[fs - duration :])
 
         return chunk
+
+
+@dataclass
+class TimeGrain:
+    """Grains from within a larger sample, with optional overlaps and
+       optional variation"""
+
+    size: float = 1 / 32
+    """Size of each grain, in seconds.  Must be non-negative"""
+
+    overlap: Overlap = Fraction(1, 2)
+    """Overlap ratio between grains, between 0 and 1 inclusive"""
+
+    rand: Optional[Rand] = None
+    curve: Optional[curve_cache.Curve] = None
+
+    def __post_init__(self):
+        assert self.overlap >= 0
