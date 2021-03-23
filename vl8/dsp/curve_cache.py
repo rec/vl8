@@ -7,6 +7,15 @@ import xmod
 Curve = Union[str, Callable, None]
 
 
+def to_callable(curve: Curve):
+    if callable(curve):
+        return curve
+    if curve is None:
+        return np.linspace
+    assert isinstance(curve, str)
+    return importer(curve, 'numpy')
+
+
 @functools.lru_cache()
 def make(curve: Curve, dtype: np.dtype):
     @functools.lru_cache()
@@ -18,7 +27,4 @@ def make(curve: Curve, dtype: np.dtype):
 
 @xmod
 def curve_cache(curve: Curve, dtype: np.dtype):
-    curve = curve or np.linspace
-    if not callable(curve):
-        curve = importer(curve, 'numpy')
-    return make(curve, dtype)
+    return make(to_callable(curve), dtype)

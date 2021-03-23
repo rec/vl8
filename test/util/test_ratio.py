@@ -13,7 +13,7 @@ class TestRatio(unittest.TestCase):
             "Do not understand set() of type <class 'set'>",
         )
 
-    def test_value_erro(self):
+    def test_value_error(self):
         with self.assertRaises(ValueError) as m:
             to_fraction('junk')
         assert m.exception.args == (

@@ -30,8 +30,8 @@ class Stripe(Creator):
         max_duration = max(s.shape[1] for s in src)
         min_duration = min(s.shape[1] for s in src)
 
-        if max_duration < MIN_DURATION or min_duration < MIN_DURATION:
-            msg = f'Sources too short: {max_duration} < {MIN_DURATION}'
+        if min_duration < MIN_DURATION:
+            msg = f'Sources too short: {min_duration} < {MIN_DURATION}'
             raise ValueError(msg)
 
         grain_count = max_duration / self.grain.stride

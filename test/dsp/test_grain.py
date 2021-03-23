@@ -54,9 +54,20 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_grain(self):
-        actual = list(Grain(size=48).chunks(self.data(1024)))
+        actual = to_list(Grain(size=48).chunks(self.data(1024)))
+        # RESULTS.write_text(json.dumps(actual, indent=2) + '\n')
         expected = json.loads(RESULTS.read_text())
-        # RESULTS.write_text(json.dumps(expected, indent=2))
         assert len(actual) == len(expected)
-        for a, e in zip(actual, expected):
-            assert_array_equal(a, e)
+        assert actual == expected
+
+
+def to_list(x):
+    try:
+        return [to_list(i) for i in x]
+    except Exception:
+        pass
+    try:
+        return x.item()
+    except Exception:
+        pass
+    return x

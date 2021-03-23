@@ -12,35 +12,8 @@ SIZE = Fraction(1024)
 
 @dataclass
 class _GrainBase:
-    overlap: ratio.Numeric = 1 / 2
-    """Overlap ratio between grains, between 0 and 1 inclusive"""
-
     rand: Optional[Rand] = None
     curve: Optional[curve_cache.Curve] = None
-
-    def __post_init__(self):
-        if self.overlap < 0:
-            raise ValueError('overlap cannot be negative')
-
-    @property
-    def stride(self) -> Fraction:
-        assert 0 <= self.overlap <= 1
-        return self.size * (1 - self.overlap)
-
-    def sizes(self, size: int) -> Iterator[Tuple[int]]:
-        begin = 0
-        while begin < size:
-            end = begin + self.size
-            if self.rand:
-                end += self.rand()
-            yield round(begin), round(min(size, end))
-            begin = end - self.overlap * self.size
-
-    def chunks(self, data: np.ndarray) -> Iterator[np.ndarray]:
-        for begin, end in self.sizes(data.shape[1]):
-            chunk = np.copy(data[:, begin:end])
-            fade(chunk, self._fade_in, self._fade_out)
-            yield chunk
 
 
 @dataclass
@@ -51,12 +24,46 @@ class Grain(_GrainBase):
     size: Fraction = SIZE
     """Size of each grain, in fractional samples.  Must be non-negative"""
 
+    overlap: Optional[Fraction] = None
+    """Overlap, in fractional samples.  None means use 1/2 of SIZE"""
+
+    @property
+    def stride(self) -> Fraction:
+        return self.size - self.overlap
+
     def __post_init__(self):
-        assert self.overlap >= 0
-        self._curves = curve_cache(self.curve, 'float32')
-        fs = self._fade_size = round(self.overlap * self.size)
-        self._fade_in = self._curves(0, 1, fs) if fs else []
-        self._fade_out = self._curves(1, 0, fs) if fs else []
+        if self.overlap is None:
+            self.overlap = Fraction(self.size, 2)
+        else:
+            assert 0 <= self.overlap <= self.size
+
+    def sizes(self, size: int) -> Iterator[Tuple[int]]:
+        if self.size < 0:
+            return
+        begin = 0
+        while begin < size:
+            end = begin + self.size
+            if self.rand:
+                end += self.rand()
+            yield round(begin), round(min(size, end))
+            b, begin = begin, end - self.overlap
+            if begin <= b:
+                raise ValueError('Made no progress')
+
+    def chunks(self, data: np.ndarray) -> Iterator[np.ndarray]:
+        function = curve_cache.to_callable(self.curve)
+        o = round(self.overlap)
+
+        if o > 0:
+            fade_in = function(0, 1, o, endpoint=True, dtype=np.float32)
+            fade_out = 1 - fade_in
+        else:
+            fade_in = fade_out = []
+
+        for begin, end in self.sizes(data.shape[1]):
+            chunk = np.copy(data[:, begin:end])
+            fade(chunk, fade_in, fade_out)
+            yield chunk
 
 
 @dataclass
@@ -67,6 +74,19 @@ class TimeGrain(_GrainBase):
     size: float = SIZE
     """Size of each grain, in seconds.  Must be non-negative"""
 
+    overlap: ratio.Numeric = 1 / 2
+    """Overlap ratio between grains, between 0 and 1 inclusive"""
+
+    def __post_init__(self):
+        if not (0 <= self.overlap <= 1):
+            raise ValueError(f'Bad overlap {self.overlap}')
+
+    @property
+    def stride(self) -> Fraction:
+        assert 0 <= self.overlap <= 1
+        return self.size * (1 - self.overlap)
+
     def to_grain(self, sample_rate) -> Grain:
         size = ratio.to_fraction(self.size * sample_rate)
-        return Grain(**dict(self.asdict(), size=size))
+        overlap = size * ratio.to_fraction(self.overlap)
+        return Grain(**dict(self.asdict(), size=size, overlap=overlap))
