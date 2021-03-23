@@ -8,9 +8,9 @@ import unittest
 class TestRatio(unittest.TestCase):
     def test_type_error(self):
         with self.assertRaises(TypeError) as m:
-            to_fraction(())
+            to_fraction(set())
         assert m.exception.args == (
-            "Do not understand () of type <class 'tuple'>",
+            "Do not understand set() of type <class 'set'>",
         )
 
     def test_value_erro(self):

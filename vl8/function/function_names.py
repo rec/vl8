@@ -1,4 +1,4 @@
-from . import abbrev
+from ..util import abbrev
 from pathlib import Path
 
 _FUNCTIONS = None

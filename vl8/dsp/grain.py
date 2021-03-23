@@ -12,7 +12,7 @@ SIZE = Fraction(1024)
 
 @dataclass
 class _GrainBase:
-    overlap: ratio.Ratio = 1 / 2
+    overlap: ratio.Numeric = 1 / 2
     """Overlap ratio between grains, between 0 and 1 inclusive"""
 
     rand: Optional[Rand] = None

@@ -1,8 +1,12 @@
 from fractions import Fraction
 from functools import singledispatch
-from typing import List, Union
+from typing import Sequence, Union
 
-Ratio = Union[Fraction, List[int], float, int, str]
+ExactNumber = Union[Fraction, int]
+NonInteger = Union[Fraction, float]
+Number = Union[NonInteger, int]
+Numeric = Union[Number, Sequence[int], str]
+
 LIMIT_DENOMINATOR = 1000000
 
 
@@ -27,7 +31,8 @@ def _(ratio: float) -> Fraction:
 
 
 @to_fraction.register(list)
-def _(ratio: List) -> Fraction:
+@to_fraction.register(tuple)
+def _(ratio: Sequence[int]) -> Fraction:
     return _fraction(*ratio)
 
 
@@ -37,14 +42,15 @@ def _(ratio: str) -> Fraction:
     return _fraction(*parts)
 
 
-def _fraction(*args):
-    def _num(x):
-        if isinstance(x, (float, int)):
-            return x
-        try:
-            return int(x)
-        except Exception:
-            return float(x)
+def to_number(x: Union[str, Number]) -> Number:
+    if not isinstance(x, str):
+        return x
+    try:
+        return int(x)
+    except Exception:
+        return float(x)
 
-    f = Fraction(*(_num(a) for a in args))
+
+def _fraction(*args):
+    f = Fraction(*(to_number(a) for a in args))
     return f.limit_denominator(LIMIT_DENOMINATOR)
