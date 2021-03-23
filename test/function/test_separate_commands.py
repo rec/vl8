@@ -14,7 +14,7 @@ class TestIsFunction(unittest.TestCase):
 
 @mock.patch('vl8.function.separate_commands.is_function', str.isupper)
 class TestSeparateCommands(unittest.TestCase):
-    def test_separate_commands(self):
+    def test_one(self):
         actual = list(separate_commands('aBcDEFg'))
         expected = [
             ('B', ['a', 'c']),
@@ -24,7 +24,7 @@ class TestSeparateCommands(unittest.TestCase):
         ]
         assert actual == expected
 
-    def test_separate_commands2(self):
+    def test_two(self):
         actual = list(separate_commands('AbCdefG'))
         expected = [
             ('A', ['b']),
@@ -33,12 +33,12 @@ class TestSeparateCommands(unittest.TestCase):
         ]
         assert actual == expected
 
-    def test_separate_commands3(self):
+    def test_three(self):
         actual = list(separate_commands('abcdefg'))
         expected = [(None, ['a', 'b', 'c', 'd', 'e', 'f', 'g'])]
         assert actual == expected
 
-    def test_separate_commands4(self):
+    def test_four(self):
         actual = list(separate_commands('ABCDEFG'))
         expected = [
             ('A', []),
