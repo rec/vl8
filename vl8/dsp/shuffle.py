@@ -1,4 +1,4 @@
-from .grain import Grain
+from .grain import Grain, GrainType
 from .rand import Rand
 from dataclasses import dataclass, field
 from typing import Callable
@@ -10,7 +10,7 @@ import random
 class Shuffle:
     """Generic shuffler"""
 
-    grain: Grain = field(default_factory=Grain)
+    grain: GrainType = field(default_factory=Grain)
     shuffle: Callable = random.Random.shuffle
     rand: Rand = field(default_factory=Rand)
 

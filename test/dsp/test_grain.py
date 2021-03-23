@@ -15,7 +15,7 @@ class TestGrain(unittest.TestCase):
         return ls.reshape(2, size // 2)
 
     def test_default(self):
-        g = Grain()
+        g = Grain(sample_count=1024)
         assert g.stride == 512
 
         actual = list(g.sizes(4096))
@@ -32,7 +32,7 @@ class TestGrain(unittest.TestCase):
         assert actual == expected
 
     def test_simple(self):
-        actual = list(Grain(size=7, overlap=0).chunks(self.data()))
+        actual = list(Grain(sample_count=7, overlap=0).chunks(self.data()))
         expected = [
             [[0, 1, 2, 3, 4, 5, 6], [10, 11, 12, 13, 14, 15, 16]],
             [[7, 8, 9], [17, 18, 19]],
@@ -42,7 +42,9 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_variation(self):
-        grain = Grain(size=7, overlap=0, rand=Rand(args=(-2, 2), seed=0))
+        grain = Grain(
+            sample_count=7, overlap=0, rand=Rand(args=(-2, 2), seed=0)
+        )
         actual = list(grain.chunks(self.data()))
         expected = [
             [[0, 1, 2, 3, 4, 5, 6, 7], [10, 11, 12, 13, 14, 15, 16, 17]],
@@ -54,7 +56,7 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_grain(self):
-        actual = to_list(Grain(size=48).chunks(self.data(1024)))
+        actual = to_list(Grain(sample_count=48).chunks(self.data(1024)))
         # RESULTS.write_text(json.dumps(actual, indent=2) + '\n')
         expected = json.loads(RESULTS.read_text())
         assert len(actual) == len(expected)

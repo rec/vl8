@@ -4,24 +4,27 @@ from ..util import ratio
 from .rand import Rand
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Iterator, Optional, Tuple
+from typing import Iterator, Optional, Tuple, Union
 import numpy as np
 
 SIZE = Fraction(1024)
 
 
 @dataclass
-class _GrainBase:
+class _Grain:
+    """Grains from within a larger sample, with optional overlaps and
+       optional variation"""
+
     rand: Optional[Rand] = None
     curve: Optional[curve_cache.Curve] = None
 
 
 @dataclass
-class Grain(_GrainBase):
+class GrainSamples(_Grain):
     """Grains from within a larger sample, with optional overlaps and
        optional variation"""
 
-    size: Fraction = SIZE
+    sample_count: Fraction = SIZE
     """Size of each grain, in fractional samples.  Must be non-negative"""
 
     overlap: Optional[Fraction] = None
@@ -29,20 +32,20 @@ class Grain(_GrainBase):
 
     @property
     def stride(self) -> Fraction:
-        return self.size - self.overlap
+        return self.sample_count - self.overlap
 
     def __post_init__(self):
         if self.overlap is None:
-            self.overlap = Fraction(self.size, 2)
+            self.overlap = Fraction(self.sample_count, 2)
         else:
-            assert 0 <= self.overlap <= self.size
+            assert 0 <= self.overlap <= self.sample_count
 
     def sizes(self, size: int) -> Iterator[Tuple[int]]:
-        if self.size < 0:
+        if self.sample_count < 0:
             return
         begin = 0
         while begin < size:
-            end = begin + self.size
+            end = begin + self.sample_count
             if self.rand:
                 end += self.rand()
             yield round(begin), round(min(size, end))
@@ -67,11 +70,12 @@ class Grain(_GrainBase):
 
 
 @dataclass
-class TimeGrain(_GrainBase):
-    """Grains from within a larger sample, with optional overlaps and
-       optional variation"""
+class GrainSeconds(_Grain):
+    """A description of a grain with size (TODO rename to duration) in
+    sec
+    """
 
-    size: float = SIZE
+    duration: ratio.NonInteger = SIZE
     """Size of each grain, in seconds.  Must be non-negative"""
 
     overlap: ratio.Numeric = 1 / 2
@@ -83,10 +87,25 @@ class TimeGrain(_GrainBase):
 
     @property
     def stride(self) -> Fraction:
-        assert 0 <= self.overlap <= 1
         return self.size * (1 - self.overlap)
 
-    def to_grain(self, sample_rate) -> Grain:
-        size = ratio.to_fraction(self.size * sample_rate)
-        overlap = size * ratio.to_fraction(self.overlap)
-        return Grain(**dict(self.asdict(), size=size, overlap=overlap))
+    def to_samples(self, sample_rate) -> GrainSamples:
+        sample_count = ratio.to_fraction(self.duration * sample_rate)
+        overlap = sample_count * ratio.to_fraction(self.overlap)
+        return GrainSamples(
+            sample_count=sample_count,
+            overlap=overlap,
+            rand=self.rand,
+            curve=self.curve,
+        )
+
+
+def Grain(**kwargs: dict):
+    if 'sample_count' in kwargs and 'duration' not in kwargs:
+        return GrainSamples(**kwargs)
+    if 'duration' in kwargs:
+        return GrainSeconds(**kwargs)
+    raise ValueError('Exactly one of sample_count and duration must be set')
+
+
+GrainType = Union[GrainSamples, GrainSeconds, dict]

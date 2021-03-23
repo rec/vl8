@@ -1,4 +1,4 @@
-from ..dsp.grain import Grain
+from ..dsp.grain import GrainType, Grain
 from ..dsp.rand import Rand
 from ..function.creator import Creator
 from dataclasses import dataclass, field
@@ -12,19 +12,20 @@ MIN_DURATION = Fraction(1000)
 
 @dataclass
 class Stripe(Creator):
-    grain: Grain = field(default_factory=Grain)
+    grain: GrainType = field(default_factory=Grain)
     rand: Rand = field(default_factory=Rand)
 
     def __call__(self, *args, **kwargs):
         return super().__call__(*args, **kwargs)
 
     def _prepare(self, src):
-        if self.grain.size < MIN_GRAIN_SIZE:
-            msg = f'Grain too short: {self.grain.size} < {MIN_GRAIN_SIZE}'
+        self._grain = self.grain.to_grain(src[0].sample_rate)
+        if self._grain.size < MIN_GRAIN_SIZE:
+            msg = f'Grain too short: {self._grain.size} < {MIN_GRAIN_SIZE}'
             raise ValueError(msg)
 
         # Add a full extra largest size grain, just in case. :-)
-        return sum(s.shape[1] for s in src) + round(self.grain.size)
+        return sum(s.shape[1] for s in src) + round(self._grain.size)
 
     def _call(self, arr, *src):
         max_duration = max(s.shape[1] for s in src)
@@ -34,7 +35,7 @@ class Stripe(Creator):
             msg = f'Sources too short: {min_duration} < {MIN_DURATION}'
             raise ValueError(msg)
 
-        grain_count = max_duration / self.grain.stride
+        grain_count = max_duration / self._grain.stride
 
         # What if some duration is "pretty short"?
         #
@@ -49,15 +50,15 @@ class Stripe(Creator):
         for s in src:
             duration = max(s.shape)
             grain_size = max(MIN_GRAIN_SIZE, duration / grain_count)
-            ratio = grain_size / self.grain.size
+            ratio = grain_size / self._grain.size
             assert ratio <= 1, f'{ratio} > 1'
 
-            grain = copy.copy(self.grain)
+            grain = copy.copy(self._grain)
             grain.size *= ratio
             grain.overlap *= ratio
             assert (
-                MIN_GRAIN_SIZE <= grain.stride <= self.grain.stride
-            ), f'{MIN_GRAIN_SIZE} > {grain.stride} > {self.grain.stride}'
+                MIN_GRAIN_SIZE <= grain.stride <= self._grain.stride
+            ), f'{MIN_GRAIN_SIZE} > {grain.stride} > {self._grain.stride}'
 
             grain_chunks.append(((grain, chunk) for chunk in grain.chunks(s)))
 
