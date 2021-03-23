@@ -1,6 +1,6 @@
 from numpy.testing import assert_array_equal
 from pathlib import Path
-from vl8.dsp.grain import Grain
+from vl8.dsp.grain import GrainSamples
 from vl8.dsp.rand import Rand
 import json
 import numpy as np
@@ -15,7 +15,7 @@ class TestGrain(unittest.TestCase):
         return ls.reshape(2, size // 2)
 
     def test_default(self):
-        g = Grain(sample_count=1024)
+        g = GrainSamples(sample_count=1024)
         assert g.stride == 512
 
         actual = list(g.sizes(4096))
@@ -32,7 +32,9 @@ class TestGrain(unittest.TestCase):
         assert actual == expected
 
     def test_simple(self):
-        actual = list(Grain(sample_count=7, overlap=0).chunks(self.data()))
+        actual = list(
+            GrainSamples(sample_count=7, overlap=0).chunks(self.data())
+        )
         expected = [
             [[0, 1, 2, 3, 4, 5, 6], [10, 11, 12, 13, 14, 15, 16]],
             [[7, 8, 9], [17, 18, 19]],
@@ -42,7 +44,7 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_variation(self):
-        grain = Grain(
+        grain = GrainSamples(
             sample_count=7, overlap=0, rand=Rand(args=(-2, 2), seed=0)
         )
         actual = list(grain.chunks(self.data()))
@@ -56,7 +58,7 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_grain(self):
-        actual = to_list(Grain(sample_count=48).chunks(self.data(1024)))
+        actual = to_list(GrainSamples(sample_count=48).chunks(self.data(1024)))
         # RESULTS.write_text(json.dumps(actual, indent=2) + '\n')
         expected = json.loads(RESULTS.read_text())
         assert len(actual) == len(expected)

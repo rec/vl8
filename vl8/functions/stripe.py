@@ -1,76 +1,55 @@
-from ..dsp.grain import GrainType, Grain
+from ..dsp.grain import Grain
 from ..dsp.rand import Rand
 from ..function.creator import Creator
 from dataclasses import dataclass, field
 from fractions import Fraction
-import copy
-import more_itertools
+from more_itertools import interleave_longest
 
-MIN_GRAIN_SIZE = Fraction(50)
+MIN_GRAIN_SAMPLES = Fraction(50)
 MIN_DURATION = Fraction(1000)
 
 
 @dataclass
 class Stripe(Creator):
-    grain: GrainType = field(default_factory=Grain)
+    grain: Grain = field(default_factory=Grain)
     rand: Rand = field(default_factory=Rand)
+    grow_grains: bool = False
 
     def __call__(self, *args, **kwargs):
         return super().__call__(*args, **kwargs)
 
     def _prepare(self, src):
-        self._grain = self.grain.to_grain(src[0].sample_rate)
-        if self._grain.size < MIN_GRAIN_SIZE:
-            msg = f'Grain too short: {self._grain.size} < {MIN_GRAIN_SIZE}'
-            raise ValueError(msg)
-
         # Add a full extra largest size grain, just in case. :-)
-        return sum(s.shape[1] for s in src) + round(self._grain.size)
+        return sum(s.shape[1] for s in src) + 1024
 
     def _call(self, arr, *src):
-        max_duration = max(s.shape[1] for s in src)
-        min_duration = min(s.shape[1] for s in src)
+        sgrain = self.grain.to_samples(src[0].sample_rate)
+        durations = [s.shape[1] for s in src]
+        min_dur, max_dur = min(durations), max(durations)
+        ref_dur = min_dur if self.grow_grains else max_dur
+        grain_count = ref_dur / sgrain.stride
 
-        if min_duration < MIN_DURATION:
-            msg = f'Sources too short: {min_duration} < {MIN_DURATION}'
-            raise ValueError(msg)
+        def chunks(s):
+            sample_count = max(MIN_GRAIN_SAMPLES, s.shape[1] / grain_count)
+            # ratio = sample_count / sgrain.sample_count
+            d = dict(sgrain.asdict(), sample_count=sample_count)
+            grain = Grain(**d)
+            for chunk in grain.chunks(s):
+                yield chunk, grain.stride
 
-        grain_count = max_duration / self._grain.stride
-
-        # What if some duration is "pretty short"?
-        #
-        # If one source is 60 minutes = 3600s and another is 1s, with
-        # a grain of 50ms, 2200 samples then if I scale that size down to the
-        # 1s source then it will be less than one sample long.
-        #
-        # A hard-limit on stripe size fixes this, but means we must expect to
-        # run out of some (short) sources before the end.
-
-        grain_chunks = []
-        for s in src:
-            duration = max(s.shape)
-            grain_size = max(MIN_GRAIN_SIZE, duration / grain_count)
-            ratio = grain_size / self._grain.size
-            assert ratio <= 1, f'{ratio} > 1'
-
-            grain = copy.copy(self._grain)
-            grain.size *= ratio
-            grain.overlap *= ratio
-            assert (
-                MIN_GRAIN_SIZE <= grain.stride <= self._grain.stride
-            ), f'{MIN_GRAIN_SIZE} > {grain.stride} > {self._grain.stride}'
-
-            grain_chunks.append(((grain, chunk) for chunk in grain.chunks(s)))
-
-        striped_chunks = more_itertools.interleave_longest(*grain_chunks)
-        # striped_chunks = [list(i) for i in il]
-        # print(len(striped_chunks))
-        # print(*(len(s) for s in striped_chunks))
-        # print(*(type(s) for s in striped_chunks[0]))
         time = 0
-
-        for i, (grain, chunk) in enumerate(striped_chunks):
-            print(round(time), time, i, chunk.shape)
+        for chunk, stride in interleave_longest(*(chunks(s) for s in src)):
+            # print(round(time), time, i, chunk.shape)
             rt = round(time)
             arr[:, rt : rt + chunk.shape[1]] += chunk
-            time += grain.stride
+            time += stride
+
+
+# What if some duration is "pretty short"?
+#
+# If one source is 60 minutes = 3600s and another is 1s, with
+# a grain of 50ms, 2200 samples then if I scale that size down to the
+# 1s source then it will be less than one sample long.
+#
+# A hard-limit on stripe size fixes this, but means we must expect to
+# run out of some (short) sources before the end.

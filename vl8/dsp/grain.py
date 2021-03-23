@@ -21,9 +21,6 @@ class _Grain:
 
 @dataclass
 class GrainSamples(_Grain):
-    """Grains from within a larger sample, with optional overlaps and
-       optional variation"""
-
     sample_count: Fraction = SIZE
     """Size of each grain, in fractional samples.  Must be non-negative"""
 
@@ -70,10 +67,8 @@ class GrainSamples(_Grain):
 
 
 @dataclass
-class GrainSeconds(_Grain):
-    """A description of a grain with size (TODO rename to duration) in
-    sec
-    """
+class Grain(_Grain):
+    """A description of a grain with a duration in seconds"""
 
     duration: ratio.NonInteger = SIZE
     """Size of each grain, in seconds.  Must be non-negative"""
@@ -90,7 +85,7 @@ class GrainSeconds(_Grain):
         return self.size * (1 - self.overlap)
 
     def to_samples(self, sample_rate) -> GrainSamples:
-        sample_count = ratio.to_fraction(self.duration * sample_rate)
+        sample_count = sample_rate * ratio.to_fraction(self.duration)
         overlap = sample_count * ratio.to_fraction(self.overlap)
         return GrainSamples(
             sample_count=sample_count,
@@ -100,12 +95,12 @@ class GrainSeconds(_Grain):
         )
 
 
-def Grain(**kwargs: dict):
+def make_grain(**kwargs: dict):
     if 'sample_count' in kwargs and 'duration' not in kwargs:
         return GrainSamples(**kwargs)
     if 'duration' in kwargs:
-        return GrainSeconds(**kwargs)
+        return Grain(**kwargs)
     raise ValueError('Exactly one of sample_count and duration must be set')
 
 
-GrainType = Union[GrainSamples, GrainSeconds, dict]
+GrainType = Union[GrainSamples, Grain, dict]
