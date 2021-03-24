@@ -1,7 +1,7 @@
-from ..dsp.grain import Grain
+from ..dsp.grain import Grain, GrainSamples
 from ..dsp.rand import Rand
 from ..function.creator import Creator
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from fractions import Fraction
 from more_itertools import interleave_longest
 
@@ -19,7 +19,7 @@ class Stripe(Creator):
         return super().__call__(*args, **kwargs)
 
     def _prepare(self, src):
-        # Add a full extra largest size grain, just in case. :-)
+        # Add extra so we can slop over
         return sum(s.shape[1] for s in src) + 1024
 
     def _call(self, arr, *src):
@@ -28,12 +28,13 @@ class Stripe(Creator):
         min_dur, max_dur = min(durations), max(durations)
         ref_dur = min_dur if self.grow_grains else max_dur
         grain_count = ref_dur / sgrain.stride
+        print('grain_count', float(grain_count))
 
         def chunks(s):
-            sample_count = max(MIN_GRAIN_SAMPLES, s.shape[1] / grain_count)
-            # ratio = sample_count / sgrain.sample_count
-            d = dict(sgrain.asdict(), sample_count=sample_count)
-            grain = Grain(**d)
+            stride = max(MIN_GRAIN_SAMPLES, s.shape[1] / grain_count)
+            # ratio = nsamples / sgrain.nsamples
+            d = dict(asdict(sgrain), nsamples=stride + sgrain.overlap)
+            grain = GrainSamples(**d)
             for chunk in grain.chunks(s):
                 yield chunk, grain.stride
 
@@ -43,6 +44,8 @@ class Stripe(Creator):
             rt = round(time)
             arr[:, rt : rt + chunk.shape[1]] += chunk
             time += stride
+
+        return arr[:, : round(time)]
 
 
 # What if some duration is "pretty short"?

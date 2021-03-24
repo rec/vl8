@@ -1,8 +1,8 @@
 from . import curve_cache
 from . import fade
-from ..util import ratio
+from ..util import duration, ratio
 from .rand import Rand
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from fractions import Fraction
 from typing import Iterator, Optional, Tuple, Union
 import numpy as np
@@ -21,28 +21,31 @@ class _Grain:
 
 @dataclass
 class GrainSamples(_Grain):
-    sample_count: Fraction = SIZE
+    nsamples: Fraction = SIZE
     """Size of each grain, in fractional samples.  Must be non-negative"""
 
     overlap: Optional[Fraction] = None
     """Overlap, in fractional samples.  None means use 1/2 of SIZE"""
 
+    def __post_init__(self):
+        print('FOUR', asdict(self))
+        if self.overlap is None:
+            self.overlap = Fraction(self.nsamples, 2)
+        else:
+            assert (
+                0 <= self.overlap <= self.nsamples
+            ), f'{float(self.overlap)} >= {float(self.nsamples)}'
+
     @property
     def stride(self) -> Fraction:
-        return self.sample_count - self.overlap
-
-    def __post_init__(self):
-        if self.overlap is None:
-            self.overlap = Fraction(self.sample_count, 2)
-        else:
-            assert 0 <= self.overlap <= self.sample_count
+        return self.nsamples - self.overlap
 
     def sizes(self, size: int) -> Iterator[Tuple[int]]:
-        if self.sample_count < 0:
+        if self.nsamples < 0:
             return
         begin = 0
         while begin < size:
-            end = begin + self.sample_count
+            end = begin + self.nsamples
             if self.rand:
                 end += self.rand()
             yield round(begin), round(min(size, end))
@@ -79,16 +82,17 @@ class Grain(_Grain):
     def __post_init__(self):
         if not (0 <= self.overlap <= 1):
             raise ValueError(f'Bad overlap {self.overlap}')
+        print('Grain', asdict(self))
 
     @property
     def stride(self) -> Fraction:
         return self.size * (1 - self.overlap)
 
     def to_samples(self, sample_rate) -> GrainSamples:
-        sample_count = sample_rate * ratio.to_fraction(self.duration)
-        overlap = sample_count * ratio.to_fraction(self.overlap)
+        nsamples = duration.to_samples(self.duration, sample_rate)
+        overlap = nsamples * ratio.to_fraction(self.overlap)
         return GrainSamples(
-            sample_count=sample_count,
+            nsamples=nsamples,
             overlap=overlap,
             rand=self.rand,
             curve=self.curve,
@@ -96,11 +100,11 @@ class Grain(_Grain):
 
 
 def make_grain(**kwargs: dict):
-    if 'sample_count' in kwargs and 'duration' not in kwargs:
+    if 'nsamples' in kwargs and 'duration' not in kwargs:
         return GrainSamples(**kwargs)
     if 'duration' in kwargs:
         return Grain(**kwargs)
-    raise ValueError('Exactly one of sample_count and duration must be set')
+    raise ValueError('Exactly one of nsamples and duration must be set')
 
 
 GrainType = Union[GrainSamples, Grain, dict]

@@ -1,7 +1,7 @@
 from ..assert_files_equal import assert_files_equal
 from pathlib import Path
 from vl8.dsp.data import File
-from vl8.dsp.grain import GrainSamples
+from vl8.dsp.grain import Grain
 from vl8.functions.stripe import Stripe
 import tdir
 import unittest
@@ -15,7 +15,7 @@ SAMPLE_RATE = 11025
 
 @tdir
 class TestStripe(unittest.TestCase):
-    def DONT_test_123_simple(self):
+    def test_123_simple(self):
         sources = [File(f) for f in FILES]
-        result = Stripe(grain=GrainSamples(wrong=200))(*sources)
-        assert_files_equal('stripe-123.wav', result, SAMPLE_RATE, True)
+        result = Stripe(grain=Grain(duration='10ms'))(*sources)
+        assert_files_equal('stripe-123.wav', result, SAMPLE_RATE)

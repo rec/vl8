@@ -12,7 +12,7 @@ class Creator:
         return max(s.shape[1] for s in src)
 
     def _call(self, x):
-        return x
+        pass
 
     _make = np.zeros
 
@@ -22,5 +22,5 @@ class Creator:
         shape = channels, duration
         dtype = self.dtype or src[0].dtype
         arr = self._make(shape=shape, dtype=dtype)
-        self._call(arr, *src)
-        return arr
+        res = self._call(arr, *src)
+        return arr if res is None else res
