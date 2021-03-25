@@ -1,5 +1,5 @@
-from ..util import abbrev
 from pathlib import Path
+import abbrev
 
 _FUNCTIONS = None
 FUNCTIONS_DIR = Path(__file__).parents[1]

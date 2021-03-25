@@ -1,8 +1,8 @@
-from ..util import abbrev
 from .ratio import Number, Numeric, ExactNumber, to_fraction, to_number
 from fractions import Fraction
 from functools import singledispatch
 from typing import Sequence
+import abbrev
 import re
 
 _match_units = re.compile(r'^([^a-zA-Z]*)([a-zA-Z]*)$').match

@@ -1,5 +1,6 @@
-from ..util import abbrev, catcher
+from ..util import catcher
 from .function import Function
+import abbrev
 import typeguard
 import yaml
 
