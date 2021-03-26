@@ -36,5 +36,4 @@ _VERBOSE_H = """Print more stuff"""
 
 _PARSER = _parser()
 DEFAULTS = vars(parse_args(['']))
-print(DEFAULTS)
 DEFAULTS.pop('commands')

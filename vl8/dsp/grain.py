@@ -2,7 +2,7 @@ from . import curve_cache
 from . import fade
 from ..util import duration, ratio
 from .rand import Rand
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from fractions import Fraction
 from typing import Iterator, Optional, Tuple, Union
 import numpy as np
@@ -28,7 +28,6 @@ class GrainSamples(_Grain):
     """Overlap, in fractional samples.  None means use 1/2 of SIZE"""
 
     def __post_init__(self):
-        print('FOUR', asdict(self))
         if self.overlap is None:
             self.overlap = Fraction(self.nsamples, 2)
         else:
@@ -82,7 +81,6 @@ class Grain(_Grain):
     def __post_init__(self):
         if not (0 <= self.overlap <= 1):
             raise ValueError(f'Bad overlap {self.overlap}')
-        print('Grain', asdict(self))
 
     @property
     def stride(self) -> Fraction:

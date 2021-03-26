@@ -15,9 +15,6 @@ class Stripe(Creator):
     rand: Rand = field(default_factory=Rand)
     grow_grains: bool = False
 
-    def __call__(self, *args, **kwargs):
-        return super().__call__(*args, **kwargs)
-
     def _prepare(self, src):
         # Add extra so we can slop over
         return sum(s.shape[1] for s in src) + 1024
@@ -28,7 +25,6 @@ class Stripe(Creator):
         min_dur, max_dur = min(durations), max(durations)
         ref_dur = min_dur if self.grow_grains else max_dur
         grain_count = ref_dur / sgrain.stride
-        print('grain_count', float(grain_count))
 
         def chunks(s):
             stride = max(MIN_GRAIN_SAMPLES, s.shape[1] / grain_count)
@@ -39,11 +35,21 @@ class Stripe(Creator):
                 yield chunk, grain.stride
 
         time = 0
+        missing_chunk = 0
+        total_chunks = 0
         for chunk, stride in interleave_longest(*(chunks(s) for s in src)):
+            total_chunks += 1
             # print(round(time), time, i, chunk.shape)
             rt = round(time)
-            arr[:, rt : rt + chunk.shape[1]] += chunk
+            if arr.shape[1] < chunk.shape[1] + rt:
+                missing_chunk += 1
+            else:
+                arr[:, rt : rt + chunk.shape[1]] += chunk
             time += stride
+
+        if missing_chunk:
+            print('OOPS', missing_chunk, rt, arr.shape)
+            raise ValueError
 
         return arr[:, : round(time)]
 

@@ -36,7 +36,8 @@ class Function:
                 )
             if len(call_params) != 2:
                 raise ValueError(
-                    f'{self.function}.__call__() takes one argument'
+                    f'{self.function}.__call__() takes one argument: '
+                    f'{call_params}'
                 )
             param = call_params[1]
 
