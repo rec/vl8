@@ -15,17 +15,22 @@ class BoundFunction:
         self.missing = required.difference(self.args)
 
     def __call__(self, *files):
-        if self.missing:
-            raise TypeError(f'Missing required arguments {self.missing}')
-
         def call(*s):
             return self.func(*s, **self.args)
 
-        if self.func.is_simple:
-            for s in files:
-                yield call(s)
-        else:
+        if self.missing:
+            raise TypeError(f'Missing required arguments {self.missing}')
+
+        if self.func.type is Function.Type.SIMPLE:
+            yield from (call(s) for s in files)
+
+        elif self.func.type is Function.Type.MULTIPLE:
             yield call(*files)
+
+        else:
+            assert self.func.type is Function.Type.GENERATOR
+            assert not files
+            yield call()
 
 
 def _func_args(func):

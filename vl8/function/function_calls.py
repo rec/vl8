@@ -21,13 +21,14 @@ def function_calls(commands):
                     new_files.append(File(file))
 
             fcalls.append([bound, new_files])
-        try:
-            i = next(i for i, f in enumerate(fcalls) if f[1])
-        except StopIteration:
-            raise ValueError('No files were specified') from None
 
         # For convenience, if f, g, h are functions,
         # f g h file1 file2 file3 becomes f file1 file2 file3 g h
+        try:
+            i = next(i for (i, f) in enumerate(fcalls) if f[1])
+        except StopIteration:
+            i = 0
+
         if i:
             f0, fi = fcalls[0], fcalls[i]
             fi[1], f0[1] = f0[1], fi[1]

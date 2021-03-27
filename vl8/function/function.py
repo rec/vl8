@@ -1,50 +1,31 @@
 from . import importer
+from enum import IntEnum
 import inspect
 
 DEFAULT = 'cat'
 
 
 class Function:
-    def __init__(self, name):
-        def params(s):
-            return dict(inspect.signature(s).parameters)
+    class Type(IntEnum):
+        GENERATOR = 0
+        SIMPLE = 1
+        MULTIPLE = 2
 
+    def __init__(self, name):
         self.name = name or DEFAULT
         self.function = importer(self.name)
-        self.params = params(self.function)
+        self.params = _params(self.function)
         self.is_class = isinstance(self.function, type)
+        p = self._param()
+        if not p:
+            self.type = Function.Type.GENERATOR
 
-        if not self.is_class:
-            # It's a function
-            if not self.params:
-                raise ValueError(
-                    f'{self.function}() needs at least one argument'
-                )
-            pname = next(iter(self.params))
-            param = self.params.pop(pname)
+        elif p.kind is p.VAR_POSITIONAL:
+            self.type = Function.Type.MULTIPLE
 
-        else:
-            f_call = _get_call(self.function)
-            if not f_call:
-                raise ValueError(f'Class {self.name} is not callable')
+        elif _is_positional(p):
+            self.type = Function.Type.SIMPLE
 
-            call_params = list(params(f_call).values())
-
-            if not call_params or call_params[0].name != 'self':
-                raise ValueError(
-                    f'{self.function}.__call__() must be a member function'
-                )
-            if len(call_params) != 2:
-                raise ValueError(
-                    f'{self.function}.__call__() takes one argument: '
-                    f'{call_params}'
-                )
-            param = call_params[1]
-
-        if param.kind in (param.POSITIONAL_ONLY, param.POSITIONAL_OR_KEYWORD):
-            self.is_simple = True
-        elif param.kind is param.VAR_POSITIONAL:
-            self.is_simple = False
         else:
             raise ValueError(
                 f'Bad signature for {self.function}({self.params})'
@@ -53,13 +34,53 @@ class Function:
     def required(self):
         return [p.name for p in self.params.values() if p.default is p.empty]
 
+    def _param(self):
+        if self.is_class:
+            print('ZERO')
+            f_call = _get_call(self.function)
+            if not f_call:
+                raise ValueError(f'Class {self.name} is not callable')
+
+            call_params = list(_params(f_call).values())
+            if call_params and call_params[0].name == 'self':
+                call_params.pop(0)
+
+            if len(call_params) > 1:
+                raise ValueError(
+                    f'{self.function}.__call__() takes zero or '
+                    f'one argument: {call_params}'
+                )
+            return call_params and call_params[0]
+
+        elif self.params:
+            pname = next(iter(self.params))
+            p = self.params[pname]
+            if _is_positional(p):
+                self.params.pop(pname)
+                return p
+            print(p.kind)
+
     def __call__(self, *sources, **kwargs):
-        if self.is_simple and len(sources) != 1:
+        if self.type is Function.Type.SIMPLE and len(sources) != 1:
             raise TypeError(f'{self.name} takes exactly one argument')
+        if self.type is Function.Type.GENERATOR and sources:
+            raise TypeError(f'{self.name} takes no sources')
         if self.is_class:
             return self.function(**kwargs)(*sources)
         else:
             return self.function(*sources, **kwargs)
+
+
+def _is_positional(p):
+    return p.kind in (
+        p.POSITIONAL_ONLY,
+        p.POSITIONAL_OR_KEYWORD,
+        p.VAR_POSITIONAL,
+    )
+
+
+def _params(s):
+    return dict(inspect.signature(s).parameters)
 
 
 def _get_call(cls):

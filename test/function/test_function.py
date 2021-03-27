@@ -4,9 +4,9 @@ import unittest
 
 
 class TestFunction(unittest.TestCase):
-    def test_simple_function(self):
+    def test_simple_function1(self):
         f = Function('test.function.test_function.simp')
-        assert f.is_simple
+        assert f.type is f.Type.SIMPLE
         assert f('src', required=5) == ('src', 5, 1)
 
         with self.assertRaises(TypeError) as m:
@@ -23,7 +23,7 @@ class TestFunction(unittest.TestCase):
 
     def test_multi_function(self):
         f = Function('test.function.test_function.mult')
-        assert not f.is_simple
+        assert f.type is f.Type.MULTIPLE
         assert f('src', required=5) == (('src',), 5, 1)
         assert f('s', 't', required=5) == (('s', 't'), 5, 1)
 
@@ -35,7 +35,7 @@ class TestFunction(unittest.TestCase):
 
     def test_simple_class(self):
         f = Function('test.function.test_function.Simp')
-        assert f.is_simple
+        assert f.type is f.Type.SIMPLE
         assert f('src', required=5) == ('src', 5, 1)
 
         with self.assertRaises(TypeError) as m:
@@ -52,7 +52,7 @@ class TestFunction(unittest.TestCase):
 
     def test_multi_class(self):
         f = Function('test.function.test_function.Mult')
-        assert not f.is_simple
+        assert f.type is f.Type.MULTIPLE
         assert f('src', required=5) == (('src',), 5, 1)
         assert f('s', 't', required=5) == (('s', 't'), 5, 1)
 
