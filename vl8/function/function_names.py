@@ -15,5 +15,5 @@ def names():
     return _FUNCTIONS
 
 
-def get(fname):
-    return abbrev(names(), fname)
+def get(fname, default=abbrev.NONE):
+    return abbrev(names(), fname, default=default)
