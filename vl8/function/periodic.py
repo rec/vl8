@@ -31,6 +31,15 @@ class Periodic(Generator):
         if f:
             self._period = None
 
+    def _actual_duration(self):
+        dur = self.duration
+        dur = dur and duration.to_seconds(dur, self.sample_rate)
+        if self.cycles is None:
+            return dur
+        cycles = ratio.to_number(self.cycles) * self.period
+        return min(dur, cycles) if dur else cycles
+
 
 Periodic.period = property(Periodic._get_period, Periodic._set_period)
 Periodic.frequency = property(Periodic._get_frequency, Periodic._set_frequency)
+Periodic.actual_duration = property(Periodic._actual_duration)

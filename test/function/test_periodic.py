@@ -17,6 +17,21 @@ class TestPeriodic(unittest.TestCase):
         p = Periodic()
         p.period = 2
         assert p.period == 2
+        assert p.actual_duration == 0
 
         p.frequency = 2
         assert p.period == 0.5
+        assert p.actual_duration == 0
+
+        p.duration = 3
+        assert p.actual_duration == 3
+
+        p.frequency = 4
+        p.cycles = 1
+        assert p.actual_duration == 0.25
+
+        p.cycles = 0
+        assert p.actual_duration == 0
+
+        p.cycles = None
+        assert p.actual_duration == 3
