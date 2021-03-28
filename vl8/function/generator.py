@@ -1,6 +1,7 @@
 from ..util import duration, ratio
 from dataclasses import dataclass
 from typing import Union
+import math
 import numpy as np
 
 DEFAULT_SAMPLE_RATE = 44100
@@ -18,11 +19,9 @@ class Generator:
     def sample_duration(self):
         return duration.to_samples(self.duration, self.sample_rate)
 
-    def _make(self):
-        shape = self.nchannels, self.sample_duration
-        return self._maker(shape=shape, dtype=self.dtype)
-
-    _maker = np.zeros
+    @property
+    def shape(self):
+        return self.nchannels, math.ceil(self.sample_duration)
 
     def __call__(self):
-        pass
+        return self._make(shape=self.shape, dtype=self.dtype)
