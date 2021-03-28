@@ -1,4 +1,4 @@
-from ..util import duration
+from ..util import duration, ratio
 from dataclasses import dataclass
 from typing import Union
 import numpy as np
@@ -9,22 +9,20 @@ DEFAULT_NCHANNELS = 2
 
 @dataclass
 class Generator:
-    duration: duration.Numeric
+    duration: ratio.Numeric = 0
     nchannels: int = DEFAULT_NCHANNELS
     sample_rate: int = DEFAULT_SAMPLE_RATE
     dtype: Union[np.dtype, str] = np.float32
 
-    def _prepare(self):
-        # Return the duration of the result, in samples
+    @property
+    def sample_duration(self):
         return duration.to_samples(self.duration, self.sample_rate)
 
-    def _call(self, x):
-        pass
+    def _make(self):
+        shape = self.nchannels, self.sample_duration
+        return self._maker(shape=shape, dtype=self.dtype)
 
-    _make = np.zeros
+    _maker = np.zeros
 
     def __call__(self):
-        duration = self._prepare()
-        arr = self._make(shape=(self.channels, duration), dtype=self.dtype)
-        res = self._call(arr)
-        return arr if res is None else res
+        pass

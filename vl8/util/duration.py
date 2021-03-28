@@ -1,11 +1,24 @@
-from .ratio import Number, Numeric, ExactNumber, to_fraction, to_number
+from .ratio import Number, Numeric, ExactNumber, to_fraction, to_int_or_float
+from enum import Enum
 from fractions import Fraction
 from functools import singledispatch
 from typing import Sequence
 import abbrev
+import math
 import re
 
 _match_units = re.compile(r'^([^a-zA-Z]*)([a-zA-Z]*)$').match
+
+
+def _identity(n: Number) -> Number:
+    return n
+
+
+class Round(Enum):
+    DOWN = math.floor
+    UP = math.ceil
+    ROUND = round
+    NONE = _identity
 
 
 def to_samples(d: Numeric, sample_rate: int) -> ExactNumber:
@@ -49,7 +62,7 @@ def _(duration: str, sample_rate: int) -> Number:
 
     parts = value.split('/', maxsplit=1)
     if len(parts) == 1:
-        v = to_number(parts[0])
+        v = to_int_or_float(parts[0])
     else:
         v = to_fraction(parts)
     return v / scale

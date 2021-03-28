@@ -2,12 +2,11 @@ from ..dsp import curve_cache
 from ..function.creator import Creator
 from ..util import fix_gaps
 from dataclasses import dataclass
-from typing import Callable, Union
 
 
 @dataclass
 class Catenate(Creator):
-    curve: Union[str, Callable] = 'linspace'
+    curve: curve_cache.Curve = None
     gap: fix_gaps.Gaps = 0
     pre: int = 0
     post: int = 0
