@@ -16,8 +16,12 @@ class Generator:
     dtype: Union[np.dtype, str] = np.float32
 
     @property
+    def actual_duration(self):
+        return self.duration
+
+    @property
     def sample_duration(self):
-        return duration.to_samples(self.duration, self.sample_rate)
+        return duration.to_samples(self.actual_duration, self.sample_rate)
 
     @property
     def shape(self):
