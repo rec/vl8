@@ -17,7 +17,7 @@ class Generator:
 
     @property
     def actual_duration(self):
-        return self.duration
+        return duration.to_seconds(self.duration, self.sample_rate)
 
     @property
     def sample_duration(self):
