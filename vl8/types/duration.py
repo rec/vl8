@@ -1,5 +1,4 @@
-from . import units
-from .ratio import to_fraction, to_number
+from . import to_fraction, to_number, units
 from .types import Number, Numeric, ExactNumber
 from fractions import Fraction
 from functools import singledispatch

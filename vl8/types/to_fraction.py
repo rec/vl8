@@ -1,5 +1,6 @@
 from . import types
 from functools import singledispatch
+import xmod
 
 LIMIT_DENOMINATOR = 1000000
 
@@ -36,26 +37,18 @@ def _(ratio: str) -> types.Fraction:
     return _fraction(*parts)
 
 
-@singledispatch
-def to_number(n) -> types.Number:
-    return to_fraction(n)
-
-
-@to_number.register(float)
-def _(n: float) -> float:
-    return n
-
-
-@to_number.register(str)
-def _(n: str) -> types.Number:
-    if '/' in n:
-        return to_fraction(n)
-    try:
-        return int(n)
-    except Exception:
-        return float(n)
-
-
 def _fraction(*args):
+    def to_number(s):
+        if not isinstance(s, str):
+            return s
+        try:
+            return int(s)
+        except Exception:
+            pass
+        return float(s)
+
     f = types.Fraction(*(to_number(a) for a in args))
     return f.limit_denominator(LIMIT_DENOMINATOR)
+
+
+xmod(to_fraction)

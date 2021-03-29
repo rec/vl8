@@ -1,4 +1,4 @@
-from ..types import duration, ratio, types
+from ..types import duration, to_number, types
 from .generator import Generator
 from dataclasses import dataclass
 from typing import Optional, Sequence, Union
@@ -29,7 +29,7 @@ class Periodic(Generator):
         return 1 / self.period
 
     def _set_frequency(self, f: Optional[types.Numeric]):
-        self._frequency = f and ratio.to_number(f)
+        self._frequency = f and to_number(f)
         if f:
             self._period = None
 
@@ -38,7 +38,7 @@ class Periodic(Generator):
         dur = dur and duration.to_seconds(dur, self.sample_rate)
         if self.cycles is None:
             return dur
-        cycles = ratio.to_number(self.cycles) * self.period
+        cycles = to_number(self.cycles) * self.period
         return min(dur, cycles) if dur else cycles
 
 
