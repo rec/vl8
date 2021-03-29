@@ -1,5 +1,5 @@
 from ...assert_files_equal import assert_files_equal
-from vl8.functions.gen.sawtooth import Sawtooth, Sine
+from vl8.functions.gen.waveform import Sawtooth, Sine
 import tdir
 import unittest
 
