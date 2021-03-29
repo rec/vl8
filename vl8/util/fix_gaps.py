@@ -15,6 +15,7 @@ def fix_gaps(
     post: float = 0,
     sample_rate: Optional[int] = None,
 ):
+    # TODO: fix_gaps should learn about durations amd ration
     if pre < 0 or post < 0:
         raise ValueError('pre and post cannot be negative')
 

@@ -56,18 +56,12 @@ def _(n: float) -> float:
 def _(n: str) -> Number:
     if '/' in n:
         return to_fraction(n)
-    return to_int_or_float(n)
-
-
-def to_int_or_float(x: Union[str, Number]) -> Number:
-    if not isinstance(x, str):
-        return x
     try:
-        return int(x)
+        return int(n)
     except Exception:
-        return float(x)
+        return float(n)
 
 
 def _fraction(*args):
-    f = Fraction(*(to_int_or_float(a) for a in args))
+    f = Fraction(*(to_number(a) for a in args))
     return f.limit_denominator(LIMIT_DENOMINATOR)
