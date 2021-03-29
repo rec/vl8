@@ -1,4 +1,4 @@
-from ..types import duration, types
+from ..types import to_samples, to_seconds, types
 from dataclasses import dataclass
 from typing import Union
 import math
@@ -17,11 +17,11 @@ class Generator:
 
     @property
     def actual_duration(self):
-        return duration.to_seconds(self.duration, self.sample_rate)
+        return to_seconds(self.duration, self.sample_rate)
 
     @property
     def sample_duration(self):
-        return duration.to_samples(self.actual_duration, self.sample_rate)
+        return to_samples(self.actual_duration, self.sample_rate)
 
     @property
     def shape(self):

@@ -1,6 +1,5 @@
 from fractions import Fraction
-from vl8.types import to_fraction
-from vl8.types.duration import to_seconds, to_samples
+from vl8.types import to_fraction, to_samples, to_seconds
 import unittest
 
 DATA = '2', '2.3', '23 / 10', '300s', '300ms', '300 samples'

@@ -1,6 +1,6 @@
 from . import curve_cache
 from . import fade
-from ..types import duration, to_fraction, types
+from ..types import to_fraction, to_samples, types
 from .rand import Rand
 from dataclasses import dataclass
 from fractions import Fraction
@@ -87,7 +87,7 @@ class Grain(_Grain):
         return self.size * (1 - self.overlap)
 
     def to_samples(self, sample_rate) -> GrainSamples:
-        nsamples = duration.to_samples(self.duration, sample_rate)
+        nsamples = to_samples(self.duration, sample_rate)
         overlap = nsamples * to_fraction(self.overlap)
         return GrainSamples(
             nsamples=nsamples,
