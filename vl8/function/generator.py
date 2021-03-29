@@ -1,4 +1,4 @@
-from ..types import duration, ratio
+from ..types import duration, types
 from dataclasses import dataclass
 from typing import Union
 import math
@@ -10,7 +10,7 @@ DEFAULT_NCHANNELS = 2
 
 @dataclass
 class Generator:
-    duration: ratio.Numeric = 0
+    duration: types.Numeric = 0
     nchannels: int = DEFAULT_NCHANNELS
     sample_rate: int = DEFAULT_SAMPLE_RATE
     dtype: Union[np.dtype, str] = np.float32

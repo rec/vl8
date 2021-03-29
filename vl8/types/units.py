@@ -1,5 +1,3 @@
-# from .ratio import Number, Numeric, ExactNumber, to_fraction, to_number
-
 from fractions import Fraction
 import abbrev
 import re

@@ -1,5 +1,6 @@
 from . import units
-from .ratio import Number, Numeric, ExactNumber, to_fraction, to_number
+from .ratio import to_fraction, to_number
+from .types import Number, Numeric, ExactNumber
 from fractions import Fraction
 from functools import singledispatch
 from typing import Sequence

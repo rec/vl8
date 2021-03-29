@@ -1,49 +1,43 @@
-from fractions import Fraction
+from . import types
 from functools import singledispatch
-from typing import Sequence, Union
-
-ExactNumber = Union[Fraction, int]
-NonInteger = Union[Fraction, float]
-Number = Union[NonInteger, int]
-Numeric = Union[Number, Sequence[int], str]
 
 LIMIT_DENOMINATOR = 1000000
 
 
 @singledispatch
-def to_fraction(ratio) -> Fraction:
+def to_fraction(ratio) -> types.Fraction:
     raise TypeError(f'Do not understand {ratio} of type {type(ratio)}')
 
 
-@to_fraction.register(Fraction)
-def _(ratio: Fraction) -> Fraction:
+@to_fraction.register(types.Fraction)
+def _(ratio: types.Fraction) -> types.Fraction:
     return ratio
 
 
 @to_fraction.register(int)
-def _(ratio: int) -> Fraction:
-    return Fraction(ratio)
+def _(ratio: int) -> types.Fraction:
+    return types.Fraction(ratio)
 
 
 @to_fraction.register(float)
-def _(ratio: float) -> Fraction:
+def _(ratio: float) -> types.Fraction:
     return _fraction(ratio)
 
 
 @to_fraction.register(list)
 @to_fraction.register(tuple)
-def _(ratio: Sequence[int]) -> Fraction:
+def _(ratio: types.Sequence[int]) -> types.Fraction:
     return _fraction(*ratio)
 
 
 @to_fraction.register(str)
-def _(ratio: str) -> Fraction:
+def _(ratio: str) -> types.Fraction:
     parts = ratio.strip().split('/', maxsplit=1)
     return _fraction(*parts)
 
 
 @singledispatch
-def to_number(n) -> Number:
+def to_number(n) -> types.Number:
     return to_fraction(n)
 
 
@@ -53,7 +47,7 @@ def _(n: float) -> float:
 
 
 @to_number.register(str)
-def _(n: str) -> Number:
+def _(n: str) -> types.Number:
     if '/' in n:
         return to_fraction(n)
     try:
@@ -63,5 +57,5 @@ def _(n: str) -> Number:
 
 
 def _fraction(*args):
-    f = Fraction(*(to_number(a) for a in args))
+    f = types.Fraction(*(to_number(a) for a in args))
     return f.limit_denominator(LIMIT_DENOMINATOR)

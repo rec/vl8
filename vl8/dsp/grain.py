@@ -1,6 +1,6 @@
 from . import curve_cache
 from . import fade
-from ..types import duration, ratio
+from ..types import duration, ratio, types
 from .rand import Rand
 from dataclasses import dataclass
 from fractions import Fraction
@@ -72,10 +72,10 @@ class GrainSamples(_Grain):
 class Grain(_Grain):
     """A description of a grain with a duration in seconds"""
 
-    duration: ratio.NonInteger = SIZE
+    duration: types.NonInteger = SIZE
     """Size of each grain, in seconds.  Must be non-negative"""
 
-    overlap: ratio.Numeric = 1 / 2
+    overlap: types.Numeric = 1 / 2
     """Overlap ratio between grains, between 0 and 1 inclusive"""
 
     def __post_init__(self):

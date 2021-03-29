@@ -1,34 +1,34 @@
-from ..types import duration, ratio
+from ..types import duration, ratio, types
 from .generator import Generator
 from dataclasses import dataclass
 from typing import Optional, Sequence, Union
 
-NumericList = Union[ratio.Numeric, Sequence[ratio.Numeric]]
+NumericList = Union[types.Numeric, Sequence[types.Numeric]]
 
 
 @dataclass
 class Periodic(Generator):
     cycles: Optional[int] = None
     phase: NumericList = 0
-    period: Optional[ratio.Number] = None
-    frequency: Optional[ratio.Number] = None
+    period: Optional[types.Number] = None
+    frequency: Optional[types.Number] = None
 
-    def _get_period(self) -> ratio.Number:
+    def _get_period(self) -> types.Number:
         if self._period or not self._frequency:
             return self._period
         return 1 / self.frequency
 
-    def _set_period(self, period: Optional[ratio.Numeric]):
+    def _set_period(self, period: Optional[types.Numeric]):
         self._period = period and duration.to_seconds(period, self.sample_rate)
         if period:
             self._frequency = None
 
-    def _get_frequency(self) -> ratio.Number:
+    def _get_frequency(self) -> types.Number:
         if self._frequency or not self._period:
             return self._frequency
         return 1 / self.period
 
-    def _set_frequency(self, f: Optional[ratio.Numeric]):
+    def _set_frequency(self, f: Optional[types.Numeric]):
         self._frequency = f and ratio.to_number(f)
         if f:
             self._period = None
