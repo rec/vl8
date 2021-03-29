@@ -1,4 +1,4 @@
-from ..util import duration, ratio
+from ..types import duration, ratio
 from .generator import Generator
 from dataclasses import dataclass
 from typing import Optional, Sequence, Union

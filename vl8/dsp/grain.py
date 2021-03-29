@@ -1,6 +1,6 @@
 from . import curve_cache
 from . import fade
-from ..util import duration, ratio
+from ..types import duration, ratio
 from .rand import Rand
 from dataclasses import dataclass
 from fractions import Fraction

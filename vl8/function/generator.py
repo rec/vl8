@@ -1,4 +1,4 @@
-from ..util import duration, ratio
+from ..types import duration, ratio
 from dataclasses import dataclass
 from typing import Union
 import math

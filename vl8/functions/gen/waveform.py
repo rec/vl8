@@ -1,6 +1,3 @@
-# from fractions import Fraction
-
-# from vl8.util import ratio
 from vl8.dsp import curve_cache
 from vl8.function.periodic import Periodic
 import math
