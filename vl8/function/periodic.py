@@ -1,13 +1,15 @@
 from ..util import duration, ratio
 from .generator import Generator
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Sequence, Union
+
+NumericList = Union[ratio.Numeric, Sequence[ratio.Numeric]]
 
 
 @dataclass
 class Periodic(Generator):
     cycles: Optional[int] = None
-    phase: ratio.Numeric = 0
+    phase: NumericList = 0
     period: Optional[ratio.Number] = None
     frequency: Optional[ratio.Number] = None
 
