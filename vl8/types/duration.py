@@ -1,24 +1,8 @@
+from . import units
 from .ratio import Number, Numeric, ExactNumber, to_fraction, to_number
-from enum import Enum
 from fractions import Fraction
 from functools import singledispatch
 from typing import Sequence
-import abbrev
-import math
-import re
-
-_match_units = re.compile(r'^([^a-zA-Z]*)([a-zA-Z]*)$').match
-
-
-def _identity(n: Number) -> Number:
-    return n
-
-
-class Round(Enum):
-    DOWN = math.floor
-    UP = math.ceil
-    ROUND = round
-    NONE = _identity
 
 
 def to_samples(d: Numeric, sample_rate: int) -> ExactNumber:
@@ -43,49 +27,10 @@ def _(duration: Sequence[int], sample_rate: int) -> Fraction:
 @_convert.register(str)
 def _(duration: str, sample_rate: int) -> Number:
     # Examples: '2', '2.3', '23 / 10', '300 samples', '300s', '300ms'
-    match = _match_units(duration.strip())
-    if not match:
-        raise ValueError(f'Bad duration "{duration}"') from None
-    value, unit = match.groups()
-
-    try:
-        u = abbrev(_UNITS, unit)
-    except KeyError:
-        raise ValueError(f'Unknown unit "{unit}"') from None
-
-    if u:
-        scale = 1 / u
-    elif not sample_rate:
-        raise ValueError('No sample rate for duration {duration}')
-    else:
-        scale = sample_rate
-
+    value, scale = units.split(duration, sample_rate)
     parts = value.split('/', maxsplit=1)
     if len(parts) == 1:
         v = to_number(parts[0])
     else:
         v = to_fraction(parts)
     return v / scale
-
-
-_MS = Fraction(1, 1000)
-_US = _MS / 1000
-_NS = _US / 1000
-
-_UNITS = {
-    '': Fraction(1),
-    's': Fraction(1),
-    'seconds': Fraction(1),
-    'milliseconds': _MS,
-    'mseconds': _MS,
-    'microseconds': _US,
-    'useconds': _US,
-    'µseconds': _US,
-    'nanoseconds': _NS,
-    'nseconds': _NS,
-    'minutes': Fraction(60),
-    'hours': Fraction(60 * 60),
-    'weeks': Fraction(60 * 60 * 7),
-    'years': Fraction(1826211, 5000),
-    'samples': Fraction(0),
-}
