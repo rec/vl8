@@ -36,7 +36,6 @@ class Function:
 
     def _param(self):
         if self.is_class:
-            print('ZERO')
             f_call = _get_call(self.function)
             if not f_call:
                 raise ValueError(f'Class {self.name} is not callable')
