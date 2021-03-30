@@ -19,7 +19,7 @@ class Waveform(Periodic):
     def __call__(self):
         arr = self._create()
         if self._duty_cycle and self._duty_cycle != 0.5:
-            _apply_duty_cycle(arr, self._duty_cycle)
+            _apply_duty_cycle(arr, float(self._duty_cycle))
 
         self._apply(arr)
         return np.row_stack([arr] * self.nchannels)
@@ -75,13 +75,14 @@ class Triangle(Waveform):
         above = arr >= 0
 
         arr[below] *= 2
-        arr[below] -= 1
+        arr[below] += 1
 
         arr[above] *= -2
         arr[above] += 1
 
 
 def _apply_duty_cycle(arr, dc):
+    # This appears to do nothing.
     below = arr < dc
     above = arr >= dc
 
@@ -90,8 +91,3 @@ def _apply_duty_cycle(arr, dc):
 
     arr[above] -= dc
     arr[above] *= 1 / (1 - dc)
-
-
-# Square
-# Triangle
-# Duty cycle
