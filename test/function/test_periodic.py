@@ -7,8 +7,8 @@ class TestPeriodic(unittest.TestCase):
         p = Periodic()
         assert str(p) == (
             "Periodic(duration=0, nchannels=2, sample_rate=44100, "
-            "dtype=<class 'numpy.float32'>, cycles=None, phase=0, "
-            "period=None, frequency=None)"
+            "dtype=<class 'numpy.float32'>, cycles=None, "
+            "phase=Fraction(0, 1), period=None, frequency=None)"
         )
 
     def test_simple(self):

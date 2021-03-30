@@ -15,8 +15,13 @@ def _(nl) -> types.NumberList:
 
 
 @to_number_list.register(str)
-def _(n: str) -> types.Number:
+def _(n: str) -> types.NumberList:
     return to_number_list(n.split(','))
+
+
+@to_number_list.register(type(None))
+def _(n: str) -> types.NumberList:
+    return []
 
 
 xmod(to_number_list)
