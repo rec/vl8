@@ -26,11 +26,11 @@ class HasData:
         return self._floating
 
     @property
-    def channels(self):
+    def nchannels(self):
         return self.data.shape[0]
 
     @property
-    def sample_count(self):
+    def nsamples(self):
         return self.data.shape[1]
 
     def __getitem__(self, k):

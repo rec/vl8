@@ -22,7 +22,7 @@ def ffprobe(file):
                 name, value = i.split(': ', maxsplit=1)
                 result[name.lower()] = value
         elif line.startswith(_STREAM):
-            names = 'audio', 'sample_rate', 'channels', 'numbers', 'bitrate'
+            names = 'audio', 'sample_rate', 'nchannels', 'numbers', 'bitrate'
             result.update(zip(names, line.split(', ')))
 
     return {k: _clean(k, v) for k, v in result.items()}
@@ -34,7 +34,7 @@ def _clean(key, value):
         assert speed == 'kb/s', value
         return 1000 * int(br)
 
-    elif key == 'channels':
+    elif key == 'nchannels':
         v = value.split()[0]
         if v == 'mono':
             return 1

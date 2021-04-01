@@ -1,25 +1,33 @@
 from ..function.creator import Creator
+from ..types.types import NumericSequence
 from dataclasses import dataclass
+from fractions import Fraction
 
 
 @dataclass
 class AtOnce(Creator):
-    overlap: float = 0.5
+    center: NumericSequence = Fraction(1, 2)
 
     def _prepare(self, src):
-        self.max_length = max(len(s) for s in src)
-        min_length = min(len(s) for s in src)
+        durations = [s.shape[1] for s in src]
+        maxl, minl = max(durations), min(durations)
 
-        begin = round(self.overlap * (self.max_length - min_length) / 2)
+        begin = self.center * (maxl - minl) / 2
+
+        self.max_length = maxl
         if begin < 0:
             self.offset = -begin
-            return self.max_length + self.offset
+            return maxl + self.offset
         else:
             self.offset = 0
-            return max(self.max_length, begin + min_length)
+            return max(maxl, begin + minl)
 
     def _call(self, arr, *src):
         for s in src:
             begin = self.offset
-            begin += round(self.overlap * (self.max_length - len(s)) / 2)
+            begin += round(self.center * (self.max_length - len(s)) / 2)
             arr[:, begin : begin + len(s)] += s
+
+
+def _get(a, i):
+    return a or None and a[i % len(a)]

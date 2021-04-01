@@ -9,7 +9,7 @@ class Creator:
 
     def _prepare(self, src):
         # Return the duration of the result, in samples
-        return max(s.shape[1] for s in src)
+        return max(s.nsamples for s in src)
 
     def _call(self, x):
         pass
@@ -17,9 +17,9 @@ class Creator:
     _make = np.zeros
 
     def __call__(self, *src):
-        channels = max(s.shape[0] for s in src)
+        nchannels = max(s.nchannels for s in src)
         duration = self._prepare(src)
-        shape = channels, duration
+        shape = nchannels, duration
         dtype = self.dtype or src[0].dtype
         arr = self._make(shape=shape, dtype=dtype)
         res = self._call(arr, *src)

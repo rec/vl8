@@ -16,7 +16,7 @@ class TestFfprobe(unittest.TestCase):
         expected = {
             'audio': 'pcm_s16le',
             'bitrate': 256000,
-            'channels': 2,
+            'nchannels': 2,
             'duration': Fraction(147, 50),
             'numbers': 's16',
             'sample_rate': 8000,
