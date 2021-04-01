@@ -7,6 +7,7 @@ from fractions import Fraction
 @dataclass
 class AtOnce(Creator):
     center: NumericSequence = Fraction(1, 2)
+    scale: bool = True
 
     def _prepare(self, src):
         durations = [s.shape[1] for s in src]
@@ -26,6 +27,11 @@ class AtOnce(Creator):
         for s in src:
             begin = self.offset
             begin += round(self.center * (self.max_length - len(s)) / 2)
+            if self.scale:
+                if 'float' in str(s.dtype):
+                    s = s / len(src)
+                else:
+                    s = s // len(src)
             arr[:, begin : begin + len(s)] += s
 
 
