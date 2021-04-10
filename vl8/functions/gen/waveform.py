@@ -8,7 +8,7 @@ import numpy as np
 
 
 @dataclass
-class Waveform(Periodic):
+class Sawtooth(Periodic):
     curve: curve_cache.Curve = None
     duty_cycle: Optional[types.Number] = None
 
@@ -18,7 +18,7 @@ class Waveform(Periodic):
 
     def __call__(self):
         arr = self._create()
-        if self._duty_cycle and self._duty_cycle != 0.5:
+        if not (self._duty_cycle is None or self._duty_cycle == 0.5):
             _apply_duty_cycle(arr, float(self._duty_cycle))
 
         self._apply(arr)
@@ -47,29 +47,24 @@ class Waveform(Periodic):
         self._duty_cycle = dc
 
 
-Waveform.duty_cycle = property(
-    Waveform._get_duty_cycle, Waveform._set_duty_cycle
+Sawtooth.duty_cycle = property(
+    Sawtooth._get_duty_cycle, Sawtooth._set_duty_cycle
 )
 
 
-class Sawtooth(Waveform):
-    def _apply(self, arr):
-        pass
-
-
-class Sine(Waveform):
+class Sine(Sawtooth):
     def _apply(self, arr):
         arr *= np.pi
         np.sin(arr, out=arr)
 
 
-class Square(Waveform):
+class Square(Sawtooth):
     def _apply(self, arr):
         arr[arr < 0] = -1
         arr[arr >= 0] = 1
 
 
-class Triangle(Waveform):
+class Triangle(Sawtooth):
     def _apply(self, arr):
         below = arr < 0
         above = arr >= 0
