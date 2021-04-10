@@ -10,7 +10,10 @@ _PROPERTY_MAKERS = {
 
 
 @xmod
-def prop(cls, exclude=(), include=None):
+def setter_dataclass(cls, exclude=(), include=None):
+    if not dataclasses.is_dataclass(cls):
+        cls = dataclasses.dataclass(cls)
+
     def make_prop(name, converter):
         def getter(self):
             return getattr(self, name)
@@ -21,8 +24,10 @@ def prop(cls, exclude=(), include=None):
         return property(getter, setter)
 
     for f in dataclasses.fields(cls):
-        if f.name not in exclude and (include is None or f.name in exclude):
+        if f.name not in exclude and (include is None or f.name in include):
             maker = _PROPERTY_MAKERS.get(f.type)
             if maker:
                 prop = make_prop('_' + f.name, maker)
                 setattr(cls, f.name, prop)
+
+    return cls

@@ -1,18 +1,15 @@
-from dataclasses import dataclass
 from fractions import Fraction
-from vl8.types import types, prop
+from vl8.types import types, setter_dataclass
 import unittest
 
 
-class TestProp(unittest.TestCase):
-    def test_prop(self):
-        @dataclass
+class TestSetterDataclass(unittest.TestCase):
+    def test_setter_dataclass(self):
+        @setter_dataclass
         class One:
             one: types.Numeric
             two: str = 'a'
             three: types.NumericSequence = None
-
-        prop(One)
 
         one = One('2 / 3', 'b', ['4.25', 12])
         assert one.one == Fraction(2, 3)
