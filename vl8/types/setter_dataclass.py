@@ -1,12 +1,26 @@
 from . import types, to_number, to_number_list, to_fraction
+from typing import Optional
 import dataclasses
+import functools
 import xmod
+
+
+def _optional(fn):
+    @functools.wraps(fn)
+    def wrapped(x):
+        return None if x is None else fn(x)
+
+    return wrapped
+
 
 _PROPERTY_MAKERS = {
     types.Numeric: to_number,
     types.NumericSequence: to_number_list,
     types.ExactNumber: to_fraction,
 }
+_PROPERTY_MAKERS.update(
+    {Optional[t]: _optional(f) for t, f in _PROPERTY_MAKERS.items()}
+)
 
 
 @xmod
