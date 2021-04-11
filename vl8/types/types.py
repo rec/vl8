@@ -6,7 +6,5 @@ NonInteger = Union[float, Fraction]
 Number = Union[int, float, Fraction]
 
 NumberList = List[Number]
-
-# TODO: do we really want Sequence[int] now we have str?
-Numeric = Union[Number, str, Sequence[int]]
+Numeric = Union[Number, str]
 NumericSequence = Union[None, Numeric, Sequence[Numeric]]

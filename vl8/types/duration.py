@@ -28,9 +28,4 @@ def _(duration: Sequence[int], sample_rate: int) -> Fraction:
 def _(duration: str, sample_rate: int) -> Number:
     # Examples: '2', '2.3', '23 / 10', '300 samples', '300s', '300ms'
     value, scale = units.split(duration, sample_rate)
-    parts = value.split('/', maxsplit=1)
-    if len(parts) == 1:
-        v = to_number(parts[0])
-    else:
-        v = to_fraction(parts)
-    return v / scale
+    return to_number(value) / scale

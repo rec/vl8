@@ -25,12 +25,6 @@ def _(ratio: float) -> types.Fraction:
     return _fraction(ratio)
 
 
-@to_fraction.register(list)
-@to_fraction.register(tuple)
-def _(ratio: types.Sequence[int]) -> types.Fraction:
-    return _fraction(*ratio)
-
-
 @to_fraction.register(str)
 def _(ratio: str) -> types.Fraction:
     parts = ratio.strip().split('/', maxsplit=1)

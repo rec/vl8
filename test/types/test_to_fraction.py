@@ -21,14 +21,14 @@ class TestRatio(unittest.TestCase):
         )
 
     def test_empty(self):
-        for x in 0, 0.0, [], [0]:
+        for x in 0, 0.0:
             assert to_fraction(x) == Fraction()
 
     def test_simple_ratio(self):
         f23 = Fraction(2, 3)
         assert to_fraction(0.66666666) == f23
 
-        for i in f23, [2, 3], '2/3', 2 / 3, '2 / 3', 0.66666666, 0.6666666:
+        for i in f23, '2/3', 2 / 3, '2 / 3', 0.66666666, 0.6666666:
             assert to_fraction(i) == f23
 
         assert to_fraction(0.666666) == Fraction(333333, 500000)
