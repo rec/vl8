@@ -1,0 +1,24 @@
+Deliverables
+--------------
+
+
+1. Binaural beat generator
+
+   Input:
+      * A list of:
+        * frequency
+        * phase
+        * relative intensity
+        * panning
+
+      * normalization info
+      * track info (panning might go here too, or?)
+
+2. Binaural mix
+
+  Same as above, but mixed with another track
+
+3. Slice player (a la Wagner precis)
+
+4. "All at once" player
+  With time-stretching
