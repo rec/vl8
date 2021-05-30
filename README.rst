@@ -4,6 +4,12 @@
 .. image:: https://raw.githubusercontent.com/rec/vl8/master/vl8.png
    :alt: vl8 logo
 
+
+Update: this is still in development - I got sidetracked by paying work.
+Most of this is working, it just needs to be packaged!
+
+----
+
 A command line tool and Python library that (will soon be) like a Swiss Army
 Knife for audio.
 
@@ -49,11 +55,9 @@ Answer: a timestamp with add the base names of all the effects appended
 If we write multiple files, they all get the same timestamp and a changing index
 number:
 
-   2021.02.23-08.23.35-reverse-cat-1.wav
-   2021.02.23-08.23.35-reverse-cat-2.wav
-   2021.02.23-08.23.35-reverse-cat-3.wav
-
-(even if writing take
+   20210223-082335-reverse-cat-1.wav
+   20210223-082335-reverse-cat-2.wav
+   20210223-082335-reverse-cat-3.wav
 
 The grammar
 

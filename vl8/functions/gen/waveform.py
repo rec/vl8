@@ -19,21 +19,30 @@ class Sawtooth(Periodic):
     def __call__(self):
         arr = self._create()
         if not (self._duty_cycle is None or self._duty_cycle == 0.5):
-            _apply_duty_cycle(arr, float(self._duty_cycle))
+            _reshape_duty_cycle(arr, float(self._duty_cycle))
 
-        self._apply(arr)
+        self._reshape(arr)
         return np.row_stack([arr] * self.nchannels)
 
-    def _apply(self, arr):
+    def _reshape(self, arr):
         pass
 
     def _create(self):
         begin = self.phase
         end = begin + self.nperiods
+
         steps = math.ceil(self.sample_duration)
+
         arr = np.linspace(2 * begin, 2 * end, steps, dtype=self.dtype)
+
+        # TODO: if nperiods is large, and we are operating in float32, then we
+        # will lose precision in this next step, perhaps enough to be audible.
+        #
+        # We get 24 bits of precision, so once nperiods is 256, then we're
+        # really only getting 16 bits, and it gets worse from there.
         arr %= 2
         arr -= 1
+
         return arr
 
     def _get_duty_cycle(self):
@@ -53,19 +62,19 @@ Sawtooth.duty_cycle = property(
 
 
 class Sine(Sawtooth):
-    def _apply(self, arr):
+    def _reshape(self, arr):
         arr *= np.pi
         np.sin(arr, out=arr)
 
 
 class Square(Sawtooth):
-    def _apply(self, arr):
+    def _reshape(self, arr):
         arr[arr < 0] = -1
         arr[arr >= 0] = 1
 
 
 class Triangle(Sawtooth):
-    def _apply(self, arr):
+    def _reshape(self, arr):
         below = arr < 0
         above = arr >= 0
 
@@ -76,7 +85,7 @@ class Triangle(Sawtooth):
         arr[above] += 1
 
 
-def _apply_duty_cycle(arr, dc):
+def _reshape_duty_cycle(arr, dc):
     # This appears to do nothing.
     below = arr < dc
     above = arr >= dc
