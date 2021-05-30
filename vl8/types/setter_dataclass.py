@@ -1,4 +1,4 @@
-from . import types, to_number, to_number_list, to_fraction
+from . import to_fraction, to_number, to_number_list, types
 from typing import Optional
 import dataclasses
 import functools

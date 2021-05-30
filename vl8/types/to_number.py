@@ -1,10 +1,11 @@
-from . import to_fraction, types
+from . import to_fraction
+from .types import Number, Numeric
 from functools import singledispatch
 import xmod
 
 
 @singledispatch
-def to_number(n) -> types.Number:
+def to_number(n: Numeric) -> Number:
     return to_fraction(n)
 
 
@@ -14,7 +15,7 @@ def _(n: float) -> float:
 
 
 @to_number.register(str)
-def _(n: str) -> types.Number:
+def _(n: str) -> Number:
     if '/' in n:
         return to_fraction(n)
     try:
