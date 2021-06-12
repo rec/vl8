@@ -1,68 +1,81 @@
-from . import function_names
+from pathlib import Path
 import importlib
 import xmod
 
+DEFAULT_MODULES = '', 'vl8.functions.', 'vl8.functions.gen.'
+
 
 @xmod
-def importer(name, default_module=None):
-    try:
-        return import_callable(name, default_module or 'vl8.functions')
-    except ImportError:
-        if default_module or '.' in name:
-            raise
+def importer(name):
+    for d in DEFAULT_MODULES:
+        mod = _import(d, name)
+        if mod:
+            return _make_callable(*mod)
 
-    fname = function_names.get(name, None)
-    if not fname:
-        raise ImportError(f'vl8.functions.{name} cannot be found')
-
-    mod = importlib.import_module(f'vl8.functions.{fname}')
-    return _make_callable(mod, fname)
+    raise ImportError(f'{name} can\'t be found anywhere: {DEFAULT_MODULES}')
 
 
-def import_callable(name, default_module=None):
-    """Import a callable item from a name"""
-    f = _import(name)
-    if not f and default_module:
-        f = _import(f'{default_module}.{name}')
+def _import(d, path):
+    if d and path and '.' not in path:
+        # Expand single-word names
+        mod = importlib.import_module(d[:-1])
+        parent = Path(mod.__file__).parent
+        pyfiles = [p.stem for p in parent.iterdir() if p.suffix == '.py']
+        if path not in pyfiles:
+            stems = [f for f in pyfiles if f.startswith(path)]
+            if not stems:
+                return
+            if len(stems) > 1:
+                raise ImportError(f'Ambiguous import {path}')
+            path = stems[0]
 
-    if not f:
-        raise ModuleNotFoundError(f"No module named '{name}'")
+        return importlib.import_module(d + path), path
 
-    return _make_callable(f, name)
+    attributes = []
+    name = path
+    while True:
+        try:
+            mod = importlib.import_module(name)
+
+        except ImportError:
+            *first, last = name.rsplit('.', maxsplit=1)
+            if not first:
+                return
+            attributes.insert(0, last)
+            name = first[0]
+
+        else:
+            if not attributes:
+                return mod, name
+
+            for a in attributes:
+                try:
+                    mod = getattr(mod, a)
+                except AttributeError:
+                    break
+            else:
+                return mod, a
+            break
 
 
 def _make_callable(f, name):
     if callable(f):
         return f
 
+    def canon(s):
+        return s.lower().replace('_', '')
+
     # It's a module or something like it.
-    stem = _canon(name.split('.')[-1])
+    stem = canon(name.split('.')[-1])
+
+    v = vars(f)
+    try:
+        return v[stem]
+    except KeyError:
+        pass
 
     for k, v in vars(f).items():
-        if callable(v) and not k.startswith('_') and _canon(k) == stem:
+        if callable(v) and not k.startswith('_') and canon(k) == stem:
             return v
 
     raise ImportError(f'Nothing callable in {name}')
-
-
-def _canon(s):
-    return s.lower().replace('_', '')
-
-
-def _import(name):
-    try:
-        return importlib.import_module(name)
-    except ImportError:
-        pass
-
-    # Maybe it's path.to.module.attribute
-    mod_path, *attr = name.rsplit('.', maxsplit=1)
-    if not attr:
-        return
-
-    try:
-        module = importlib.import_module(mod_path)
-    except ImportError:
-        return
-    else:
-        return getattr(module, attr[0], None)
