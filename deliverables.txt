@@ -14,7 +14,8 @@ Deliverables
       * normalization info
       * track info (panning might go here too, or?)
 
-    vl8 sine(freq=200) sine(freq=208)
+    vl8 sine(frequency=200) sine(frequency=200)
+    vl8 sine(freq=200) sine(freq=200)
 
 
 2. Binaural mix
