@@ -6,7 +6,7 @@ class TestPeriodic(unittest.TestCase):
     def test_empty(self):
         p = Periodic()
         assert str(p) == (
-            "Periodic(duration=0, nchannels=2, sample_rate=44100, "
+            "Periodic(duration=None, nchannels=2, sample_rate=44100, "
             "dtype=<class 'numpy.float32'>, cycles=None, "
             "phase=Fraction(0, 1), period=None, frequency=None)"
         )
@@ -17,11 +17,11 @@ class TestPeriodic(unittest.TestCase):
         p = Periodic()
         p.period = 2
         assert p.period == 2
-        assert p.actual_duration == 0
+        assert p.actual_duration == 10
 
         p.frequency = 2
         assert p.period == 0.5
-        assert p.actual_duration == 0
+        assert p.actual_duration == 10
 
         p.duration = 3
         assert p.actual_duration == 3

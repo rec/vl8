@@ -39,7 +39,6 @@ class Stripe(Creator):
         total_chunks = 0
         for chunk, stride in interleave_longest(*(chunks(s) for s in src)):
             total_chunks += 1
-            # print(round(time), time, i, chunk.shape)
             rt = round(time)
             if arr.shape[1] < chunk.shape[1] + rt:
                 missing_chunk += 1
@@ -48,8 +47,7 @@ class Stripe(Creator):
             time += stride
 
         if missing_chunk:
-            print('OOPS', missing_chunk, rt, arr.shape)
-            raise ValueError
+            raise ValueError('missing chunk')
 
         return arr[:, : round(time)]
 

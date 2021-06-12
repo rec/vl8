@@ -13,8 +13,7 @@ class Periodic(Generator):
 
     @property
     def actual_duration(self):
-        dur = self.duration
-        dur = dur and to_seconds(dur, self.sample_rate)
+        dur = super().actual_duration
         if self.cycles is None:
             return dur
         cycles = to_number(self.cycles) * self.period

@@ -1,15 +1,15 @@
 from . import importer
-from enum import IntEnum
+from enum import Enum
 import inspect
 
 DEFAULT = 'cat'
 
 
 class Function:
-    class Type(IntEnum):
-        GENERATOR = 0
-        SIMPLE = 1
-        MULTIPLE = 2
+    class Type(Enum):
+        GENERATOR = 'generator'
+        SIMPLE = 'simple'
+        MULTIPLE = 'multiple'
 
     def __init__(self, name):
         self.name = name or DEFAULT
@@ -30,6 +30,9 @@ class Function:
             raise ValueError(
                 f'Bad signature for {self.function}({self.params})'
             )
+
+    def __str__(self):
+        return f'Function({self.function}, {self.params}, {self.type})'
 
     def required(self):
         return [p.name for p in self.params.values() if p.default is p.empty]
@@ -57,7 +60,6 @@ class Function:
             if _is_positional(p):
                 self.params.pop(pname)
                 return p
-            print(p.kind)
 
     def __call__(self, *sources, **kwargs):
         if self.type is Function.Type.SIMPLE and len(sources) != 1:

@@ -29,8 +29,10 @@ class BoundFunction:
 
         else:
             assert self.func.type is Function.Type.GENERATOR
-            assert not files
             yield call()
+
+    def __str__(self):
+        return f'BoundFunction({self.func}, {self.args})'
 
 
 def _func_args(func):
@@ -45,6 +47,10 @@ def _func_args(func):
 
     if isinstance(func, str):
         fname, arg_str = _split_args(func)
+        parts = arg_str.split(',')
+        if parts and all('=' in p for p in parts):
+            arg_str = ', '.join(p.replace('=', ': ', 1) for p in parts)
+
         args = yaml.safe_load('{%s}' % arg_str)
         f = Function(fname)
         return f, _expand(f, args)

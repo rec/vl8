@@ -3,6 +3,8 @@ from . import separate_commands
 from ..dsp import data
 import numpy as np
 
+DEFAULT_SAMPLE_RATE = 44100
+
 
 def run(args):
     # If a function DOES have files, it acts on those files
@@ -20,7 +22,12 @@ def run(args):
 
     for function, files in function_calls(commands):
         items = files or pool
-        results = _apply(function(*items), items[0].sample_rate)
+        # TODO: config!
+        sample_rate = items[0].sample_rate if items else DEFAULT_SAMPLE_RATE
+        results = function(*items)
+        results = list(results)
+        results = _apply(results, sample_rate)
+        results = list(results)
         if files:
             pool.extend(results)
         else:

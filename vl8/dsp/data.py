@@ -39,9 +39,8 @@ class HasData:
 
 @dataclass
 class Data(HasData):
-    def __init__(self, data: np.ndarray, sample_rate: int):
-        self.data = data
-        self.sample_rate = sample_rate
+    data: np.ndarray
+    sample_rate: int
 
 
 class File(HasData):
