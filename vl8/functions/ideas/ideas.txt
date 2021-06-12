@@ -1,0 +1,1 @@
+An advancing loop which starts X samples later (or earlier) every iteration.
