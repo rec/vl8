@@ -1,4 +1,5 @@
 from pathlib import Path
+import abbrev
 import importlib
 import xmod
 
@@ -19,17 +20,16 @@ def _import(d, path):
     if d and path and '.' not in path:
         # Expand single-word names
         mod = importlib.import_module(d[:-1])
-        parent = Path(mod.__file__).parent
-        pyfiles = [p.stem for p in parent.iterdir() if p.suffix == '.py']
-        if path not in pyfiles:
-            stems = [f for f in pyfiles if f.startswith(path)]
-            if not stems:
-                return
-            if len(stems) > 1:
-                raise ImportError(f'Ambiguous import {path}')
-            path = stems[0]
+        found = abbrev(list(vars(mod)), path, None)
+        if found is not None:
+            return getattr(mod, found), found
 
-        return importlib.import_module(d + path), path
+        parent = Path(mod.__file__).parent
+        d = [p.stem for p in parent.iterdir() if p.suffix == '.py']
+        found = abbrev(d, path, None)
+        if found:
+            return importlib.import_module(d + found), found
+        return
 
     attributes = []
     name = path

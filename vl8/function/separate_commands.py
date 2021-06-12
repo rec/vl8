@@ -11,6 +11,9 @@ def is_function(x):
 
 @xmod(mutable=True)
 def separate_commands(commands):
+    if commands and len(commands) == 1 and ' ' in commands[0]:
+        commands = commands[0].split()
+
     function, args = None, []
     for a in commands or ():
         if is_function(a):
