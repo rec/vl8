@@ -5,7 +5,7 @@ import wavemap
 
 read = pydub_io.read
 write = pydub_io.write
-DEFAULT_DIR = '_vl8'
+DEFAULT_DIR = '_VL8'
 
 
 def write_data(data_list, output_file=None, output_format='.wav', dtype=None):
@@ -26,4 +26,4 @@ def write_data(data_list, output_file=None, output_format='.wav', dtype=None):
 
 
 def _timestamp():
-    return datetime.datetime.now().strftime(f'{DEFAULT_DIR}/%Y-%m-%d-%H-%M-%S')
+    return datetime.datetime.now().strftime(f'{DEFAULT_DIR}/%Y%m%d-%H%M%S')
