@@ -10,6 +10,7 @@ class AtOnce(Creator):
     scale: bool = True
 
     def _prepare(self, src):
+        # TODO: use the newer version in io.py
         durations = [s.shape[1] for s in src]
         maxl, minl = max(durations), min(durations)
 

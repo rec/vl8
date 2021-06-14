@@ -2,10 +2,12 @@ from . import function_calls
 from . import separate_commands
 from ..dsp import data
 import numpy as np
+import xmod
 
 DEFAULT_SAMPLE_RATE = 44100
 
 
+@xmod
 def run(args):
     # If a function DOES have files, it acts on those files
     # and then adds them to the pool.
@@ -22,12 +24,13 @@ def run(args):
 
     for function, files in function_calls(commands):
         items = files or pool
-        # TODO: config!
-        sample_rate = items[0].sample_rate if items else DEFAULT_SAMPLE_RATE
+        if items:
+            sample_rate = items[0].sample_rate
+        else:
+            sample_rate = args.sample_rate or DEFAULT_SAMPLE_RATE
+
         results = function(*items)
-        results = list(results)
         results = _apply(results, sample_rate)
-        results = list(results)
         if files:
             pool.extend(results)
         else:
