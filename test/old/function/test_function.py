@@ -5,7 +5,7 @@ import unittest
 
 class TestFunction(unittest.TestCase):
     def test_simple_function1(self):
-        f = Function('test.function.test_function.simp')
+        f = Function('test.old.function.test_function.simp')
         assert f.type is f.Type.SIMPLE
         assert f('src', required=5) == ('src', 5, 1)
 
@@ -18,11 +18,11 @@ class TestFunction(unittest.TestCase):
         with self.assertRaises(TypeError) as m:
             f('src', 'src2', required=5)
         assert m.exception.args == (
-            'test.function.test_function.simp takes exactly one argument',
+            'test.old.function.test_function.simp takes exactly one argument',
         )
 
     def test_multi_function(self):
-        f = Function('test.function.test_function.mult')
+        f = Function('test.old.function.test_function.mult')
         assert f.type is f.Type.MULTIPLE
         assert f('src', required=5) == (('src',), 5, 1)
         assert f('s', 't', required=5) == (('s', 't'), 5, 1)
@@ -34,7 +34,7 @@ class TestFunction(unittest.TestCase):
         )
 
     def test_simple_class(self):
-        f = Function('test.function.test_function.Simp')
+        f = Function('test.old.function.test_function.Simp')
         assert f.type is f.Type.SIMPLE
         assert f('src', required=5) == ('src', 5, 1)
 
@@ -47,11 +47,11 @@ class TestFunction(unittest.TestCase):
         with self.assertRaises(TypeError) as m:
             f('src', 'src2', required=5)
         assert m.exception.args == (
-            'test.function.test_function.Simp takes exactly one argument',
+            'test.old.function.test_function.Simp takes exactly one argument',
         )
 
     def test_multi_class(self):
-        f = Function('test.function.test_function.Mult')
+        f = Function('test.old.function.test_function.Mult')
         assert f.type is f.Type.MULTIPLE
         assert f('src', required=5) == (('src',), 5, 1)
         assert f('s', 't', required=5) == (('s', 't'), 5, 1)
