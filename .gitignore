@@ -133,3 +133,6 @@ dmypy.json
 
 # vl8 folder
 _VL8
+
+# emacs TAGS
+TAGS
