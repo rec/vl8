@@ -29,7 +29,7 @@ if __name__ == '__main__':
         author_email='tom@swirly.com',
         url='https://github.com/rec/vl8',
         py_modules=['vl8'],
-        description='🔉 vl8: Sort audio granularly 🔉',
+        description='🔉 vl8: perturbed audio 🔉',
         long_description=open('README.rst').read(),
         license='MIT',
         classifiers=_classifiers,
