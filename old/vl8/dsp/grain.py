@@ -106,3 +106,16 @@ def make_grain(**kwargs: dict):
 
 
 GrainType = Union[GrainSamples, Grain, dict]
+
+"""
+
+Overlap should be different for collections of grains of different sizes.
+
+overlap: None or any floating point numbers, referenced to the longest item.
+
+0 means: all start together
+0.5 means: middles of all songs are at same time
+1 means: all end together
+
+Negative numbers and numbers bigger than one are possible!
+"""
