@@ -1,5 +1,5 @@
-from ..dsp import curve_cache
-from ..function.creator import Creator
+from old.vl8.dsp import curve_cache
+from old.vl8.function.creator import Creator
 from vl8.dsp import fix_gaps
 from dataclasses import dataclass
 
