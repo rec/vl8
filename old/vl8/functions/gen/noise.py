@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
-from vl8.dsp.rand import Rand
-from vl8.function.generator import Generator
+from old.vl8.dsp.rand import Rand
+from old.vl8.function.generator import Generator
 import numpy as np
 
 

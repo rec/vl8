@@ -1,7 +1,7 @@
 from numpy.testing import assert_array_equal
 from pathlib import Path
-from vl8.dsp.grain import GrainSamples
-from vl8.dsp.rand import Rand
+from old.vl8.dsp.grain import GrainSamples
+from old.vl8.dsp.rand import Rand
 import json
 import numpy as np
 import unittest

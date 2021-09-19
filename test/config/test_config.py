@@ -1,4 +1,4 @@
-from vl8.config.config import merge
+from old.vl8.config.config import merge
 import unittest
 
 

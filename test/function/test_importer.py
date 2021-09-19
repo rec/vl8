@@ -1,5 +1,5 @@
-from vl8.function import importer
-from vl8.functions.catenate import Catenate
+from old.vl8.function import importer
+from old.vl8.functions.catenate import Catenate
 import unittest
 
 MISSING = []
@@ -23,14 +23,14 @@ class TestImporter(unittest.TestCase):
         with self.assertRaises(ImportError) as m:
             importer(mod)
         msg = ("toast.function.test_importer can't be found anywhere: "
-               "('', 'vl8.functions.', 'vl8.functions.gen.')")
+               "('', 'old.vl8.functions.', 'old.vl8.functions.gen.')")
         assert m.exception.args[0] == msg
 
     def test_import_error2(self):
         with self.assertRaises(ImportError) as m:
             importer('test.function.toast_importer')
         msg = ("test.function.toast_importer can't be found anywhere: "
-               "('', 'vl8.functions.', 'vl8.functions.gen.')")
+               "('', 'old.vl8.functions.', 'old.vl8.functions.gen.')")
         assert m.exception.args[0] == msg
 
     def test_import_error3(self):

@@ -13,7 +13,7 @@ _classifiers = [
 
 
 def _version():
-    with open('vl8.py') as fp:
+    with open('old/vl8/vl8.py') as fp:
         line = next(i for i in fp if i.startswith('__version__'))
         return line.strip().split()[-1].strip("'")
 
@@ -23,7 +23,7 @@ REQUIREMENTS = Path('requirements.txt').read_text().splitlines()
 
 if __name__ == '__main__':
     setup(
-        name='vl8',
+        name='old.vl8',
         version=_version(),
         author='Tom Ritchford',
         author_email='tom@swirly.com',

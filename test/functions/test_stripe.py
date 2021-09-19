@@ -1,8 +1,8 @@
 from ..assert_files_equal import assert_files_equal
 from pathlib import Path
-from vl8.dsp.data import File
-from vl8.dsp.grain import Grain
-from vl8.functions.stripe import Stripe
+from old.vl8.dsp.data import File
+from old.vl8.dsp.grain import Grain
+from old.vl8.functions.stripe import Stripe
 import tdir
 import unittest
 

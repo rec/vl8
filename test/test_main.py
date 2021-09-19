@@ -1,6 +1,6 @@
 from . import assert_files_equal
 from pathlib import Path
-from vl8.__main__ import main
+from old.vl8.__main__ import main
 import tdir
 import unittest
 

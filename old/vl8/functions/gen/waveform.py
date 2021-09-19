@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
-from vl8.dsp import curve_cache
-from vl8.function.periodic import Periodic
-from vl8.types import to_number, types
+from old.vl8.dsp import curve_cache
+from old.vl8.function.periodic import Periodic
+from old.vl8.types import to_number, types
 import math
 import numpy as np
 

@@ -1,7 +1,7 @@
 from ..assert_files_equal import assert_files_equal
 from pathlib import Path
-from vl8.dsp.data import File
-from vl8.functions.catenate import Catenate
+from old.vl8.dsp.data import File
+from old.vl8.functions.catenate import Catenate
 import tdir
 import unittest
 

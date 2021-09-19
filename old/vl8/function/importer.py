@@ -3,7 +3,7 @@ import abbrev
 import importlib
 import xmod
 
-DEFAULT_MODULES = '', 'vl8.functions.', 'vl8.functions.gen.'
+DEFAULT_MODULES = '', 'old.vl8.functions.', 'old.vl8.functions.gen.'
 
 
 @xmod

@@ -1,5 +1,5 @@
 from ...assert_files_equal import assert_files_equal
-from vl8.functions.gen import Sawtooth, Sine, Square, Triangle
+from old.vl8.functions.gen import Sawtooth, Sine, Square, Triangle
 import tdir
 import unittest
 

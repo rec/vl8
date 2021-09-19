@@ -1,5 +1,5 @@
 from numpy.testing import assert_array_almost_equal
-from vl8.dsp.fader import Fader
+from old.vl8.dsp.fader import Fader
 import numpy as np
 import unittest
 

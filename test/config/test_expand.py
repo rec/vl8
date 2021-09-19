@@ -1,4 +1,4 @@
-from vl8.config.expand import Expander
+from old.vl8.config.expand import Expander
 import unittest
 
 expander = Expander('config', {'money': 3, 'love': 10, 'murder': 0})

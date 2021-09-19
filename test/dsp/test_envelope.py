@@ -1,5 +1,5 @@
 from numpy.testing import assert_array_equal
-from vl8.dsp import envelope
+from old.vl8.dsp import envelope
 import itertools
 import numpy as np
 import unittest

@@ -1,5 +1,5 @@
 from pathlib import Path
-from vl8.config.validate import validate
+from old.vl8.config.validate import validate
 import functools
 import unittest
 
@@ -16,9 +16,9 @@ class TestValidate(unittest.TestCase):
 
     def test_simple(self):
         # TODO: restore this
-        # self.validate(sources='foo.wav', functions={'foo': 'vl8.foo'})
+        # self.validate(sources='foo.wav', functions={'foo': 'old.vl8.foo'})
         self.validate(
-            sources={'_': ['foo.wav']}, functions={'foo': 'vl8.util.error'}
+            sources={'_': ['foo.wav']}, functions={'foo': 'old.vl8.util.error'}
         )
 
         assert self.errors == []

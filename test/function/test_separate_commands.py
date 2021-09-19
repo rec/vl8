@@ -1,5 +1,5 @@
 from unittest import mock
-from vl8.function import separate_commands
+from old.vl8.function import separate_commands
 import unittest
 
 
@@ -12,7 +12,7 @@ class TestIsFunction(unittest.TestCase):
             assert not separate_commands.is_function(i)
 
 
-@mock.patch('vl8.function.separate_commands.is_function', str.isupper)
+@mock.patch('old.vl8.function.separate_commands.is_function', str.isupper)
 class TestSeparateCommands(unittest.TestCase):
     def test_one(self):
         actual = list(separate_commands('aBcDEFg'))

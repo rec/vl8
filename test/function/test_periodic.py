@@ -1,4 +1,4 @@
-from vl8.function.periodic import Periodic
+from old.vl8.function.periodic import Periodic
 import unittest
 
 

@@ -1,6 +1,6 @@
 from .. import skip
 from fractions import Fraction
-from vl8.util import ffprobe
+from old.vl8.util import ffprobe
 import unittest
 
 FILE1 = 'test/www-mmsp.ece.mcgill.ca/AFsp/M1F1-int12WE-AFsp.wav'

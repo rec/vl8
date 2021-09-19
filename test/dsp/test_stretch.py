@@ -1,6 +1,6 @@
 from .. import skip
 from pathlib import Path
-from vl8.dsp import io
+from old.vl8.dsp import io
 import tdir
 import unittest
 

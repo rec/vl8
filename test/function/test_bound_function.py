@@ -1,4 +1,4 @@
-from vl8.function.bound_function import BoundFunction
+from old.vl8.function.bound_function import BoundFunction
 import unittest
 
 

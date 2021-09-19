@@ -1,5 +1,5 @@
 from fractions import Fraction
-from vl8.types import to_fraction
+from old.vl8.types import to_fraction
 import itertools
 import more_itertools
 import unittest
