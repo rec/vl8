@@ -1,4 +1,4 @@
-from . import error
+from old.vl8.util import error
 from typing import List, Union, Optional
 import math
 import xmod
