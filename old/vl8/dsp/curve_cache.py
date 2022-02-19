@@ -10,17 +10,20 @@ Curve = Union[str, Callable, None]
 def to_callable(curve: Curve):
     if callable(curve):
         return curve
+
     if curve is None:
         return np.linspace
+
     assert isinstance(curve, str)
     return importer(curve, 'numpy')
 
 
 @functools.lru_cache()
-def make(curve: Curve, dtype: np.dtype):
+def make(curve: Curve, dtype: np.dtype, endpoint=True):
+    @functools.wraps(curve)
     @functools.lru_cache()
     def f(a, b, gap):
-        return curve(a, b, gap, endpoint=True, dtype=dtype)
+        return curve(a, b, gap, endpoint=endpoint, dtype=dtype)
 
     return f
 
