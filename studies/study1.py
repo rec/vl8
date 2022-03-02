@@ -29,6 +29,7 @@ end = linspace(0, F_END * CYCLES)
 
 write(sin(begin), 'begin.wav')
 write(sin(end), 'end.wav')
+
 write(sin(begin * linspace(1, RATIO)), 'bad-linear.wav')
 write(sin(begin * linspace(1, HALF_RATIO)), 'linear.wav')
 write(sin(begin * geomspace(1, RATIO)), 'bad-geom1.wav')
