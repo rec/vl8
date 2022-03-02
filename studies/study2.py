@@ -1,14 +1,14 @@
+from dataclasses import dataclass
 import wavemap
 from functools import partial
 import numpy as np
-from numpy import sin
+# from numpy import sin
 
 SAMPLE_RATE = 44100
 SCALE = 0.5
-DTYPE = np.float64
 
-linspace = partial(np.linspace, endpoint=False, dtype=DTYPE)
-geomspace = partial(np.geomspace, endpoint=False, dtype=DTYPE)
+linspace = partial(np.linspace, endpoint=False)
+geomspace = partial(np.geomspace, endpoint=False)
 
 
 def write(a, filename):
@@ -23,6 +23,25 @@ def write(a, filename):
 # A way to slice and combine samples
 
 
-def ramp(begin, end, duration, fade_in, fade_out):
-    nsamples = round(duration * SAMPLE_RATE)
-    cycles = duration * 2 * np.pi
+def _samples(duration):
+    return round(duration * SAMPLE_RATE)
+
+
+@dataclass
+class Ramp:
+    f_begin: float
+    f_end: float
+    duration: float
+    linear: bool = False
+
+    def __call__(self):
+        nsamples = _samples(self.duration)
+        s = linspace(0, self.begin * self.duration * 2 * np.pi, nsamples)
+
+        ratio = self.f_end / self.f_begin
+        if self.linear:
+            s *= linspace(1, 1 + (ratio - 1) / 2, nsamples)
+        else:
+            s *= geomspace(1, np.sqrt(ratio), nsamples)
+
+        return np.sin(s, out=s)
