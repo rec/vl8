@@ -1,5 +1,4 @@
 abbrev
-dataclasses
 graycode
 more-itertools
 numpy
