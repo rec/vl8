@@ -9,7 +9,7 @@ auto = true
 [tool.poetry]
 name = "vl8"
 version = "0.2.0"
-description = "🔉 vl8: perturbed audio 🔉"
+description = "🔉 Perturbed audio 🔉"
 authors = ["Tom Ritchford <tom@swirly.com>"]
 license = "MIT"
 readme = "README.rst"
