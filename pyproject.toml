@@ -43,6 +43,9 @@ source = "vl8"
 fail_under = "60"
 skip_covered = "True"
 exclude_lines = ["pragma: no cover", "if False:", "if __name__ == .__main__.:", "raise NotImplementedError"]
+
+[tool.mypy]
+strict = true
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
