@@ -1,40 +1,57 @@
-[tool.doks]
-auto = true
-
-[tool.poetry]
+[project]
 name = "vl8"
 version = "0.2.0"
 description = "🔉 Perturbed audio 🔉"
-authors = ["Tom Ritchford <tom@swirly.com>"]
-license = "MIT"
+authors = [{ name = "Tom Ritchford", email = "tom@swirly.com" }]
+requires-python = ">=3.8.1,<4"
 readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "abbrev>=1.0.1,<2",
+    "graycode>=1.0.5,<2",
+    "more-itertools>=9.0.0,<10",
+    "numpy>=1.24.1,<2",
+    "pydub>=0.25.1,<0.26",
+    "pyyaml>=6.0,<7",
+    "runs>=1.1.0,<2",
+    "soundfile>=0.11.0,<0.12",
+    "stroll>=1.1.0,<2",
+    "tdir>=1.4.1,<2",
+    "toml>=0.10.2,<0.11",
+    "typeguard>=2.13.3,<3",
+    "wavemap>=2.0.1,<3",
+    "xmod>=1.3.2,<2",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8.1"
-abbrev = "^1.0.1"
-graycode = "^1.0.5"
-more-itertools = "^9.0.0"
-numpy = "^1.24.1"
-pydub = "^0.25.1"
-pyyaml = "^6.0"
-runs = "^1.1.0"
-soundfile = "^0.11.0"
-stroll = "^1.1.0"
-tdir = "^1.4.1"
-toml = "^0.10.2"
-typeguard = "^2.13.3"
-wavemap = "^2.0.1"
-xmod = "^1.3.2"
+[tool.doks]
+auto = true
 
-[tool.poetry.group.dev.dependencies]
-coverage = "^7.1.0"
-flake8 = "^6.0.0"
-impall = "^1.1.1"
-pytest = "^7.2.1"
-tdir = "^1.4.1"
+[dependency-groups]
+dev = [
+    "coverage>=7.1.0,<8",
+    "flake8>=6.0.0,<7",
+    "impall>=1.1.1,<2",
+    "pytest>=7.2.1,<8",
+    "tdir>=1.4.1,<2",
+]
 
+[tool.uv]
 
-[tool.coverage]
+[tool.uv.build-backend]
+module-root = ""
+
+[build-system]
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
 [tool.coverage.run]
 branch = "True"
 source = "vl8"
@@ -46,6 +63,3 @@ exclude_lines = ["pragma: no cover", "if False:", "if __name__ == .__main__.:", 
 
 [tool.mypy]
 strict = true
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
