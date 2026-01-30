@@ -3,7 +3,7 @@ name = "vl8"
 version = "0.2.0"
 description = "🔉 Perturbed audio 🔉"
 authors = [{ name = "Tom Ritchford", email = "tom@swirly.com" }]
-requires-python = ">=3.8.1,<4"
+requires-python = ">=3.10"
 readme = "README.md"
 license = "MIT"
 classifiers = [
