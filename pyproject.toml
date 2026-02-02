@@ -38,10 +38,12 @@ auto = true
 [dependency-groups]
 dev = [
     "coverage>=7.1.0,<8",
-    "flake8>=6.0.0,<7",
     "impall>=1.1.1,<2",
     "pytest>=7.2.1,<8",
+    "pyupgrade>=3.21.2",
+    "ruff>=0.14.14",
     "tdir>=1.4.1,<2",
+    "ty>=0.0.14",
 ]
 
 [tool.uv]
@@ -53,12 +55,12 @@ module-root = ""
 requires = ["uv_build>=0.9.0,<0.10.0"]
 build-backend = "uv_build"
 [tool.coverage.run]
-branch = "True"
+branch = true
 source = "vl8"
 
 [tool.coverage.report]
 fail_under = "60"
-skip_covered = "True"
+skip_covered = true
 exclude_lines = ["pragma: no cover", "if False:", "if __name__ == .__main__.:", "raise NotImplementedError"]
 
 [tool.mypy]
