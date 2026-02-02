@@ -8,7 +8,7 @@ LIMIT_DENOMINATOR = 1000000
 
 @singledispatch
 def to_fraction(ratio: Numeric) -> Fraction:
-    raise TypeError(f'Do not understand {ratio} of type {type(ratio)}')
+    raise TypeError(f"Do not understand {ratio} of type {type(ratio)}")
 
 
 @to_fraction.register(Fraction)
@@ -28,7 +28,7 @@ def _(ratio: float) -> Fraction:
 
 @to_fraction.register(str)
 def _(ratio: str) -> Fraction:
-    parts = ratio.strip().split('/', maxsplit=1)
+    parts = ratio.strip().split("/", maxsplit=1)
     return _fraction(*parts)
 
 

@@ -12,7 +12,7 @@ def read(filename):
     assert not len(array) % s.channels
     assert nsamples == int(s.frame_count())
 
-    matrix = array.reshape((s.channels, nsamples), order='F')
+    matrix = array.reshape((s.channels, nsamples), order="F")
     return matrix, s.frame_rate
 
 
@@ -31,7 +31,7 @@ def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, *args, **kwargs):
         data = data.astype(np.int16)
 
     segment = AudioSegment(
-        data=data.tobytes('F'),
+        data=data.tobytes("F"),
         sample_width=data.dtype.itemsize,
         frame_rate=sample_rate,
         channels=first if rest else 1,

@@ -6,8 +6,8 @@ import numpy as np
 import tdir
 import unittest
 
-TEST_FILE = Path(__file__).parent / 'b-4098.wav'
-DIR = Path(__file__).parent / 'sources'
+TEST_FILE = Path(__file__).parent / "b-4098.wav"
+DIR = Path(__file__).parent / "sources"
 
 
 @tdir
@@ -20,9 +20,9 @@ class TestIO(unittest.TestCase):
         assert sample_rate == 44100
         assert data.shape == (2, length)
         segment = AudioSegment.from_file(TEST_FILE)
-        assert segment._data == data.tobytes('F')
+        assert segment._data == data.tobytes("F")
 
-        filename = f'result-{length}.wav'
+        filename = f"result-{length}.wav"
         io.write(filename, data)
         data2, _ = io.read(filename)
 
@@ -32,9 +32,12 @@ class TestIO(unittest.TestCase):
         length = 7249
         data = np.linspace(0, length - 1, length, dtype=np.int16)
         data = data.reshape(1, length)
-        assert data.shape == (1, length,)
+        assert data.shape == (
+            1,
+            length,
+        )
 
-        filename = f'result-{length}.wav'
+        filename = f"result-{length}.wav"
         io.write(filename, data)
         data2, _ = io.read(filename)
         assert_array_equal(data, data2)
@@ -52,10 +55,10 @@ class TestIO(unittest.TestCase):
         assert_array_equal(stereo.data, expected)
 
     def test_two(self):
-        infile = DIR / '1.wav'
-        outfile = Path('1.wav')
+        infile = DIR / "1.wav"
+        outfile = Path("1.wav")
         segment = AudioSegment.from_file(infile)
-        segment.export(outfile, format='wav')
+        segment.export(outfile, format="wav")
 
         d1 = infile.read_bytes()
         d2 = outfile.read_bytes()
@@ -65,8 +68,8 @@ class TestIO(unittest.TestCase):
         # AudioSegment changes one bit in the length from the sample
 
     def test_three(self):
-        infile = DIR / '1.wav'
-        outfile = Path('1.wav')
+        infile = DIR / "1.wav"
+        outfile = Path("1.wav")
         data, sample_rate = io.read(infile)
         assert data.dtype == np.int8
         io.write(outfile, data, sample_rate)
@@ -79,8 +82,8 @@ class TestIO(unittest.TestCase):
 
     def NO_test_pydub_24(self):
         # A 24-bit file
-        infile = DIR / 'sunnk - skinning gales 07.wav'
-        outfile = Path('stereo.wav')
+        infile = DIR / "sunnk - skinning gales 07.wav"
+        outfile = Path("stereo.wav")
         segment = AudioSegment.from_file(infile)
-        segment.export('stereo.wav', format='wav')
+        segment.export("stereo.wav", format="wav")
         assert infile.read_bytes() == outfile.read_bytes()

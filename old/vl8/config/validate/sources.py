@@ -1,6 +1,6 @@
 from pathlib import Path
 
-DEFAULT = '_'
+DEFAULT = "_"
 
 
 def validate(sources):
@@ -9,8 +9,8 @@ def validate(sources):
 
     for k, v in sources.items():
         if not isinstance(v, list):
-            yield 'source %s was not a list' % k
+            yield "source %s was not a list" % k
         elif not all(isinstance(i, str) for i in v):
-            yield 'source %s was not a list of strings' % k
+            yield "source %s was not a list of strings" % k
         else:
             sources[k] = [Path(i).expanduser() for i in v]

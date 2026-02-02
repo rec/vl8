@@ -46,4 +46,4 @@ def _apply(results, sample_rate):
         elif isinstance(x, np.ndarray):
             yield data.Data(x, sample_rate)
         else:
-            raise ValueError(f'Cannot understand {x}')
+            raise ValueError(f"Cannot understand {x}")

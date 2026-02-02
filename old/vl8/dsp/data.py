@@ -12,17 +12,15 @@ class HasData:
     def __getattr__(self, k: str) -> object:
         return getattr(self.data, k)
 
-    floating_dtype = np.dtype('float32')
+    floating_dtype = np.dtype("float32")
 
     @property
     def floating(self):
-        if getattr(self, '_floating', None) is None:
-            if 'float' in str(self.data.dtype):
+        if getattr(self, "_floating", None) is None:
+            if "float" in str(self.data.dtype):
                 self._floating = self.data
             else:
-                self._floating = wavemap.convert(
-                    self.data, self.floating_dtype
-                )
+                self._floating = wavemap.convert(self.data, self.floating_dtype)
         return self._floating
 
     @property

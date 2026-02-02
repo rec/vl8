@@ -6,7 +6,7 @@ import json
 import numpy as np
 import unittest
 
-RESULTS = Path(__file__).parent / 'grain-results.json'
+RESULTS = Path(__file__).parent / "grain-results.json"
 
 
 class TestGrain(unittest.TestCase):
@@ -42,9 +42,7 @@ class TestGrain(unittest.TestCase):
             assert_array_equal(a, e)
 
     def test_variation(self):
-        grain = GrainSamples(
-            nsamples=7, overlap=0, rand=Rand(args=(-2, 2), seed=0)
-        )
+        grain = GrainSamples(nsamples=7, overlap=0, rand=Rand(args=(-2, 2), seed=0))
         actual = list(grain.chunks(self.data()))
         expected = [
             [[0, 1, 2, 3, 4, 5, 6, 7], [10, 11, 12, 13, 14, 15, 16, 17]],

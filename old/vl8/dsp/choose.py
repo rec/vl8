@@ -14,7 +14,7 @@ def choose_read(filename):
         except Exception as e:
             exceptions.append(str(e))
 
-    raise ValueError(f'Cannot read file {filename}: {exceptions}')
+    raise ValueError(f"Cannot read file {filename}: {exceptions}")
 
 
 def choose_write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE):
@@ -25,4 +25,4 @@ def choose_write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE):
         except Exception as e:
             exceptions.append(e)
 
-    raise ValueError(f'Cannot write file {filename}: {exceptions}')
+    raise ValueError(f"Cannot write file {filename}: {exceptions}")

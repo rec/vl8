@@ -47,7 +47,7 @@ class Stripe(Creator):
             time += stride
 
         if missing_chunk:
-            raise ValueError('missing chunk')
+            raise ValueError("missing chunk")
 
         return arr[:, : round(time)]
 

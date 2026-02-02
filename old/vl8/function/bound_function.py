@@ -19,7 +19,7 @@ class BoundFunction:
             return self.func(*s, **self.args)
 
         if self.missing:
-            raise TypeError(f'Missing required arguments {self.missing}')
+            raise TypeError(f"Missing required arguments {self.missing}")
 
         if self.func.type is Function.Type.SIMPLE:
             yield from (call(s) for s in files)
@@ -32,7 +32,7 @@ class BoundFunction:
             yield call()
 
     def __str__(self):
-        return f'BoundFunction({self.func}, {self.args})'
+        return f"BoundFunction({self.func}, {self.args})"
 
 
 def _func_args(func):
@@ -47,25 +47,25 @@ def _func_args(func):
 
     if isinstance(func, str):
         fname, arg_str = _split_args(func)
-        parts = arg_str.split(',')
-        if parts and all('=' in p for p in parts):
-            arg_str = ', '.join(p.replace('=', ': ', 1) for p in parts)
+        parts = arg_str.split(",")
+        if parts and all("=" in p for p in parts):
+            arg_str = ", ".join(p.replace("=", ": ", 1) for p in parts)
 
-        args = yaml.safe_load('{%s}' % arg_str)
+        args = yaml.safe_load("{%s}" % arg_str)
         f = Function(fname)
         return f, _expand(f, args)
 
-    raise TypeError(f'Cannot understand func={func}')
+    raise TypeError(f"Cannot understand func={func}")
 
 
 def _split_args(name):
-    for begin, end in '()', '{}':
+    for begin, end in "()", "{}":
         if name.endswith(end):
             if begin not in name:
                 raise ValueError(f'"{end}" with no "{begin}" in "{name}"')
             return name[:-1].split(begin, maxsplit=1)
 
-    return name, ''
+    return name, ""
 
 
 def _expand(func, args):
@@ -74,7 +74,7 @@ def _expand(func, args):
         if key == param.name:
             argname = key
         else:
-            argname = f'{key}/{param.name}'
+            argname = f"{key}/{param.name}"
         typeguard.check_type(argname, value, param)
         return param.name, value
 

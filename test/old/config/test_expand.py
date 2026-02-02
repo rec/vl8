@@ -1,7 +1,7 @@
 from old.vl8.config.expand import Expander
 import unittest
 
-expander = Expander('config', {'money': 3, 'love': 10, 'murder': 0})
+expander = Expander("config", {"money": 3, "love": 10, "murder": 0})
 
 
 class TestExpander(unittest.TestCase):
@@ -12,16 +12,16 @@ class TestExpander(unittest.TestCase):
     def test_empty(self):
         self.expand()
         assert self.errors == []
-        assert self.config == {'money': 3, 'love': 10, 'murder': 0}
+        assert self.config == {"money": 3, "love": 10, "murder": 0}
 
     def test_simple(self):
         self.expand(money=5)
         assert self.errors == []
-        assert self.config == {'money': 5, 'love': 10, 'murder': 0}
+        assert self.config == {"money": 5, "love": 10, "murder": 0}
 
         self.expand(mo=5, love=20)
         assert self.errors == []
-        assert self.config == {'money': 5, 'love': 20, 'murder': 0}
+        assert self.config == {"money": 5, "love": 20, "murder": 0}
 
     def test_errors(self):
         self.expand(m=5)

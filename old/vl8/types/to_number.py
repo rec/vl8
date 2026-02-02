@@ -16,7 +16,7 @@ def _(n: float) -> float:
 
 @to_number.register(str)
 def _(n: str) -> Number:
-    if '/' in n:
+    if "/" in n:
         return to_fraction(n)
     try:
         return int(n)

@@ -2,7 +2,7 @@ from . import DEFAULT_SAMPLE_RATE
 from .external import External
 from pathlib import Path
 
-_rubberband = External('rubberband {options} {infile} {outfile}', '--', '=')
+_rubberband = External("rubberband {options} {infile} {outfile}", "--", "=")
 
 
 def rubberband(
@@ -21,15 +21,15 @@ def rubberband(
     freqs = sum(f is not None for f in (pitch, frequency))
 
     if times > 1:
-        raise ValueError('Can only set one of time, tempo, duration')
+        raise ValueError("Can only set one of time, tempo, duration")
     if freqs > 1:
-        raise ValueError('Can only set one of pitch, frequency')
+        raise ValueError("Can only set one of pitch, frequency")
 
     if timemap and not Path(timemap).exists():
-        raise ValueError('File {timemap} does not exist')
+        raise ValueError("File {timemap} does not exist")
 
     if not (times or freqs or timemap):
-        raise ValueError('No change requested')
+        raise ValueError("No change requested")
 
     kwargs = {k: v for k, v in locals().items() if v is not None}
     return _rubberband(**kwargs)

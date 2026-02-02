@@ -6,15 +6,15 @@ import soundfile
 DEFAULT_TYPE = np.float32
 
 DTYPE = {
-    'PCM_16': np.int16,
-    'PCM_32': np.int32,
-    'DOUBLE': np.float64,
-    'FLOAT': np.float32,
+    "PCM_16": np.int16,
+    "PCM_32": np.int32,
+    "DOUBLE": np.float64,
+    "FLOAT": np.float32,
 }
 SPECIAL_DTYPE = {
-    'PCM_24': np.int32,
-    'PCM_S8': np.int16,
-    'PCM_U8': np.int16,
+    "PCM_24": np.int32,
+    "PCM_S8": np.int16,
+    "PCM_U8": np.int16,
 }
 
 
@@ -26,11 +26,11 @@ def read(file, original_type=True, **kwargs):
     data = np.transpose(data)
 
     if original_type:
-        if sf.subtype == 'PCM_S8':
+        if sf.subtype == "PCM_S8":
             data /= 0x100
             data = data.astype(np.int8)
 
-        elif sf.subtype == 'PCM_U8':
+        elif sf.subtype == "PCM_U8":
             data //= 0x100
             data += 0x80
             data = data.astype(np.uint8)
@@ -42,7 +42,7 @@ def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, **kwargs):
     d = np.transpose(data)
 
     f = _file(filename)
-    assert f.endswith('.wav')
+    assert f.endswith(".wav")
 
     if d.dtype == np.int8:
         d = d.astype(np.int16)
@@ -59,7 +59,7 @@ def write(filename, data, sample_rate=DEFAULT_SAMPLE_RATE, **kwargs):
         if dt == d.dtype:
             break
     else:
-        raise ValueError(f'Unknown type {d.dtype}')
+        raise ValueError(f"Unknown type {d.dtype}")
 
     return soundfile.write(f, d, sample_rate, subtype, **kwargs)
 

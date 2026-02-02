@@ -6,8 +6,8 @@ from old.vl8.functions.stripe import Stripe
 import tdir
 import unittest
 
-DIR = Path(__file__).parents[1] / 'dsp/sources'
-FILES = tuple(DIR / f'{i}.wav' for i in range(1, 4))
+DIR = Path(__file__).parents[1] / "dsp/sources"
+FILES = tuple(DIR / f"{i}.wav" for i in range(1, 4))
 assert len(FILES) == 3
 
 SAMPLE_RATE = 11025
@@ -17,5 +17,5 @@ SAMPLE_RATE = 11025
 class TestStripe(unittest.TestCase):
     def DONT_test_123_simple(self):
         sources = [File(f) for f in FILES]
-        result = Stripe(grain=Grain(duration='10ms'))(*sources)
-        assert_files_equal('stripe-123.wav', result, SAMPLE_RATE)
+        result = Stripe(grain=Grain(duration="10ms"))(*sources)
+        assert_files_equal("stripe-123.wav", result, SAMPLE_RATE)

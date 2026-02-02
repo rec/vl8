@@ -13,10 +13,10 @@ class Expander:
             opts = [d for d in self.defaults if d.startswith(k)]
             if opts:
                 if len(opts) > 1:
-                    yield f'Ambiguous {self.name} {k}={v}: {opts}'
+                    yield f"Ambiguous {self.name} {k}={v}: {opts}"
                 results[opts[0]] = v
             else:
-                yield f'Unknown {self.name}: {k}={v}'
+                yield f"Unknown {self.name}: {k}={v}"
 
         for k, v in self.defaults.items():
             if k not in results:

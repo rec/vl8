@@ -9,16 +9,12 @@ class TestRatio(unittest.TestCase):
     def test_type_error(self):
         with self.assertRaises(TypeError) as m:
             to_fraction(set())
-        assert m.exception.args == (
-            "Do not understand set() of type <class 'set'>",
-        )
+        assert m.exception.args == ("Do not understand set() of type <class 'set'>",)
 
     def test_value_error(self):
         with self.assertRaises(ValueError) as m:
-            to_fraction('junk')
-        assert m.exception.args == (
-            "could not convert string to float: 'junk'",
-        )
+            to_fraction("junk")
+        assert m.exception.args == ("could not convert string to float: 'junk'",)
 
     def test_empty(self):
         for x in 0, 0.0:
@@ -28,7 +24,7 @@ class TestRatio(unittest.TestCase):
         f23 = Fraction(2, 3)
         assert to_fraction(0.66666666) == f23
 
-        for i in f23, '2/3', 2 / 3, '2 / 3', 0.66666666, 0.6666666:
+        for i in f23, "2/3", 2 / 3, "2 / 3", 0.66666666, 0.6666666:
             assert to_fraction(i) == f23
 
         assert to_fraction(0.666666) == Fraction(333333, 500000)

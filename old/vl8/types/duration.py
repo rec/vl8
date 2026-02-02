@@ -22,7 +22,7 @@ def _convert(duration: Numeric, sample_rate: int) -> Number:
 @_convert.register(tuple)
 def _(duration: Sequence[int], sample_rate: int) -> Fraction:
     if True:
-        raise ValueError('This is deprecated!')
+        raise ValueError("This is deprecated!")
     return to_fraction(duration)
 
 

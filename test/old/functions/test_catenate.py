@@ -5,8 +5,8 @@ from old.vl8.functions.catenate import Catenate
 import tdir
 import unittest
 
-DIR = Path(__file__).parents[1] / 'dsp/sources'
-FILES = tuple(DIR / f'{i}.wav' for i in range(1, 4))
+DIR = Path(__file__).parents[1] / "dsp/sources"
+FILES = tuple(DIR / f"{i}.wav" for i in range(1, 4))
 assert len(FILES) == 3
 
 SAMPLE_RATE = 11025
@@ -29,21 +29,21 @@ class TestCatenate(unittest.TestCase):
         assert nchannels == [1, 1, 1]
 
         result = Catenate(gap=2)(*sources)
-        assert_files_equal('123.wav', result, SAMPLE_RATE)
+        assert_files_equal("123.wav", result, SAMPLE_RATE)
 
     def test_123_float(self):
         sources = [File(f) for f in FILES]
-        result = Catenate(dtype='float32', gap=1)(*sources)
-        assert_files_equal('123-float.wav', result, SAMPLE_RATE)
+        result = Catenate(dtype="float32", gap=1)(*sources)
+        assert_files_equal("123-float.wav", result, SAMPLE_RATE)
 
     def test_123_float_fade(self):
         sources = [File(f) for f in FILES]
-        result = Catenate(dtype='float32', gap=-1 / 2)(*sources)
-        assert_files_equal('123-float-fade.wav', result, SAMPLE_RATE)
+        result = Catenate(dtype="float32", gap=-1 / 2)(*sources)
+        assert_files_equal("123-float-fade.wav", result, SAMPLE_RATE)
 
     def test_2(self):
-        f = File(DIR / '2.wav')
+        f = File(DIR / "2.wav")
         assert f.nsamples == 12172
         assert f.sample_rate == 11025
         result = Catenate(gap=2)(f)
-        assert_files_equal('2.wav', result, SAMPLE_RATE)
+        assert_files_equal("2.wav", result, SAMPLE_RATE)

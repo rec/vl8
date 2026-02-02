@@ -9,12 +9,12 @@ class TestSetterDataclass(unittest.TestCase):
         @setter_dataclass
         class One:
             one: types.Numeric
-            two: str = 'a'
+            two: str = "a"
             three: types.NumericSequence = None
             four: Optional[types.Numeric] = None
-            five: Optional[types.Numeric] = '23.5'
+            five: Optional[types.Numeric] = "23.5"
 
-        one = One('2 / 3', 'b', ['4.25', 12])
+        one = One("2 / 3", "b", ["4.25", 12])
         assert one.one == Fraction(2, 3)
         assert one.three == [4.25, 12]
         assert one.four is None

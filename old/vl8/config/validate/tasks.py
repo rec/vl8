@@ -1,7 +1,7 @@
 from ..expand import Expander
 
-DEFAULT = {'functions': dict, 'sources': dict, 'out': dict}
-expand = Expander('tasks', DEFAULT)
+DEFAULT = {"functions": dict, "sources": dict, "out": dict}
+expand = Expander("tasks", DEFAULT)
 
 
 def validate(tasks):
@@ -19,7 +19,7 @@ def validate(tasks):
             functions, *rest = task
             task = {}
             if rest:
-                task['out'], *rest = rest
+                task["out"], *rest = rest
 
             task.update(functions=functions, sources=list(rest))
 
@@ -27,4 +27,4 @@ def validate(tasks):
             yield from expand(task)
             tasks[name] = task
         else:
-            yield f'Task {name} is not a dict, string, or list'
+            yield f"Task {name} is not a dict, string, or list"

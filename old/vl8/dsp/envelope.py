@@ -66,25 +66,25 @@ def _check(levels, times):
     if times is None:
         if not level_time_pairs:
             raise ValueError(
-                'levels must be a list of time, level pairs if times is None'
+                "levels must be a list of time, level pairs if times is None"
             )
         times, levels = zip(*levels)
     elif level_time_pairs:
         raise ValueError(
-            'times must be None if levels us be a list of time, level pairs'
+            "times must be None if levels us be a list of time, level pairs"
         )
 
     if isinstance(levels, Number):
         levels = [levels]
     elif len(levels) < 1:
-        raise ValueError('There must be at least one level')
+        raise ValueError("There must be at least one level")
 
     if isinstance(times, Number):
         times = [times]
     elif not times and len(levels) != 1:
-        raise ValueError('A constant envelope can only have one level')
+        raise ValueError("A constant envelope can only have one level")
 
     if any(t < 0 for t in times):
-        raise ValueError('Times cannot be negative')
+        raise ValueError("Times cannot be negative")
 
     return levels, times

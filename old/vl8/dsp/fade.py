@@ -9,7 +9,7 @@ def fade(src: np.ndarray, fade_in: np.ndarray, fade_out: np.ndarray) -> None:
 
     # TODO: unsafe leaves the possibility of overs in a fixed-point format.
     def mul(x, y):
-        np.multiply(x, y, out=x, casting='unsafe')
+        np.multiply(x, y, out=x, casting="unsafe")
 
     fi = len(fade_in)
     fo = len(fade_out)

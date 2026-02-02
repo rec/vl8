@@ -18,31 +18,31 @@ class TestValidate(unittest.TestCase):
         # TODO: restore this
         # self.validate(sources='foo.wav', functions={'foo': 'old.vl8.foo'})
         self.validate(
-            sources={'_': ['foo.wav']}, functions={'foo': 'old.vl8.util.error'}
+            sources={"_": ["foo.wav"]}, functions={"foo": "old.vl8.util.error"}
         )
 
         assert self.errors == []
 
-        functions = self.config.pop('functions')
-        assert isinstance(functions.pop('foo'), functools.partial)
+        functions = self.config.pop("functions")
+        assert isinstance(functions.pop("foo"), functools.partial)
         assert not functions
 
-        sources = {'_': [Path('foo.wav')]}
+        sources = {"_": [Path("foo.wav")]}
         assert self.config == dict(_CONFIG, sources=sources)
 
 
 _CONFIG = {
-    'arguments': {},
-    'options': {
-        'calc_type': 'float32',
-        'continue': False,
-        'dry_run': False,
-        'force': False,
-        'out_file': '',
-        'out_format': '.wav',
-        'out_type': 'int16',
-        'verbose': False,
+    "arguments": {},
+    "options": {
+        "calc_type": "float32",
+        "continue": False,
+        "dry_run": False,
+        "force": False,
+        "out_file": "",
+        "out_format": ".wav",
+        "out_type": "int16",
+        "verbose": False,
     },
-    'sources': {},
-    'tasks': {},
+    "sources": {},
+    "tasks": {},
 }

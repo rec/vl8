@@ -34,7 +34,7 @@ class Catcher(Exception):
 
     def __str__(self):
         if not self.exceptions:
-            return ''
+            return ""
         if len(self.exceptions) == 1:
             return str(self.exceptions[0])
         # TODO: clean up!
@@ -53,7 +53,7 @@ def map_dict(f, args):
         with catcher:
             k, v = f(k, v)
             if k in result:
-                raise KeyError(k, 'Duplicate key')
+                raise KeyError(k, "Duplicate key")
             result[k] = v
     catcher.raise_if()
     return result

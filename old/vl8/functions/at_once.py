@@ -28,7 +28,7 @@ class AtOnce(Creator):
             begin = self.offset
             begin += round(self.center * (self.max_length - len(s)) / 2)
             if self.scale:
-                if 'float' in str(s.dtype):
+                if "float" in str(s.dtype):
                     s = s / len(src)
                 else:
                     s = s // len(src)

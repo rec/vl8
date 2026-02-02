@@ -3,15 +3,15 @@ import xmod
 
 
 def is_function(x):
-    if '.' in x:
-        suffix = x.rsplit('.', maxsplit=1)[-1]
+    if "." in x:
+        suffix = x.rsplit(".", maxsplit=1)[-1]
         return suffix.upper() not in AUDIO_FORMATS
     return True
 
 
 @xmod(mutable=True)
 def separate_commands(commands):
-    if commands and len(commands) == 1 and ' ' in commands[0]:
+    if commands and len(commands) == 1 and " " in commands[0]:
         commands = commands[0].split()
 
     function, args = None, []

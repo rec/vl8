@@ -41,7 +41,7 @@ def setter_dataclass(cls, exclude=(), include=None):
         if f.name not in exclude and (include is None or f.name in include):
             maker = _PROPERTY_MAKERS.get(f.type)
             if maker:
-                prop = make_prop('_' + f.name, maker)
+                prop = make_prop("_" + f.name, maker)
                 setattr(cls, f.name, prop)
 
     return cls

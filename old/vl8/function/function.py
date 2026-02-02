@@ -2,14 +2,14 @@ from . import importer
 from enum import Enum
 import inspect
 
-DEFAULT = 'cat'
+DEFAULT = "cat"
 
 
 class Function:
     class Type(Enum):
-        GENERATOR = 'generator'
-        SIMPLE = 'simple'
-        MULTIPLE = 'multiple'
+        GENERATOR = "generator"
+        SIMPLE = "simple"
+        MULTIPLE = "multiple"
 
     def __init__(self, name):
         self.name = name or DEFAULT
@@ -27,12 +27,10 @@ class Function:
             self.type = Function.Type.SIMPLE
 
         else:
-            raise ValueError(
-                f'Bad signature for {self.function}({self.params})'
-            )
+            raise ValueError(f"Bad signature for {self.function}({self.params})")
 
     def __str__(self):
-        return f'Function({self.function}, {self.params}, {self.type})'
+        return f"Function({self.function}, {self.params}, {self.type})"
 
     def required(self):
         return [p.name for p in self.params.values() if p.default is p.empty]
@@ -41,16 +39,16 @@ class Function:
         if self.is_class:
             f_call = _get_call(self.function)
             if not f_call:
-                raise ValueError(f'Class {self.name} is not callable')
+                raise ValueError(f"Class {self.name} is not callable")
 
             call_params = list(_params(f_call).values())
-            if call_params and call_params[0].name == 'self':
+            if call_params and call_params[0].name == "self":
                 call_params.pop(0)
 
             if len(call_params) > 1:
                 raise ValueError(
-                    f'{self.function}.__call__() takes zero or '
-                    f'one argument: {call_params}'
+                    f"{self.function}.__call__() takes zero or "
+                    f"one argument: {call_params}"
                 )
             return call_params and call_params[0]
 
@@ -63,9 +61,9 @@ class Function:
 
     def __call__(self, *sources, **kwargs):
         if self.type is Function.Type.SIMPLE and len(sources) != 1:
-            raise TypeError(f'{self.name} takes exactly one argument')
+            raise TypeError(f"{self.name} takes exactly one argument")
         if self.type is Function.Type.GENERATOR and sources:
-            raise TypeError(f'{self.name} takes no sources')
+            raise TypeError(f"{self.name} takes no sources")
         if self.is_class:
             return self.function(**kwargs)(*sources)
         else:
@@ -85,7 +83,7 @@ def _params(s):
 
 
 def _get_call(cls):
-    x = vars(cls).get('__call__')
+    x = vars(cls).get("__call__")
     if x:
         return x
     for base in cls.__bases__:

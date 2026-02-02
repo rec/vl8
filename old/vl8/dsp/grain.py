@@ -13,7 +13,7 @@ SIZE = Fraction(1024)
 @dataclass
 class _Grain:
     """Grains from within a larger sample, with optional overlaps and
-       optional variation"""
+    optional variation"""
 
     rand: Optional[Rand] = None
     curve: Optional[curve_cache.Curve] = None
@@ -31,9 +31,9 @@ class GrainSamples(_Grain):
         if self.overlap is None:
             self.overlap = Fraction(self.nsamples, 2)
         else:
-            assert (
-                0 <= self.overlap <= self.nsamples
-            ), f'{float(self.overlap)} >= {float(self.nsamples)}'
+            assert 0 <= self.overlap <= self.nsamples, (
+                f"{float(self.overlap)} >= {float(self.nsamples)}"
+            )
 
     @property
     def stride(self) -> Fraction:
@@ -50,7 +50,7 @@ class GrainSamples(_Grain):
             yield round(begin), round(min(size, end))
             b, begin = begin, end - self.overlap
             if begin <= b:
-                raise ValueError('Made no progress')
+                raise ValueError("Made no progress")
 
     def chunks(self, data: np.ndarray) -> Iterator[np.ndarray]:
         function = curve_cache.to_callable(self.curve)
@@ -80,7 +80,7 @@ class Grain(_Grain):
 
     def __post_init__(self):
         if not (0 <= self.overlap <= 1):
-            raise ValueError(f'Bad overlap {self.overlap}')
+            raise ValueError(f"Bad overlap {self.overlap}")
 
     @property
     def stride(self) -> Fraction:
@@ -98,11 +98,11 @@ class Grain(_Grain):
 
 
 def make_grain(**kwargs: dict):
-    if 'nsamples' in kwargs and 'duration' not in kwargs:
+    if "nsamples" in kwargs and "duration" not in kwargs:
         return GrainSamples(**kwargs)
-    if 'duration' in kwargs:
+    if "duration" in kwargs:
         return Grain(**kwargs)
-    raise ValueError('Exactly one of nsamples and duration must be set')
+    raise ValueError("Exactly one of nsamples and duration must be set")
 
 
 GrainType = Union[GrainSamples, Grain, dict]

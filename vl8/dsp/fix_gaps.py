@@ -17,12 +17,12 @@ def fix_gaps(
 ):
     # TODO: fix_gaps should learn about durations amd ration
     if pre < 0 or post < 0:
-        raise ValueError('pre and post cannot be negative')
+        raise ValueError("pre and post cannot be negative")
 
     if not isinstance(gaps, list):
         gaps = [gaps]
     elif not gaps:
-        raise ValueError('gap must be a non-empty list or an integer')
+        raise ValueError("gap must be a non-empty list or an integer")
 
     n = len(durations)
     scale = math.ceil(n / len(gaps))
@@ -40,7 +40,7 @@ def fix_gaps(
         if i < n:
             gap = max(gap, -durations[i])
         if gaps[i] != gap:
-            error(f'Gap {i}: {gap} was longer than the sample!')
+            error(f"Gap {i}: {gap} was longer than the sample!")
             gaps[i] = gap
 
     assert len(gaps) == n + 1

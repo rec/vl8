@@ -17,7 +17,7 @@ def _(nl: List[Numeric]) -> NumberList:
 
 @to_number_list.register(str)
 def _(n: str) -> NumberList:
-    return to_number_list(n.split(','))
+    return to_number_list(n.split(","))
 
 
 @to_number_list.register(type(None))

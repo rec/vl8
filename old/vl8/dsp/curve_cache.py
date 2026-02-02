@@ -15,7 +15,7 @@ def to_callable(curve: Curve):
         return np.linspace
 
     assert isinstance(curve, str)
-    return importer(curve, 'numpy')
+    return importer(curve, "numpy")
 
 
 @functools.lru_cache()

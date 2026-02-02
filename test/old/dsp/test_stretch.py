@@ -4,15 +4,15 @@ from old.vl8.dsp import io
 import tdir
 import unittest
 
-DIR = Path(__file__).parent / 'sources'
+DIR = Path(__file__).parent / "sources"
 
 
-@tdir(use_dir='.')
+@tdir(use_dir=".")
 class TestStretch(unittest.TestCase):
     @skip.if_travis
     def test_pitch_up(self):
         sample_rate = 44100 // 4
-        data, rate = io.read(DIR / '2.wav')
+        data, rate = io.read(DIR / "2.wav")
         assert rate == sample_rate
         assert data.shape[-1] == 12172
 

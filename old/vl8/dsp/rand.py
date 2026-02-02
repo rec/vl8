@@ -4,7 +4,7 @@ from numpy.random import Generator, default_rng
 from typing import Callable, Optional, Union
 
 Distribution = Union[Callable, str, None]
-DEFAULT_DISTRIBUTION = 'uniform'
+DEFAULT_DISTRIBUTION = "uniform"
 
 
 @dataclass
@@ -38,7 +38,7 @@ class Rand:
             try:
                 self._distribution = getattr(Generator, d)
             except AttributeError:
-                raise ValueError(f'No distribution {d}') from None
+                raise ValueError(f"No distribution {d}") from None
 
     def _get_distribution(self) -> Callable:
         return self._distribution

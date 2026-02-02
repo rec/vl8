@@ -4,7 +4,7 @@ import toml
 import yaml
 
 # The sections in a config file dictionary.
-READERS = {'.json': json, '.toml': toml, '.yaml': yaml}
+READERS = {".json": json, ".toml": toml, ".yaml": yaml}
 
 
 def load(filename):
@@ -12,7 +12,7 @@ def load(filename):
     try:
         reader = READERS[p.suffix]
     except KeyError:
-        raise ValueError(f'Cannot understand suffix {p.suffix}')
+        raise ValueError(f"Cannot understand suffix {p.suffix}")
     with p.open() as fp:
         return reader.load(fp)
 

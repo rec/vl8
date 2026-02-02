@@ -52,13 +52,11 @@ class Sawtooth(Periodic):
         if dc is not None:
             dc = to_number(dc)
             if not (0 < dc < 1):
-                raise ValueError('duty_cycle must be between 0 and 1')
+                raise ValueError("duty_cycle must be between 0 and 1")
         self._duty_cycle = dc
 
 
-Sawtooth.duty_cycle = property(
-    Sawtooth._get_duty_cycle, Sawtooth._set_duty_cycle
-)
+Sawtooth.duty_cycle = property(Sawtooth._get_duty_cycle, Sawtooth._set_duty_cycle)
 
 
 class Sine(Sawtooth):
