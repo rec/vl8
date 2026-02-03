@@ -1,6 +1,7 @@
-from dataclasses import dataclass
-from old.vl8.function.function import Function
 import unittest
+from dataclasses import dataclass
+
+from old.vl8.function.function import Function
 
 
 class TestFunction(unittest.TestCase):

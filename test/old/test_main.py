@@ -1,8 +1,11 @@
-from . import assert_files_equal
-from pathlib import Path
-from old.vl8.__main__ import main
-import tdir
 import unittest
+from pathlib import Path
+
+import tdir
+
+from old.vl8.__main__ import main
+
+from . import assert_files_equal
 
 DIR = Path(__file__).parent / "dsp/sources"
 FILES = tuple(DIR / f"{i}.wav" for i in range(1, 4))

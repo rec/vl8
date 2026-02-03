@@ -1,7 +1,8 @@
-from pathlib import Path
-from old.vl8.config.validate import validate
 import functools
 import unittest
+from pathlib import Path
+
+from old.vl8.config.validate import validate
 
 
 class TestValidate(unittest.TestCase):

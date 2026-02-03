@@ -1,5 +1,6 @@
-from old.vl8.function.periodic import Periodic
 import unittest
+
+from old.vl8.function.periodic import Periodic
 
 
 class TestPeriodic(unittest.TestCase):

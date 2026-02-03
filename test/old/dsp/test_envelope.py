@@ -1,8 +1,10 @@
-from numpy.testing import assert_array_equal
-from old.vl8.dsp import envelope
 import itertools
-import numpy as np
 import unittest
+
+import numpy as np
+from numpy.testing import assert_array_equal
+
+from old.vl8.dsp import envelope
 
 
 class TestSegments(unittest.TestCase):

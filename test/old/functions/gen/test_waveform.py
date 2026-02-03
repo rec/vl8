@@ -1,7 +1,10 @@
-from ...assert_files_equal import assert_files_equal
-from old.vl8.functions.gen import Sawtooth, Sine, Square, Triangle
-import tdir
 import unittest
+
+import tdir
+
+from old.vl8.functions.gen import Sawtooth, Sine, Square, Triangle
+
+from ...assert_files_equal import assert_files_equal
 
 _OVERWRITE_FILES = False
 

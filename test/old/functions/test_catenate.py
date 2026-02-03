@@ -1,9 +1,12 @@
-from ..assert_files_equal import assert_files_equal
+import unittest
 from pathlib import Path
+
+import tdir
+
 from old.vl8.dsp.data import File
 from old.vl8.functions.catenate import Catenate
-import tdir
-import unittest
+
+from ..assert_files_equal import assert_files_equal
 
 DIR = Path(__file__).parents[1] / "dsp/sources"
 FILES = tuple(DIR / f"{i}.wav" for i in range(1, 4))

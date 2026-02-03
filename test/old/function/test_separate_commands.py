@@ -1,6 +1,7 @@
-from unittest import mock
-from old.vl8.function import separate_commands
 import unittest
+from unittest import mock
+
+from old.vl8.function import separate_commands
 
 
 class TestIsFunction(unittest.TestCase):

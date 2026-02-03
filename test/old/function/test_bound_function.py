@@ -1,5 +1,6 @@
-from old.vl8.function.bound_function import BoundFunction
 import unittest
+
+from old.vl8.function.bound_function import BoundFunction
 
 
 class TestBoundFunction(unittest.TestCase):

@@ -1,10 +1,12 @@
-from numpy.testing import assert_array_equal
+import unittest
 from pathlib import Path
-from pydub import AudioSegment
-from old.vl8.dsp import io
+
 import numpy as np
 import tdir
-import unittest
+from numpy.testing import assert_array_equal
+from pydub import AudioSegment
+
+from old.vl8.dsp import io
 
 TEST_FILE = Path(__file__).parent / "b-4098.wav"
 DIR = Path(__file__).parent / "sources"
@@ -63,7 +65,7 @@ class TestIO(unittest.TestCase):
         d1 = infile.read_bytes()
         d2 = outfile.read_bytes()
         assert len(d1) == len(d2)
-        errors = [a for a in enumerate(zip(d1, d2)) if a[1][0] != a[1][1]]
+        errors = [a for a in enumerate(zip(d1, d2, strict=True)) if a[1][0] != a[1][1]]
         assert errors == [(4, (134, 133))]
         # AudioSegment changes one bit in the length from the sample
 
@@ -77,7 +79,7 @@ class TestIO(unittest.TestCase):
         d1 = infile.read_bytes()
         d2 = outfile.read_bytes()
         assert len(d1) == len(d2)
-        errors = [a for a in enumerate(zip(d1, d2)) if a[1][0] != a[1][1]]
+        errors = [a for a in enumerate(zip(d1, d2, strict=True)) if a[1][0] != a[1][1]]
         assert errors == [(4, (134, 133))]
 
     def NO_test_pydub_24(self):

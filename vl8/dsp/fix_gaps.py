@@ -1,7 +1,9 @@
-from old.vl8.util import error
-from typing import List, Union, Optional
 import math
+from typing import List, Optional, Union
+
 import xmod
+
+from old.vl8.util import error
 
 Number = Union[int, float]
 Gaps = Union[Number, List[Number]]

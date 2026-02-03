@@ -1,8 +1,11 @@
-from ...assert_files_equal import assert_files_equal
+import unittest
+
+import tdir
+
 from old.vl8.dsp.rand import Rand
 from old.vl8.functions.gen.noise import Noise
-import tdir
-import unittest
+
+from ...assert_files_equal import assert_files_equal
 
 
 @tdir

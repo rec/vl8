@@ -1,5 +1,6 @@
-from old.vl8.config.config import merge
 import unittest
+
+from old.vl8.config.config import merge
 
 
 class TestConfig(unittest.TestCase):

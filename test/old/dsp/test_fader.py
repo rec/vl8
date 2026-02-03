@@ -1,7 +1,9 @@
-from numpy.testing import assert_array_almost_equal
-from old.vl8.dsp.fader import Fader
-import numpy as np
 import unittest
+
+import numpy as np
+from numpy.testing import assert_array_almost_equal
+
+from old.vl8.dsp.fader import Fader
 
 
 class TestFader(unittest.TestCase):

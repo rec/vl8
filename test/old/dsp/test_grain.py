@@ -1,10 +1,12 @@
-from numpy.testing import assert_array_equal
+import json
+import unittest
 from pathlib import Path
+
+import numpy as np
+from numpy.testing import assert_array_equal
+
 from old.vl8.dsp.grain import GrainSamples
 from old.vl8.dsp.rand import Rand
-import json
-import numpy as np
-import unittest
 
 RESULTS = Path(__file__).parent / "grain-results.json"
 
@@ -38,7 +40,7 @@ class TestGrain(unittest.TestCase):
             [[7, 8, 9], [17, 18, 19]],
         ]
         assert len(actual) == len(expected)
-        for a, e in zip(actual, expected):
+        for a, e in zip(actual, expected, strict=True):
             assert_array_equal(a, e)
 
     def test_variation(self):
@@ -50,7 +52,7 @@ class TestGrain(unittest.TestCase):
         ]
 
         assert len(actual) == len(expected)
-        for a, e in zip(actual, expected):
+        for a, e in zip(actual, expected, strict=True):
             assert_array_equal(a, e)
 
     def test_grain(self):

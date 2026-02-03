@@ -1,8 +1,11 @@
-from .. import skip
-from pathlib import Path
-from old.vl8.dsp import io
-import tdir
 import unittest
+from pathlib import Path
+
+import tdir
+
+from old.vl8.dsp import io
+
+from .. import skip
 
 DIR = Path(__file__).parent / "sources"
 

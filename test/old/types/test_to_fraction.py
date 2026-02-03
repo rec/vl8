@@ -1,8 +1,10 @@
-from fractions import Fraction
-from old.vl8.types import to_fraction
 import itertools
-import more_itertools
 import unittest
+from fractions import Fraction
+
+import more_itertools
+
+from old.vl8.types import to_fraction
 
 
 class TestRatio(unittest.TestCase):

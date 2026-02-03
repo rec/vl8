@@ -1,7 +1,8 @@
+import unittest
 from fractions import Fraction
 from typing import Optional
-from old.vl8.types import types, setter_dataclass
-import unittest
+
+from old.vl8.types import setter_dataclass, types
 
 
 class TestSetterDataclass(unittest.TestCase):
@@ -11,8 +12,8 @@ class TestSetterDataclass(unittest.TestCase):
             one: types.Numeric
             two: str = "a"
             three: types.NumericSequence = None
-            four: Optional[types.Numeric] = None
-            five: Optional[types.Numeric] = "23.5"
+            four: types.Numeric | None = None
+            five: types.Numeric | None = "23.5"
 
         one = One("2 / 3", "b", ["4.25", 12])
         assert one.one == Fraction(2, 3)

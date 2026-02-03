@@ -1,6 +1,7 @@
-from old.vl8.util import gray
 import itertools
 import unittest
+
+from old.vl8.util import gray
 
 
 class TestGray(unittest.TestCase):

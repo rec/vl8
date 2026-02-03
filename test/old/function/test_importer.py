@@ -1,6 +1,7 @@
+import unittest
+
 from old.vl8.function import importer
 from old.vl8.functions.catenate import Catenate
-import unittest
 
 MISSING = []
 
